@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <link rel="preconnect" href="https://utqviljholfvpfztfuvx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://utqviljholfvpfztfuvx.supabase.co">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order History — 956 Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap"></noscript>
+  <link rel="modulepreload" href="js/supabase.js">
+  <link rel="modulepreload" href="js/auth.js?v=15">
+  <link rel="modulepreload" href="js/cart.js?v=19">
+  <link rel="modulepreload" href="js/products.js?v=15">
+  <link rel="stylesheet" href="css/site.css?v=4" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── HEADER ──────────────────────────────────── */
+    .orders-header {
+      padding: 52px 0 36px; border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .orders-graffiti {
+      position: absolute; font-family: var(--font-m);
+      color: var(--red); opacity: .04; pointer-events: none; user-select: none;
+    }
+    .orders-header-inner { position: relative; z-index: 1; }
+    .orders-eyebrow {
+      font-family: var(--font-c); font-size: .68rem; font-weight: 700;
+      letter-spacing: .28em; text-transform: uppercase; color: var(--red);
+      margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+    }
+    .orders-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--red); }
+    .orders-title {
+      font-family: var(--font-d); font-size: clamp(2.4rem, 5vw, 4.5rem);
+      line-height: .92; letter-spacing: .03em; color: #111111;
+    }
+    .orders-title em { color: var(--red); font-style: normal; }
+
+    /* ── BODY ────────────────────────────────────── */
+    .orders-body { padding: 40px 0 80px; flex: 1; }
+
+    /* ── SUMMARY BAR ─────────────────────────────── */
+    .orders-summary {
+      display: flex; align-items: center; gap: 32px;
+      padding: 20px 0 28px; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .summary-stat { }
+    .summary-stat-val {
+      font-family: var(--font-d); font-size: 2rem; letter-spacing: .04em; color: #111111;
+    }
+    .summary-stat-label {
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--smoke);
+      margin-top: 2px;
+    }
+    .summary-divider { width: 1px; height: 40px; background: var(--border); }
+
+    /* ── ORDER ROWS ──────────────────────────────── */
+    .orders-list { margin-top: 8px; }
+
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 80px 0;
+    }
+    .empty-icon { font-size: 3rem; opacity: .2; margin-bottom: 20px; }
+    .empty-title {
+      font-family: var(--font-d); font-size: 1.8rem; letter-spacing: .04em;
+      color: #111111; margin-bottom: 10px;
+    }
+    .empty-sub { font-size: .85rem; color: var(--smoke); margin-bottom: 28px; }
+    .empty-cta {
+      display: inline-flex;
+      font-family: var(--font-c); font-size: .75rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: var(--red); color: #fff; padding: 12px 28px;
+      clip-path: polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));
+      transition: background .18s;
+    }
+    .empty-cta:hover { background: var(--red-hot); }
+
+    /* ── GROUP HEADERS (by month) ────────────────── */
+    .month-group { margin-top: 32px; }
+    .month-label {
+      font-family: var(--font-c); font-size: .65rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--smoke);
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+    }
+
+    /* ── Order Cards ──────────────────────────────────── */
+    .order-card {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #F6F6F6; border: 1px solid #E0E0E0;
+      padding: 16px; margin-bottom: 10px;
+    }
+    .order-card:last-child { margin-bottom: 0; }
+    .order-card-thumb {
+      width: 56px; height: 56px; flex-shrink: 0;
+      border: 1px solid #E0E0E0;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .order-card-body { flex: 1; min-width: 0; }
+    .order-card-header {
+      display: flex; align-items: baseline;
+      justify-content: space-between; gap: 12px; margin-bottom: 8px;
+    }
+    .order-card-name {
+      font-family: var(--font-c); font-size: .88rem; font-weight: 700;
+      letter-spacing: .05em; text-transform: uppercase; color: #111111;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .order-card-total {
+      font-family: var(--font-d); font-size: 1.2rem;
+      color: #111111; letter-spacing: .04em; flex-shrink: 0;
+    }
+    .order-card-bottom {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .order-card-meta {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .order-card-meta-item { display: flex; align-items: center; gap: 4px; line-height: 1; }
+    .order-card-meta-label {
+      font-family: var(--font-c); font-size: .66rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--smoke);
+    }
+    .order-card-meta-val {
+      font-family: var(--font-c); font-size: .66rem;
+      font-weight: 600; letter-spacing: .04em; color: var(--ash);
+    }
+    .order-review-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--font-c); font-size: .6rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--smoke); text-decoration: none;
+      border: 1px solid #E0E0E0; padding: 4px 10px; flex-shrink: 0;
+      transition: color .18s, border-color .18s;
+    }
+    .order-review-link:hover { color: var(--red); border-color: rgba(0,104,71,.4); }
+
+    @media (max-width: 600px) {
+      .summary-divider { display: none; }
+    }
+
+    /* ── Order status badges ──────────────────────────── */
+    .order-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-c);
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 2px;
+    }
+    .order-status.processing {
+      background: rgba(0,104,71,.12);
+      color: #006847;
+      border: 1px solid rgba(0,104,71,.3);
+      animation: status-pulse 2s ease-in-out infinite;
+    }
+    .order-status.payment_processed {
+      background: rgba(91,199,91,.12);
+      color: #2a7a2a;
+      border: 1px solid rgba(91,199,91,.3);
+    }
+    .order-status.completed { background: rgba(0,104,71,.1); color: #006847; border-color: rgba(0,104,71,.3); }
+    @keyframes status-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .6; }
+    }
+  </style>
+  <meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;top:0;left:0;padding:8px 16px;background:var(--red);color:#fff;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;z-index:999;transform:translateY(-100%);transition:transform .2s;will-change:transform" onfocus="this.style.transform='translateY(0)'" onblur="this.style.transform='translateY(-100%)'">Skip to content</a>
+  <div id="nav-mount"></div>
+  <div id="banner-mount"></div>
+
+  <div class="orders-header">
+    <div class="orders-header-inner container">
+      <div class="orders-eyebrow">Purchase History</div>
+      <div class="orders-title">Your complete <em>order</em><br/>history.</div>
+    </div>
+  </div>
+
+  <div class="orders-body">
+    <div class="container">
+      <div class="orders-summary" id="orders-summary"></div>
+      <div class="orders-list"  id="orders-list">
+        <div style="padding:40px 0;text-align:center;font-family:var(--font-c);font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--smoke)">Loading orders…</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-mount"></div>
+
+  <script type="module">
+    window.CART_SOURCE = '956labs';
+    import './js/auth.js?v=15';
+    import './js/cart.js?v=19';
+    import { loadProducts, getProduct, miniPepperSVG } from './js/products.js?v=15';
+
+    const [, , orders] = await Promise.all([
+      window.initPage('orders'),
+      loadProducts(),
+      Auth.getAllOrders(),
+    ]);
+    const summaryEl = document.getElementById('orders-summary');
+    const listEl    = document.getElementById('orders-list');
+
+    if (!orders.length) {
+      summaryEl.style.display = 'none';
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🧪</div>
+          <div class="empty-title">No orders yet.</div>
+          <p class="empty-sub">Time to fix that.</p>
+          <a href="dashboard.html" class="empty-cta">Go to Shop</a>
+        </div>`;
+    } else {
+      /* ── Summary bar ── */
+      const totalSpent = orders.reduce((s, o) => s + Number(o.total), 0);
+      summaryEl.innerHTML = `
+        <div class="summary-stat">
+          <div class="summary-stat-val">${orders.length}</div>
+          <div class="summary-stat-label">Total Orders</div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-stat">
+          <div class="summary-stat-val">$${totalSpent.toFixed(2)}</div>
+          <div class="summary-stat-label">Total Spent</div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-stat">
+          <div class="summary-stat-val">${orders.reduce((s, o) => s + o.qty, 0)}</div>
+          <div class="summary-stat-label">Items Ordered</div>
+        </div>`;
+
+      /* ── Group by month ── */
+      const groups = {};
+      orders.forEach(o => {
+        const key = new Date(o.ordered_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(o);
+      });
+
+      listEl.innerHTML = Object.entries(groups).map(([month, rows]) => `
+        <div class="month-group">
+          <div class="month-label">${month}</div>
+          ${rows.map(o => {
+            const pid     = o.product_id;
+            const product = getProduct(pid);
+            const bg = '#F0F0F0';
+            const thumb   = product ? miniPepperSVG(product) : '';
+            const date    = new Date(o.ordered_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `
+              <div class="order-card">
+                <div class="order-card-thumb" style="background:#F0F0F0">${thumb}</div>
+                <div class="order-card-body">
+                  <div class="order-card-header">
+                    <div class="order-card-name">${o.product_name}</div>
+                    <div class="order-card-total">$${Number(o.total).toFixed(2)}</div>
+                  </div>
+                  <div class="order-card-bottom">
+                    <div class="order-card-meta">
+                      <span class="order-card-meta-item"><span class="order-card-meta-label">Date</span><span class="order-card-meta-val">${date}</span></span>
+                      <span class="order-card-meta-item"><span class="order-card-meta-label">Qty</span><span class="order-card-meta-val">${o.qty}</span></span>
+                      <span class="order-card-meta-item"><span class="order-card-meta-label">Unit</span><span class="order-card-meta-val">$${Number(o.unit_price).toFixed(2)}</span></span>
+                      ${o.shipping_carrier ? `<span class="order-card-meta-item"><span class="order-card-meta-label">Via</span><span class="order-card-meta-val">${o.shipping_carrier}</span></span>` : ''}
+                    </div>
+                    <a href="product.html?id=${pid}#reviews" onclick="event.stopPropagation()" class="order-review-link">★ Write a Review</a>
+                  </div>
+                </div>
+              </div>
+                </div>
+              </a>`;
+          }).join('')}
+        </div>`).join('');
+    }
+  </script>
+</body>
+</html>

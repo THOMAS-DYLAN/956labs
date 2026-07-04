@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <meta charset="UTF-8"/>
+  <link rel="preconnect" href="https://utqviljholfvpfztfuvx.supabase.co" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Research Peptides for Sale | Buy Online | 956 Labs</title>
+  <meta name="description" content="Research-grade peptides from 956 Labs — Semaglutide, Tirzepatide, BPC-157, Retatrutide and more. For licensed research purposes only.">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="Research Peptides — 956 Labs">
+  <meta property="og:url" content="https://956labs.bigboypeps.com/product.html">
+  <meta property="og:image" content="https://956labs.bigboypeps.com/img/logo.png">
+  <link rel="canonical" href="https://956labs.ctxlabz.com/product.html">
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="Research-grade peptides for the Rio Grande Valley — McAllen, Edinburg, Harlingen, Brownsville. For research purposes only."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap"></noscript>
+  <link rel="modulepreload" href="./js/supabase.js">
+  <link rel="modulepreload" href="./js/auth.js?v=15">
+  <link rel="modulepreload" href="./js/cart.js?v=19">
+  <link rel="modulepreload" href="./js/products.js?v=15">
+  <link rel="stylesheet" href="./css/site.css?v=4"/>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .container { max-width:1140px; margin:0 auto; padding:0 16px; }
+
+    .breadcrumb { padding:14px 0; border-bottom:1px solid var(--border); font-family:var(--font-c); font-size:.62rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color: #666666; display:flex; align-items:center; gap:8px; }
+    .breadcrumb a { color: #666666; transition:color .18s; }
+    .breadcrumb a:hover { color:var(--red-hot); }
+
+    .product-page { flex:1; padding:44px 0 80px; }
+    .product-layout { display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:start; }
+
+    .product-visual { position:sticky; top:72px; }
+    .product-main-thumb { width:100%; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; border:1px solid #D8D8D8; position:relative; overflow:hidden; background:#FFFFFF; }
+    .product-main-thumb img { height:70%; width:auto; object-fit:contain; display:block; margin:auto; position:relative; z-index:1; }
+    .product-visual-badge { position:absolute; top:12px; left:12px; z-index:2; font-family:var(--font-c); font-size:.58rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; padding:4px 11px; border:1px solid rgba(0,104,71,.4); background:rgba(0,104,71,.15); color:var(--red-hot); border-radius:2px; }
+    .oos-overlay { position:absolute; inset:0; background:rgba(4,10,6,.7); z-index:5; display:flex; align-items:center; justify-content:center; }
+    .oos-label { font-family:var(--font-c); font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; background:rgba(206,17,38,.88); color:#fff; padding:7px 18px; border-radius:2px; }
+    .research-tag { margin-top:12px; padding:10px 14px; border:1px solid #D8D8D8; background:#F6F6F6; font-size:.67rem; color: #666666; font-style:italic; line-height:1.6; text-align:center; border-radius:2px; }
+
+    .product-cat-tag { display:inline-flex; align-items:center; gap:7px; font-family:var(--font-c); font-size:.62rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--red-hot); margin-bottom:11px; }
+    .product-cat-tag::before { content:''; width:16px; height:2px; background:var(--red); }
+    .product-title { font-family:var(--font-d); font-size:clamp(1.9rem,4vw,3rem); letter-spacing:.04em; line-height:.95; color:#111111; margin-bottom:16px; }
+    .product-info-row { display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+    .info-label { font-family:var(--font-c); font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color: #666666; }
+    .product-description { font-size:.86rem; color: #666666; line-height:1.75; margin-bottom:22px; }
+
+    /* ── Research Hint ───────────────────────────────── */
+    .research-hint {
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--red);
+      overflow: hidden;
+    }
+    .hint-toggle {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: none; border: none; cursor: pointer;
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--red);
+      transition: background .18s;
+    }
+    .hint-toggle:hover { background: rgba(0,104,71,.05); }
+    .hint-arrow { font-size: .7rem; transition: transform .25s; }
+    .hint-arrow.open { transform: rotate(180deg); }
+    .hint-body {
+      max-height: 0; overflow: hidden; transition: max-height .3s ease;
+    }
+    .hint-body.open { max-height: 200px; }
+    .hint-text {
+      padding: 0 14px 14px;
+      font-family: var(--font-b); font-size: .82rem; color: var(--ash);
+      line-height: 1.7;
+    }
+    .product-divider { height:1px; background:var(--border); margin:22px 0; }
+    .price-row { display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+    .price-big { font-family:var(--font-d); font-size:2.2rem; letter-spacing:.04em; color:#111111; }
+    .price-note { font-family:var(--font-c); font-size:.63rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color: #666666; }
+
+    .product-actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; align-items:center; }
+    .qty-control { display:flex; border:1px solid #D8D8D8; }
+    .qty-dec, .qty-inc { width:36px; height:46px; display:flex; align-items:center; justify-content:center; font-size:1.05rem; color:#444444; background:#FFFFFF; transition:all .18s; border:none; cursor:pointer; }
+    .qty-dec:hover, .qty-inc:hover { color:#111111; background:var(--border); }
+    .qty-display { width:48px; height:46px; display:flex; align-items:center; justify-content:center; font-family:var(--font-d); font-size:1.15rem; letter-spacing:.04em; color:#111111; background:#F6F6F6; border-left:1px solid var(--border); border-right:1px solid var(--border); user-select:none; }
+    .add-to-cart-btn { flex:1; min-width:160px; height:46px; font-family:var(--font-c); font-size:.76rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; background:var(--red); color:#111; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); display:flex; align-items:center; justify-content:center; gap:7px; transition:background .2s, transform .2s; border:none; cursor:pointer; }
+    .add-to-cart-btn:hover { background:var(--red-hot); transform:translateY(-1px); }
+    /* OOS button — looks clickable, not disabled */
+    .add-to-cart-btn.oos {
+      clip-path: none !important;
+      background: transparent !important;
+      color: var(--red) !important;
+      border: 1px solid var(--red) !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+    }
+    .add-to-cart-btn.oos:hover {
+      background: rgba(0,104,71,.08) !important;
+    }
+    .add-to-cart-btn.oos { background:var(--border); color:#666666; cursor:not-allowed; }
+    .add-to-cart-btn.added { background:#FFFFFF; color:var(--ok); }
+    .waitlist-msg { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ok); margin-top:6px; display:none; }
+
+    .detail-row { display:flex; padding:10px 0; border-bottom:1px solid var(--border); font-size:.83rem; }
+    .detail-row:first-child { border-top:1px solid var(--border); }
+    .detail-key { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color: #666666; width:110px; flex-shrink:0; padding-top:2px; }
+    .detail-val { color:#1A1A1A; }
+
+    /* ── Related ──────────────────────────────────────── */
+    .related-section { padding:44px 0; border-top:1px solid var(--border); }
+    .related-title { font-family:var(--font-d); font-size:1.6rem; letter-spacing:.04em; color:#111111; margin-bottom:20px; }
+    .related-title em { color:var(--red); font-style:normal; }
+    .related-row { display:flex; gap:12px; overflow-x:auto; padding-bottom:8px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+    .related-card { background:#FFFFFF; border:1px solid #D8D8D8; cursor:pointer; transition:border-color .2s, transform .2s; flex:0 0 180px; border-radius:2px; }
+    .related-card:hover { border-color:var(--red); transform:translateY(-3px); }
+    .related-thumb { height:110px; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--border); overflow:hidden; }
+    .related-thumb img { height:76px; width:auto; object-fit:contain; }
+    .related-info { padding:10px 12px; }
+    .related-name { font-family:var(--font-c); font-size:.8rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#111111; margin-bottom:3px; line-height:1.2; }
+    .related-price { font-family:var(--font-d); font-size:1.05rem; color:#111111; }
+
+    /* ── Lab report ───────────────────────────────────── */
+    .lab-section { padding:36px 0; border-top:1px solid var(--border); }
+    .lab-title { font-family:var(--font-d); font-size:1.5rem; letter-spacing:.04em; color:#111111; margin-bottom:14px; }
+    .lab-img { max-width:580px; width:100%; filter:invert(.9) hue-rotate(90deg); border:1px solid #D8D8D8; border-radius:2px; }
+
+    /* ── Reviews ──────────────────────────────────────── */
+    .reviews-area { padding:52px 0; border-top:1px solid var(--border); }
+    .reviews-head { font-family:var(--font-d); font-size:1.6rem; letter-spacing:.04em; color:#111111; margin-bottom:22px; }
+    .reviews-head em { color:var(--red); font-style:normal; }
+    .your-rating-panel { background:#F6F6F6; border:1px solid #D8D8D8; padding:18px 20px; margin-bottom:26px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; border-radius:2px; }
+    .rating-label { font-family:var(--font-c); font-size:.63rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color: #666666; flex-shrink:0; }
+    .star-btn { width:30px; height:30px; background:none; border:none; cursor:pointer; padding:0; transition:transform .12s; display:inline-flex; }
+    .star-btn:hover { transform:scale(1.15); }
+    .star-btn svg { width:26px; height:26px; display:block; }
+    .rating-saved { font-family:var(--font-c); font-size:.63rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ok); display:none; }
+    .review-write-btn { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; background:none; color:var(--red-hot); padding:5px 11px; border:1px solid rgba(0,104,71,.32); cursor:pointer; margin-left:8px; transition:all .18s; border-radius:2px; }
+    .review-write-btn:hover { background:rgba(0,104,71,.1); }
+    .review-form-wrap { display:none; background:#F6F6F6; border:1px solid #D8D8D8; padding:18px; margin-bottom:20px; border-radius:2px; }
+    .review-form-wrap.open { display:block; }
+    .review-form-label { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color: #666666; margin-bottom:10px; }
+    .review-input { width:100%; padding:9px 12px; background:#FFFFFF; border:1px solid #D8D8D8; color:#111111; font-size:.85rem; outline:none; box-sizing:border-box; margin-bottom:8px; transition:border-color .2s; font-family:var(--font-b); border-radius:2px; }
+    .review-input:focus { border-color:var(--red); box-shadow:0 0 0 2px rgba(0,104,71,.12); }
+    .review-card { background:#FFFFFF; border:1px solid #D8D8D8; padding:14px 16px; margin-bottom:8px; border-radius:2px; }
+    .review-header { display:flex; align-items:center; gap:9px; margin-bottom:7px; flex-wrap:wrap; }
+    .review-username { font-family:var(--font-c); font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#111111; }
+    .review-stars { display:flex; gap:2px; }
+    .review-stars svg { width:12px; height:12px; }
+    .review-date { font-size:.65rem; color: #666666; margin-left:auto; }
+    .review-comment { font-size:.83rem; color:#1A1A1A; line-height:1.65; }
+
+    /* ── Toast ────────────────────────────────────────── */
+    .add-toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%) translateY(16px); background:#F6F6F6; border:1px solid #D8D8D8; border-left:3px solid var(--red); font-family:var(--font-c); font-size:.73rem; font-weight:700; letter-spacing:.08em; color:#1A1A1A; padding:11px 20px; border-radius:2px; opacity:0; transition:all .26s; pointer-events:none; white-space:nowrap; z-index:99; }
+    .add-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width:800px) { .product-layout { grid-template-columns:1fr; gap:24px; } .product-visual { position:static; } }
+    @media (max-width:500px)  { .product-actions { flex-direction:column; } .add-to-cart-btn { min-width:100%; } }
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;top:0;left:0;padding:8px 16px;background:var(--red);color:#fff;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;z-index:999;transform:translateY(-100%);transition:transform .2s;will-change:transform" onfocus="this.style.transform='translateY(0)'" onblur="this.style.transform='translateY(-100%)'">Skip to content</a>
+  <div id="nav-mount"></div>
+  <div id="banner-mount"></div>
+
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="dashboard.html">Shop</a><span>›</span><span id="breadcrumb-name">Loading…</span>
+    </div>
+  </div>
+
+  <main id="main-content">
+  <div class="product-page">
+    <div class="container">
+      <div id="product-content"><p style="color: #666666">Loading…</p></div>
+    </div>
+  </div>
+
+  <div class="container" id="lab-mount" style="display:none"></div>
+  <div class="container" id="related-mount" style="display:none"></div>
+
+  <div class="container">
+    <div class="reviews-area" id="reviews">
+      <div class="reviews-head">Community <em>Reviews</em></div>
+      <div id="your-rating-panel"></div>
+      <div id="review-form-wrap" class="review-form-wrap">
+        <div class="review-form-label">Write a Review</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span class="rating-label">Your Rating</span>
+          <div id="form-star-picker" style="display:flex;gap:4px"></div>
+          <span id="form-star-label" style="font-family:var(--font-c);font-size:.58rem;color: #666666"></span>
+        </div>
+        <input id="review-username" class="review-input" type="text" placeholder="Display name (e.g. ResearcherJane)" maxlength="40"/>
+        <textarea id="review-comment" class="review-input" placeholder="Share your experience…" maxlength="500" rows="3" style="resize:vertical"></textarea>
+        <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+          <button onclick="submitReview()" style="font-family:var(--font-c);font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--red);color:#fff;padding:8px 18px;border:none;cursor:pointer;transition:background .18s;border-radius:2px" onmouseover="this.style.background='var(--red-hot)'" onmouseout="this.style.background='var(--red)'">Post Review</button>
+          <button onclick="document.getElementById('review-form-wrap').classList.remove('open')" style="font-family:var(--font-c);font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:none;color: #666666;padding:8px 12px;border:1px solid #D8D8D8;cursor:pointer;border-radius:2px">Cancel</button>
+          <span id="review-err" style="font-size:.7rem;color:var(--err)"></span>
+        </div>
+      </div>
+      <div id="reviews-list"></div>
+    </div>
+  </div>
+
+  </main>
+  <div id="footer-mount"></div>
+  <div class="add-toast" id="add-toast"></div>
+
+  <!-- Checkout overlay required by openCheckout() -->
+  <div class="checkout-overlay" id="checkout-overlay" onclick="if(event.target===this)closeCheckout()">
+    <div class="checkout-modal" id="checkout-modal"></div>
+  </div>
+
+  <script type="module">
+    window.CART_SOURCE = '956labs';
+    import './js/auth.js?v=15';
+    import './js/cart.js?v=19';
+    import { loadProducts, allProducts, getProduct, pepperSVG, miniPepperSVG } from './js/products.js?v=15';
+
+    let _formStars = 0; // must be before renderReviews is called
+
+    await Promise.all([window.initPage('product'), loadProducts()]);
+
+    const params    = new URLSearchParams(window.location.search);
+    const productId = parseInt(params.get('id'), 10);
+    const content   = document.getElementById('product-content');
+
+    if (!productId || isNaN(productId)) {
+      content.innerHTML = '<p style="color: #666666">No product specified. <a href="index.html">← Back to Shop</a></p>';
+    } else {
+      const p = getProduct(productId);
+      if (!p) {
+        content.innerHTML = '<p style="color: #666666">Product not found. <a href="dashboard.html">← Back to Shop</a></p>';
+      } else {
+        const rating = await Auth.getProductRating(productId);
+
+    // ── Research Hint ─────────────────────────────────────
+    const HINTS_DATA = {"sema": ["Semaglutide", "A GLP-1 receptor agonist originally developed for blood sugar regulation. Research focuses on its role in metabolic pathways, appetite signaling, and cellular energy balance."], "tirz": ["Tirzepatide", "A dual GIP/GLP-1 receptor agonist. Research explores its effects on insulin sensitivity, lipid metabolism, and energy homeostasis."], "bpc": ["BPC-157", "A pentadecapeptide derived from a human gastric protein. Extensively studied for tissue repair, angiogenesis, and gastrointestinal integrity in preclinical models."], "tb500": ["TB-500", "A synthetic peptide fragment of Thymosin Beta-4. Research focuses on actin binding, cell migration, and wound healing mechanisms."], "ghk": ["GHK-Cu", "A naturally occurring copper peptide. Research areas include collagen synthesis stimulation, antioxidant activity, and tissue regeneration signals."], "mots": ["MOTS-c", "A mitochondrial-derived peptide that regulates metabolic homeostasis. Research focuses on insulin sensitivity, exercise response, and cellular aging pathways."], "reta": ["Retatrutide", "A triple GLP-1/GIP/glucagon receptor agonist. Among the newest compounds in metabolic research, studied for energy expenditure and adipose tissue effects."], "tesa": ["Tesamorelin", "A GHRH analogue that stimulates growth hormone release. Research examines its role in visceral adipose reduction and IGF-1 axis regulation."], "ipa": ["Ipamorelin", "A selective GH secretagogue and ghrelin receptor agonist. Research focuses on pulsatile GH release with minimal effect on cortisol and prolactin."], "cjc": ["CJC-1295", "A long-acting GHRH analogue studied for extended half-life via DAC technology and sustained GH/IGF-1 elevation."], "aod": ["AOD-9604", "A modified hGH fragment (176-191). Research focuses specifically on lipolytic activity without the growth-promoting effects of full hGH."], "ahk": ["AHK-Cu", "A tripeptide copper complex. Research explores its role in hair follicle biology, scalp circulation, and extracellular matrix remodeling."], "klow": ["KLOW-80", "A proprietary peptide formulation studied for its metabolic activity profile and receptor binding characteristics across multiple pathways."], "bac": ["BAC Water", "Bacteriostatic water preserved with 0.9% benzyl alcohol \u2014 the standard reconstitution solution for lyophilized research peptides."], "thymalin": ["Thymalin", "A naturally derived thymic peptide complex. Research focuses on immune system modulation, T-lymphocyte activity, and restoration of thymic function."], "nad": ["NAD+", "Nicotinamide Adenine Dinucleotide \u2014 a coenzyme critical for cellular energy metabolism. Research areas include mitochondrial function, sirtuin activation, and cellular aging pathways."], "b12": ["Vitamin B12", "An essential coenzyme involved in DNA synthesis, red blood cell formation, and neurological function. Research-grade injectable form."], "lipo": ["Lipo-C", "A lipotropic injection combining methionine, inositol, and choline with Vitamin B12. Research focuses on hepatic lipid metabolism and fat mobilization pathways."], "fat blast": ["Lipo-C Fat Blaster", "A high-strength lipotropic complex at 526mg. Comprehensive MIC + vitamin formula for lipid metabolism research."], "hgh": ["HGH", "Human Growth Hormone \u2014 a 191 amino acid protein produced by the anterior pituitary. Research examines body composition, cellular repair, IGF-1 axis regulation, and metabolic function."]};
+    function injectHint(p) {
+      var mount = document.getElementById('hint-mount');
+      if (!mount) return;
+      var name = (p.name || '').toLowerCase();
+      var match = Object.keys(HINTS_DATA).find(function(k) { return name.indexOf(k) !== -1; });
+      if (!match) { mount.style.display = 'none'; return; }
+      var label = HINTS_DATA[match][0];
+      var text  = HINTS_DATA[match][1];
+      mount.innerHTML =
+        '<div class="research-hint">' +
+        '<button class="hint-toggle" onclick="this.nextElementSibling.classList.toggle(\'open\');this.querySelector(\'.hint-arrow\').classList.toggle(\'open\')">' +
+        '<span>What is ' + label + '?</span><span class="hint-arrow">&#9660;</span>' +
+        '</button>' +
+        '<div class="hint-body"><p class="hint-text">' + text + '</p></div>' +
+        '</div>';
+      mount.style.display = 'block';
+    }
+        renderProduct(p, rating);
+        injectHint(p);
+        renderLabReport(p);
+        renderRelated(p);
+        renderReviews(productId, rating);
+      }
+    }
+
+    function star(filled, size) {
+      size = size || 20;
+      return '<svg viewBox="0 0 24 24" fill="' + (filled ? 'var(--red)' : 'var(--border)') + '" width="' + size + '" height="' + size + '"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    }
+
+    function renderProduct(p, rating) {
+      if (typeof updateProductMeta !== "undefined") updateProductMeta(p, rating);
+      document.getElementById('breadcrumb-name').textContent = p.name;
+      const avg = Math.round(rating.average || 0);
+
+      content.innerHTML = '<div class="product-layout">'
+        // Visual
+        + '<div class="product-visual">'
+        + '<div class="product-main-thumb">'
+        + (p.inventory <= 0 ? '<div class="oos-overlay"><div class="oos-label">Out of Stock</div></div>' : '')
+        + (p.badge ? '<div class="product-visual-badge">' + p.badge + '</div>' : '')
+        + (p.images ? '<img src="' + (p.images.startsWith('http') ? p.images : './pdct img/' + p.images) + '" alt="' + p.name + '" width="280" height="280"/>' : pepperSVG(p))
+        + '</div>'
+        + '<div class="research-tag">⚠️ For research purposes only · Not intended for human consumption · Handle with care</div>'
+        + '</div>'
+        // Info
+        + '<div>'
+        + '<div class="product-cat-tag">' + p.category + '</div>'
+        + '<h1 class="product-title">' + p.name + '</h1>'
+        + '<div class="product-info-row"><span class="info-label">Rating</span>'
+        + '<div style="display:flex;gap:3px">' + Array.from({length:5},(_,i)=>star(i<avg)).join('') + '</div>'
+        + '<span style="font-family:var(--font-c);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color: #666666">'
+        + (rating.count === 0 ? 'No reviews' : rating.count + ' review' + (rating.count!==1?'s':'')) + '</span>'
+        + '</div>'
+        + '<div class="product-description">' + p.description + '</div>'
+        + '<div id="hint-mount" style="display:none"></div>'
+        + '<div class="product-divider"></div>'
+        + '<div class="price-row"><span class="price-big">$' + Number(p.price).toFixed(2) + '</span><span class="price-note">per unit</span></div>'
+        + '<div class="product-actions">'
+        + '<div class="qty-control"><button class="qty-dec" onclick="changeQty(-1)">−</button><div class="qty-display" id="qty-display">1</div><button class="qty-inc" onclick="changeQty(1)">+</button></div>'
+        + (p.inventory > 0
+          ? '<button class="add-to-cart-btn" id="add-btn" onclick="addToCart(' + p.id + ')">Add to Cart — $' + Number(p.price).toFixed(2) + '</button>'
+          : '<button class="add-to-cart-btn oos" id="add-btn" onclick="joinWaitlist(' + p.id + ',\'' + p.name.replace(/'/g,"\\'") + '\')">🔔 Notify Me When In Stock</button>')
+        + '</div>'
+        + '<div class="waitlist-msg" id="waitlist-msg">✓ You\'re on the waitlist — we\'ll email you when it\'s back.</div>'
+        + '<div style="margin-top:22px">'
+        + [['Category',p.category],['Use','Research purposes only'],['Consumption','Not for human consumption'],
+           ['Status',p.inventory<=0?'Out of Stock':p.inventory<=10?'Low Stock — '+p.inventory+' left':'In Stock']
+          ].map(([k,v])=>'<div class="detail-row"><div class="detail-key">'+k+'</div><div class="detail-val">'+v+'</div></div>').join('')
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    let qty = 1;
+    window.changeQty = d => {
+      const p = getProduct(productId);
+      if (!p) return;
+      qty = Math.max(1, Math.min(p.inventory || 0, qty + d));
+      const el  = document.getElementById('qty-display');
+      const btn = document.getElementById('add-btn');
+      if (el) el.textContent = qty;
+      if (btn && p.inventory > 0) btn.textContent = 'Add to Cart — $' + (p.price * qty).toFixed(2) + (qty > 1 ? ' (' + qty + '×)' : '');
+    };
+
+    window.addToCart = id => {
+      const p     = getProduct(id);
+      const toast = document.getElementById('add-toast');
+      const btn   = document.getElementById('add-btn');
+      if (!p) return;
+      let added = 0;
+      for (let i = 0; i < qty; i++) { const r = Cart.add(p); if (!r?.ok) break; added++; }
+      if (added === 0) {
+        toast.textContent = p.name + ' is out of stock';
+        toast.style.borderLeftColor = 'var(--red)';
+      } else {
+        if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); setTimeout(() => { btn.textContent = 'Add to Cart — $' + Number(p.price).toFixed(2); btn.classList.remove('added'); }, 1800); }
+        toast.textContent = added + '× ' + p.name + ' added to cart';
+        toast.style.borderLeftColor = 'var(--red)';
+      }
+      toast.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => toast.classList.remove('show'), 2500);
+    };
+
+    window.joinWaitlist = async (id, name) => {
+      const btn = document.getElementById('add-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Adding to waitlist…'; }
+      const r = await Auth.joinWaitlist(id, name);
+      if (r.ok) { if (btn) btn.style.display = 'none'; document.getElementById('waitlist-msg').style.display = 'block'; }
+      else if (r.err === 'already_on_waitlist') { if (btn) { btn.disabled = false; btn.textContent = '🔔 Already on Waitlist'; } }
+      else { if (btn) { btn.disabled = false; btn.textContent = '🔔 Notify Me When In Stock'; } }
+    };
+
+    function renderLabReport(p) {
+      if (!p.lab_report) return;
+      const m = document.getElementById('lab-mount');
+      m.style.display = '';
+      m.innerHTML = '<div class="lab-section"><div class="lab-title">Lab Report</div><img src="./report img/' + p.lab_report + '" alt="Lab Report" class="lab-img" width="700" height="1000" loading="lazy" decoding="async"/></div>';
+    }
+
+    function renderRelated(p) {
+      const others = allProducts().filter(x => x.id !== p.id && x.category === p.category && x.inventory > 0 && x.images).slice(0,6);
+      if (!others.length) return;
+      const m = document.getElementById('related-mount');
+      m.style.display = '';
+      m.innerHTML = '<div class="related-section"><div class="related-title">More <em>Research</em></div><div class="related-row">'
+        + others.map(r => '<div class="related-card" onclick="location.href=\'product.html?id='+r.id+'\'">'
+            + '<div class="related-thumb">' + (r.images ? '<img src="'+(r.images.startsWith('http') ? r.images : './pdct img/'+r.images)+'" alt="'+r.name+'" width="76" height="76"/>' : miniPepperSVG(r)) + '</div>'
+            + '<div class="related-info"><div class="related-name">'+r.name+'</div><div class="related-price">$'+Number(r.price).toFixed(2)+'</div></div>'
+            + '</div>').join('')
+        + '</div></div>';
+    }
+
+    // ── Reviews — uses Auth.getReviews() and Auth.submitReview() ──
+    async function renderReviews(productId, rating) {
+      const panel    = document.getElementById('your-rating-panel');
+      const listEl   = document.getElementById('reviews-list');
+      const userStars = rating.userStars || 0;
+      _formStars = userStars;
+
+      // Star picker
+      panel.innerHTML = '<div class="your-rating-panel">'
+        + '<span class="rating-label">Your Rating</span>'
+        + '<div style="display:flex;gap:4px">'
+        + Array.from({length:5},(_,i)=>'<button class="star-btn" onmouseenter="hoverStars('+(i+1)+')" onmouseleave="resetStars()" onclick="pickStar('+(i+1)+')" id="pstar-'+(i+1)+'">'
+            + star(i < userStars, 26) + '</button>').join('')
+        + '</div>'
+        + '<span id="rating-saved" class="rating-saved">✓ Saved</span>'
+        + '<button class="review-write-btn" onclick="document.getElementById(\'review-form-wrap\').classList.toggle(\'open\')">Write a Review</button>'
+        + '</div>';
+
+      window.hoverStars = n => { for(let i=1;i<=5;i++){const s=document.getElementById('pstar-'+i);if(s)s.innerHTML=star(i<=n,26);} };
+      window.resetStars = ()  => { for(let i=1;i<=5;i++){const s=document.getElementById('pstar-'+i);if(s)s.innerHTML=star(i<=_formStars,26);} };
+      window.pickStar   = async n => {
+        _formStars = n;
+        resetStars();
+        await Auth.submitReview(productId, n, '', '');
+        const saved = document.getElementById('rating-saved');
+        if (saved) { saved.style.display = 'block'; setTimeout(()=>saved.style.display='none', 2000); }
+      };
+
+      // Build form star picker
+      const fp = document.getElementById('form-star-picker');
+      if (fp) {
+        let _hover = 0, _pick = 0;
+        fp.innerHTML = Array.from({length:5},(_,i)=>'<button class="star-btn" id="fstar-'+(i+1)+'">'+ star(false, 24) +'</button>').join('');
+        fp.querySelectorAll('button').forEach((btn, i) => {
+          btn.addEventListener('mouseenter', () => { _hover=i+1; for(let j=1;j<=5;j++){const s=fp.querySelector('#fstar-'+j);if(s)s.innerHTML=star(j<=_hover,24);} });
+          btn.addEventListener('mouseleave', () => { _hover=0;   for(let j=1;j<=5;j++){const s=fp.querySelector('#fstar-'+j);if(s)s.innerHTML=star(j<=_pick,24);} });
+          btn.addEventListener('click',      e  => { e.preventDefault(); _pick=i+1; for(let j=1;j<=5;j++){const s=fp.querySelector('#fstar-'+j);if(s)s.innerHTML=star(j<=_pick,24);} document.getElementById('form-star-label').textContent=['','Poor','Fair','Good','Great','Excellent'][_pick]; });
+        });
+        fp._getPick = () => _pick;
+      }
+
+      // Reviews list — Auth.getReviews returns { rows, currentUserId }
+      const { rows } = await Auth.getReviews(productId);
+      if (!rows.length) {
+        listEl.innerHTML = '<p style="color: #666666;font-size:.83rem;padding:16px 0">No written reviews yet. Be the first!</p>';
+      } else {
+        listEl.innerHTML = rows.map(r =>
+          '<div class="review-card">'
+          + '<div class="review-header"><span class="review-username">' + (r.username||'Anonymous') + '</span>'
+          + '<div class="review-stars">' + Array.from({length:5},(_,i)=>star(i<r.stars,13)).join('') + '</div>'
+          + '<span class="review-date">' + Auth.formatDate(r.updated_at) + '</span></div>'
+          + (r.comment ? '<div class="review-comment">' + r.comment + '</div>' : '')
+          + '</div>'
+        ).join('');
+      }
+    }
+
+    window.submitReview = async () => {
+      const fp      = document.getElementById('form-star-picker');
+      const stars   = fp?._getPick?.() || 0;
+      const comment = document.getElementById('review-comment').value.trim();
+      const username = document.getElementById('review-username').value.trim();
+      const errEl   = document.getElementById('review-err');
+      errEl.textContent = '';
+      if (!stars) { errEl.textContent = 'Please select a star rating.'; return; }
+      const r = await Auth.submitReview(productId, stars, comment, username);
+      if (!r.ok) { errEl.textContent = r.err || 'Failed to submit.'; return; }
+      document.getElementById('review-form-wrap').classList.remove('open');
+      // Refresh
+      const rating = await Auth.getProductRating(productId);
+      await renderReviews(productId, rating);
+    };
+  
+    function updateProductMeta(p, rating) {
+      var title = p.name + ' Research Peptide | Buy Online | 956 Labs';
+      document.title = title;
+      var og = {'og:title': title, 'og:description': p.name + ': Research-grade peptide from 956 Labs. For research purposes only.', 'og:url': 'https://956labs.bigboypeps.com/product.html?id=' + p.id};
+      Object.entries(og).forEach(([k,v]) => { var el = document.querySelector('meta[property="'+k+'"]'); if(el) el.setAttribute('content',v); });
+      var canon = document.querySelector('link[rel="canonical"]');
+      if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
+      canon.href = 'https://956labs.bigboypeps.com/product.html?id=' + p.id;
+      var ld = {"@context":"https://schema.org","@type":"Product","name":p.name + " Research Peptide","description":(p.description||("Research-grade " + p.name + " peptide for licensed research purposes only.")),"image":(p.images?"https://956labs.bigboypeps.com/pdct img/"+p.images:"https://956labs.bigboypeps.com/img/logo.png"),"category":(p.category||"Research Peptides"),"brand":{"@type":"Brand","name":"956 Labs"},"offers":{"@type":"Offer","url":"https://956labs.bigboypeps.com/product.html?id="+p.id,"price":p.price,"priceCurrency":"USD","availability":p.inventory>0?"https://schema.org/InStock":"https://schema.org/OutOfStock","seller":{"@type":"Organization","name":"956 Labs"}}};
+      if (rating && rating.count > 0) { ld.aggregateRating = {"@type":"AggregateRating","ratingValue":rating.average,"reviewCount":rating.count}; }
+      var s = document.getElementById('product-ld'); if(s) s.remove();
+      s = document.createElement('script'); s.id='product-ld'; s.type='application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s);
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /cart.html
+Disallow: /dashboard.html
+Disallow: /orders.html
+Disallow: /reset.html
+
+Sitemap: https://956labs.bigboypeps.com/sitemap.xml

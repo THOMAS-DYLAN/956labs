@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Reviews — 956 Labs</title>
+  <meta name="description" content="See what verified researchers say about 956 Labs. Real reviews from real customers." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap"></noscript>
+  <link rel="stylesheet" href="css/site.css?v=4" />
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; background:#F6F6F6; }
+
+    .reviews-page-header {
+      background: #006847;
+      border-bottom: 3px solid #CE1126;
+      padding: 52px 0 40px;
+    }
+    .reviews-page-header .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+    .reviews-eyebrow {
+      font-family:var(--font-c); font-size:.6rem; font-weight:700;
+      letter-spacing:.28em; text-transform:uppercase;
+      color:rgba(255,255,255,.7); margin-bottom:8px;
+    }
+    .reviews-page-title {
+      font-family:var(--font-d); font-size:clamp(2.2rem,5vw,3.6rem);
+      letter-spacing:.06em; color:#fff; margin:0 0 6px; line-height:1;
+    }
+    .reviews-page-sub { font-family:var(--font-b); font-size:.88rem; color:rgba(255,255,255,.75); margin:0; }
+    .reviews-stats { display:flex; gap:28px; margin-top:20px; flex-wrap:wrap; }
+    .reviews-stat { display:flex; flex-direction:column; gap:3px; }
+    .reviews-stat-num { font-family:var(--font-d); font-size:1.8rem; letter-spacing:.04em; color:#fff; line-height:1; }
+    .reviews-stat-label { font-family:var(--font-c); font-size:.55rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+
+    .reviews-filter-bar {
+      background:#fff; border-bottom:1px solid #E0E0E0;
+      padding:0 24px; position:sticky; top:0; z-index:50;
+      box-shadow:0 2px 8px rgba(0,0,0,.06);
+    }
+    .reviews-filter-inner {
+      max-width:1100px; margin:0 auto;
+      display:flex; align-items:center; gap:4px;
+      overflow-x:auto; padding:12px 0; scrollbar-width:none;
+    }
+    .reviews-filter-inner::-webkit-scrollbar { display:none; }
+    .filter-divider { width:1px; height:20px; background:#E0E0E0; margin:0 6px; flex-shrink:0; }
+    .rf-btn {
+      font-family:var(--font-c); font-size:.6rem; font-weight:700;
+      letter-spacing:.14em; text-transform:uppercase;
+      background:none; border:1px solid #E0E0E0;
+      color:#666; padding:6px 14px; border-radius:2px;
+      cursor:pointer; white-space:nowrap; flex-shrink:0;
+      transition:color .15s, border-color .15s, background .15s;
+    }
+    .rf-btn:hover { color:#006847; border-color:#006847; }
+    .rf-btn.active { color:#fff; background:#006847; border-color:#006847; }
+
+    .reviews-body { flex:1; padding:40px 0 72px; }
+    .reviews-body .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+    .reviews-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+      gap:18px; align-items:start;
+    }
+
+    /* Card */
+    .rc {
+      background:#fff; border:1px solid #E0E0E0; border-radius:3px;
+      padding:18px 18px 14px; display:flex; flex-direction:column; gap:10px;
+      position:relative; transition:border-color .2s, transform .2s, box-shadow .2s;
+    }
+    .rc:hover { border-color:#006847; transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+
+    .rc-type { position:absolute; top:-1px; left:14px;
+      font-family:var(--font-c); font-size:.48rem; font-weight:700;
+      letter-spacing:.14em; text-transform:uppercase;
+      padding:2px 8px; border-radius:0 0 3px 3px; }
+    .rc-type--testimonial { background:rgba(0,104,71,.1); color:#006847; border:1px solid rgba(0,104,71,.3); border-top:none; }
+    .rc-type--review { background:rgba(206,17,38,.08); color:#CE1126; border:1px solid rgba(206,17,38,.2); border-top:none; }
+
+    .rc-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; }
+    .rc-stars { letter-spacing:3px; font-size:.85rem; }
+    .rc-stars-filled { color:#006847; }
+    .rc-stars-empty  { color:#E0E0E0; }
+    .rc-author { display:flex; align-items:center; gap:7px; flex-shrink:0; }
+    .rc-avatar {
+      width:24px; height:24px; border-radius:50%;
+      background:#006847; color:#fff;
+      font-family:var(--font-c); font-size:.65rem; font-weight:700;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .rc-name { font-family:var(--font-c); font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#666; }
+    .rc-title { font-family:var(--font-c); font-size:.95rem; font-weight:700; letter-spacing:.03em; color:#111; }
+    .rc-product { font-family:var(--font-c); font-size:.55rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#888; background:#F6F6F6; border:1px solid #E0E0E0; padding:3px 8px; border-radius:2px; display:inline-block; width:fit-content; }
+    .rc-body { font-family:var(--font-b); font-size:.85rem; line-height:1.65; color:#333; margin:0; flex:1; }
+    .rc-date { font-family:var(--font-c); font-size:.52rem; letter-spacing:.1em; text-transform:uppercase; color:#bbb; margin-top:4px; }
+
+    .reviews-empty { grid-column:1/-1; text-align:center; padding:48px 0;
+      font-family:var(--font-c); font-size:.68rem; font-weight:700;
+      letter-spacing:.14em; text-transform:uppercase; color:#bbb; }
+
+    .ts-footer { margin-top:44px; text-align:center; }
+    .ts-cta-link {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:var(--font-c); font-size:.65rem; font-weight:700;
+      letter-spacing:.16em; text-transform:uppercase;
+      color:#666; text-decoration:none;
+      border:1px solid #E0E0E0; padding:10px 22px; border-radius:2px;
+      transition:color .15s, border-color .15s;
+    }
+    .ts-cta-link:hover { color:#006847; border-color:#006847; }
+
+    /* Popup */
+    #testimonial-popup { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; align-items:center; justify-content:center; padding:20px; }
+    .tp-box { background:#fff; border-radius:3px; width:100%; max-width:480px; position:relative; overflow:hidden; border-top:3px solid #006847; }
+    .tp-head { display:flex; align-items:center; justify-content:space-between; padding:18px 20px 0; }
+    .tp-title { font-family:var(--font-d); font-size:1.3rem; letter-spacing:.06em; color:#111; }
+    .tp-close { background:none; border:none; color:#888; font-size:1.2rem; cursor:pointer; padding:4px 8px; }
+    .tp-body { padding:16px 20px 20px; display:flex; flex-direction:column; gap:10px; }
+    .tp-stars { display:flex; gap:4px; }
+    .tp-star { background:none; border:none; cursor:pointer; font-size:1.6rem; color:#E0E0E0; padding:0; transition:color .1s; line-height:1; }
+    .tp-star.on { color:#006847; }
+    .tp-input { width:100%; background:#F6F6F6; border:1px solid #E0E0E0; color:#111; font-family:var(--font-b); font-size:.88rem; padding:10px 12px; border-radius:2px; box-sizing:border-box; outline:none; }
+    .tp-input:focus { border-color:#006847; }
+    textarea.tp-input { resize:vertical; min-height:90px; }
+    .tp-submit { font-family:var(--font-c); font-size:.65rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; background:#006847; color:#fff; border:none; padding:12px 24px; border-radius:2px; cursor:pointer; align-self:flex-start; }
+    .tp-submit:hover { background:#00875A; }
+    .tp-msg { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; min-height:16px; }
+    .tp-msg.ok  { color:#006847; }
+    .tp-msg.err { color:#CE1126; }
+  </style>
+</head>
+<body>
+<div id="nav-mount"></div>
+<div id="banner-mount"></div>
+
+<div class="reviews-page-header">
+  <div class="container">
+    <div class="reviews-eyebrow">Verified Researchers</div>
+    <h1 class="reviews-page-title">Customer Reviews</h1>
+    <p class="reviews-page-sub">Real feedback from real researchers in the Rio Grande Valley.</p>
+    <div class="reviews-stats">
+      <div class="reviews-stat"><div class="reviews-stat-num" id="stat-total">—</div><div class="reviews-stat-label">Total Reviews</div></div>
+      <div class="reviews-stat"><div class="reviews-stat-num" id="stat-avg">—</div><div class="reviews-stat-label">Average Rating</div></div>
+      <div class="reviews-stat"><div class="reviews-stat-num" id="stat-5star">—</div><div class="reviews-stat-label">5-Star Reviews</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="reviews-filter-bar">
+  <div class="reviews-filter-inner">
+    <button class="rf-btn" style="background:#006847;color:#fff;border-color:#006847" onclick="openTestimonialPopup()">✎ Write a Review</button>
+    <div class="filter-divider"></div>
+    <button class="rf-btn active" data-sort="highest">★ Highest</button>
+    <button class="rf-btn" data-sort="lowest">★ Lowest</button>
+    <button class="rf-btn" data-sort="newest">Most Recent</button>
+    <button class="rf-btn" data-sort="oldest">Oldest</button>
+    <div class="filter-divider"></div>
+    <button class="rf-btn" data-sort="testimonials">Testimonials</button>
+    <button class="rf-btn" data-sort="product-reviews">Product Reviews</button>
+  </div>
+</div>
+
+<div class="reviews-body">
+  <div class="container">
+    <div class="reviews-grid" id="reviews-grid">
+      <div class="reviews-empty">Loading reviews…</div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-mount"></div>
+
+<!-- Testimonial popup -->
+<div id="testimonial-popup">
+  <div class="tp-box">
+    <div class="tp-head">
+      <div class="tp-title">Leave a Testimonial</div>
+      <button class="tp-close" onclick="closeTestimonialPopup()">✕</button>
+    </div>
+    <div class="tp-body">
+      <div class="tp-stars" id="tp-stars">
+        <button class="tp-star" data-val="1" onclick="setTpStar(1)">★</button>
+        <button class="tp-star" data-val="2" onclick="setTpStar(2)">★</button>
+        <button class="tp-star" data-val="3" onclick="setTpStar(3)">★</button>
+        <button class="tp-star" data-val="4" onclick="setTpStar(4)">★</button>
+        <button class="tp-star" data-val="5" onclick="setTpStar(5)">★</button>
+      </div>
+      <input id="tp-title" class="tp-input" type="text" maxlength="80" placeholder="Give your review a title…"/>
+      <textarea id="tp-body" class="tp-input" maxlength="500" rows="4" placeholder="Share your experience with 956 Labs…"></textarea>
+      <button class="tp-submit" onclick="submitTestimonialPopup()">Submit Review</button>
+      <div id="tp-msg" class="tp-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { supabase } from './js/supabase.js';
+  import './js/auth.js?v=15';
+  import './js/cart.js?v=19';
+
+  await window.initPage('reviews');
+
+  let _all = [], _filter = 'highest';
+
+  const [tsRes, rvRes, prRes] = await Promise.all([
+    supabase.from('testimonials').select('id,display_name,rating,title,body,created_at,approved').eq('approved', true),
+    supabase.from('reviews').select('id,user_id,product_id,stars,comment,username,updated_at'),
+    supabase.from('products').select('id,name'),
+  ]);
+
+  const productMap = {};
+  (prRes.data || []).forEach(p => { productMap[p.id] = p.name; });
+
+  const testimonials = (tsRes.data || []).map(r => ({
+    _type:'testimonial', rating:r.rating, name:r.display_name||'Verified Researcher',
+    title:r.title||'', body:r.body||'', product:null, date:new Date(r.created_at),
+  }));
+  const reviews = (rvRes.data || []).map(r => ({
+    _type:'review', rating:r.stars, name:r.username||'Anonymous',
+    title:'', body:r.comment||'', product:productMap[r.product_id]||null, date:new Date(r.updated_at),
+  }));
+  _all = [...testimonials, ...reviews];
+
+  if (_all.length) {
+    const avg = (_all.reduce((s,r)=>s+r.rating,0)/_all.length).toFixed(1);
+    document.getElementById('stat-total').textContent = _all.length;
+    document.getElementById('stat-avg').textContent   = avg + '★';
+    document.getElementById('stat-5star').textContent = _all.filter(r=>r.rating===5).length;
+  }
+
+  function sorted(filter) {
+    let list = [..._all];
+    if (filter==='testimonials')    list=list.filter(r=>r._type==='testimonial');
+    if (filter==='product-reviews') list=list.filter(r=>r._type==='review');
+    if (filter==='highest')  list.sort((a,b)=>b.rating-a.rating);
+    if (filter==='lowest')   list.sort((a,b)=>a.rating-b.rating);
+    if (filter==='newest')   list.sort((a,b)=>b.date-a.date);
+    if (filter==='oldest')   list.sort((a,b)=>a.date-b.date);
+    if (filter==='testimonials'||filter==='product-reviews') list.sort((a,b)=>b.rating-a.rating);
+    return list;
+  }
+
+  function render() {
+    const grid = document.getElementById('reviews-grid');
+    const list = sorted(_filter);
+    if (!list.length) { grid.innerHTML='<div class="reviews-empty">No reviews yet.</div>'; return; }
+    grid.innerHTML = list.map(r => {
+      const filled   = '\u2605'.repeat(r.rating);
+      const empty    = '\u2606'.repeat(5-r.rating);
+      const name     = (r.name).replace(/</g,'&lt;');
+      const title    = (r.title).replace(/</g,'&lt;');
+      const body     = r.body.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const date     = r.date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const typeClass= r._type==='testimonial'?'rc-type--testimonial':'rc-type--review';
+      const typeLabel= r._type==='testimonial'?'Testimonial':'Product Review';
+      const product  = r.product?'<div class="rc-product">'+r.product.replace(/</g,'&lt;')+'</div>':'';
+      return '<div class="rc">'
+        +'<div class="rc-type '+typeClass+'">'+typeLabel+'</div>'
+        +'<div class="rc-top">'
+        +'<div class="rc-stars"><span class="rc-stars-filled">'+filled+'</span><span class="rc-stars-empty">'+empty+'</span></div>'
+        +'<div class="rc-author"><div class="rc-avatar">'+name.charAt(0).toUpperCase()+'</div><span class="rc-name">'+name+'</span></div>'
+        +'</div>'
+        +(title?'<div class="rc-title">'+title+'</div>':'')
+        +product
+        +(body?'<p class="rc-body">'+body+'</p>':'')
+        +'<div class="rc-date">'+date+'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  render();
+
+  document.querySelectorAll('.rf-btn[data-sort]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.rf-btn[data-sort]').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      _filter = this.dataset.sort;
+      render();
+    });
+  });
+
+  // ── Popup ──────────────────────────────────────────────────
+  var _tpRating = 0;
+
+  window.openTestimonialPopup = function() {
+    const popup = document.getElementById('testimonial-popup');
+    popup.style.display = 'flex';
+    _tpRating = 0;
+    document.querySelectorAll('.tp-star').forEach(s=>s.classList.remove('on'));
+    const ti=document.getElementById('tp-title'); if(ti) ti.value='';
+    const tb=document.getElementById('tp-body');  if(tb) tb.value='';
+    const tm=document.getElementById('tp-msg');   if(tm) { tm.textContent=''; tm.className='tp-msg'; }
+  };
+  window.closeTestimonialPopup = function() {
+    document.getElementById('testimonial-popup').style.display='none';
+  };
+  document.getElementById('testimonial-popup').addEventListener('click', function(e){
+    if(e.target===this) window.closeTestimonialPopup();
+  });
+  if (new URLSearchParams(window.location.search).get('write')==='1') openTestimonialPopup();
+
+  window.setTpStar = function(n) {
+    _tpRating = n;
+    document.querySelectorAll('.tp-star').forEach(s=>{
+      s.classList.toggle('on', parseInt(s.dataset.val)<=n);
+    });
+  };
+
+  window.submitTestimonialPopup = async function() {
+    const title = (document.getElementById('tp-title')?.value||'').trim();
+    const body  = (document.getElementById('tp-body')?.value||'').trim();
+    const msg   = document.getElementById('tp-msg');
+    msg.textContent=''; msg.className='tp-msg';
+    if(!_tpRating){msg.className='tp-msg err';msg.textContent='Please select a rating.';return;}
+    if(!title)    {msg.className='tp-msg err';msg.textContent='Please add a title.';return;}
+    if(!body)     {msg.className='tp-msg err';msg.textContent='Please write something.';return;}
+    const { data:{session} } = await supabase.auth.getSession();
+    if(!session){msg.className='tp-msg err';msg.textContent='You must be logged in.';return;}
+    const { data:profile } = await supabase.from('profiles').select('first_name').eq('id',session.user.id).single();
+    const displayName = profile?.first_name || session.user.email?.split('@')[0] || 'Verified Researcher';
+    const { error } = await supabase.from('testimonials').insert({
+      user_id:session.user.id, display_name:displayName,
+      title, body, rating:_tpRating, approved:true,
+    });
+    if(error){msg.className='tp-msg err';msg.textContent=error.message||'Something went wrong.';}
+    else{
+      msg.className='tp-msg ok';msg.textContent='✓ Review submitted! Thank you.';
+      setTimeout(()=>{ window.closeTestimonialPopup(); location.reload(); }, 2000);
+    }
+  };
+</script>
+</body>
+</html>

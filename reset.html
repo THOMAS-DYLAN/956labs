@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password — 956 Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap"></noscript>
+  <link rel="stylesheet" href="css/global.css?v=2" />
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--black); }
+
+    .reset-box {
+      width: 100%; max-width: 420px; padding: 0 24px;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+
+    .reset-brand {
+      font-family: var(--font-d); font-size: 2.2rem; letter-spacing: .08em;
+      color: var(--white); margin-bottom: 4px; text-align: center;
+    }
+    .reset-brand span { color: var(--red); }
+    .reset-eyebrow {
+      font-family: var(--font-c); font-size: .65rem; font-weight: 700;
+      letter-spacing: .28em; text-transform: uppercase; color: var(--smoke);
+      text-align: center; margin-bottom: 36px;
+    }
+
+    .reset-card {
+      background: var(--off); border: 1px solid var(--border); padding: 36px;
+    }
+    .reset-title {
+      font-family: var(--font-d); font-size: 1.6rem; letter-spacing: .04em;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .reset-desc { font-size: .8rem; color: var(--smoke); line-height: 1.6; margin-bottom: 24px; }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-family: var(--font-c); font-size: .65rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--smoke); margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%; background: var(--card); border: 1px solid var(--border);
+      color: var(--white); padding: 11px 14px; font-size: .88rem; outline: none;
+      transition: border-color .18s; box-sizing: border-box;
+    }
+    .field input:focus { border-color: var(--red); }
+
+    .reset-btn {
+      width: 100%; padding: 14px; margin-top: 8px;
+      font-family: var(--font-c); font-size: .8rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase;
+      background: var(--red); color: var(--white);
+      clip-path: polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+      transition: background .2s; cursor: pointer;
+    }
+    .reset-btn:hover { background: var(--red-hot); }
+    .reset-btn:disabled { background: var(--border); color: var(--smoke); cursor: not-allowed; clip-path: none; }
+
+    .reset-err {
+      font-family: var(--font-c); font-size: .72rem; font-weight: 700;
+      letter-spacing: .08em; color: var(--red); margin-top: 10px; min-height: 18px;
+    }
+    .reset-ok {
+      font-family: var(--font-c); font-size: .72rem; font-weight: 700;
+      letter-spacing: .08em; color: #5BC75B; margin-top: 10px; display: none;
+    }
+    .reset-back {
+      display: block; text-align: center; margin-top: 20px;
+      font-family: var(--font-c); font-size: .68rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--smoke);
+      text-decoration: underline; text-underline-offset: 3px; transition: color .18s;
+    }
+    .reset-back:hover { color: var(--light); }
+
+    #invalid-link {
+      display: none; text-align: center;
+    }
+    #invalid-link p {
+      font-size: .85rem; color: var(--smoke); margin-bottom: 20px; line-height: 1.6;
+    }
+  </style>
+  <meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+  <div class="reset-box">
+    <div class="reset-brand">BigBoy<span>Peps</span></div>
+    <div class="reset-eyebrow">Password Reset</div>
+
+    <div class="reset-card">
+
+      <!-- Valid link — show new password form -->
+      <div id="reset-form">
+        <div class="reset-title">Set new password.</div>
+        <p class="reset-desc">Choose a strong password for your account.</p>
+        <div class="field">
+          <label>New Password</label>
+          <input type="password" id="new-pass" placeholder="Min. 8 characters" />
+        </div>
+        <div class="field">
+          <label>Confirm Password</label>
+          <input type="password" id="confirm-pass" placeholder="Repeat password" />
+        </div>
+        <button class="reset-btn" id="reset-btn" onclick="doSetPassword()">Set New Password</button>
+        <div class="reset-err" id="reset-err"></div>
+        <div class="reset-ok"  id="reset-ok">Password updated — redirecting…</div>
+      </div>
+
+      <!-- Invalid / expired link -->
+      <div id="invalid-link">
+        <div class="reset-title">Link expired.</div>
+        <p class="reset-desc">This reset link has expired or already been used. Request a new one from the login page.</p>
+      </div>
+
+      <a href="dashboard.html" class="reset-back">← Back to Login</a>
+    </div>
+  </div>
+
+  <!-- Block any auth redirect before module runs -->
+  <script>
+    window.__BBP_RECOVERY_MODE__ = true;
+    // Capture hash NOW before Supabase clears it during client init
+    window.__BBP_RECOVERY_HASH__ = window.location.hash;
+  </script>
+
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+
+    const formEl    = document.getElementById('reset-form');
+    const invalidEl = document.getElementById('invalid-link');
+    formEl.style.display    = 'none';
+    invalidEl.style.display = 'none';
+
+    // ── Try PKCE flow first (?code= query param) ──────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const code      = urlParams.get('code');
+
+    // ── Fall back to implicit flow (#access_token= hash) ──────
+    const hash         = window.__BBP_RECOVERY_HASH__ || '';
+    const hashParams   = new URLSearchParams(hash.substring(1));
+    const type         = hashParams.get('type');
+    const accessToken  = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token') || '';
+
+    if (code) {
+      // PKCE — exchange code for session
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) {
+        invalidEl.style.display = 'block';
+      } else {
+        formEl.style.display = 'block';
+      }
+    } else if (type === 'recovery' && accessToken) {
+      // Implicit — set session directly from hash tokens
+      const { error } = await supabase.auth.setSession({
+        access_token:  accessToken,
+        refresh_token: refreshToken,
+      });
+      if (error) {
+        invalidEl.style.display = 'block';
+      } else {
+        formEl.style.display = 'block';
+      }
+    } else {
+      invalidEl.style.display = 'block';
+    }
+
+    window.doSetPassword = async () => {
+      const pass    = document.getElementById('new-pass').value;
+      const confirm = document.getElementById('confirm-pass').value;
+      const err     = document.getElementById('reset-err');
+      const ok      = document.getElementById('reset-ok');
+      const btn     = document.getElementById('reset-btn');
+      err.textContent = '';
+
+      if (pass.length < 8)  { err.textContent = 'Password must be at least 8 characters.'; return; }
+      if (pass !== confirm) { err.textContent = 'Passwords do not match.'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      const { error } = await supabase.auth.updateUser({ password: pass });
+
+      if (error) {
+        err.textContent = error.message;
+        btn.disabled = false;
+        btn.textContent = 'Set New Password';
+        return;
+      }
+
+      ok.style.display = 'block';
+      await supabase.auth.signOut();
+      setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+    };
+  </script>
+</body>
+</html>

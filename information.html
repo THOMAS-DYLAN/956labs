@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Peptide Research Library — BPC-157, Semaglutide, Tirzepatide &amp; More | 956 Labs</title>
+  <meta name="description" content="Research overviews for peptides including Semaglutide, Tirzepatide, Retatrutide, BPC-157, Ipamorelin, GHK-Cu and more. Compound guides from 956 Labs. For informational purposes only."/>
+  <meta name="robots" content="index,follow"/>
+  <link rel="canonical" href="https://956labs.bigboypeps.com/information.html"/>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap"></noscript>
+  <link rel="modulepreload" href="js/supabase.js">
+  <link rel="modulepreload" href="js/auth.js?v=15">
+  <link rel="modulepreload" href="js/cart.js?v=19">
+  <link rel="modulepreload" href="js/products.js?v=15">
+  <link rel="stylesheet" href="css/site.css?v=4"/>
+  <style>
+    body { background: #FFFFFF; color: #111; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Page header ── */
+    .page-header {
+      padding: 52px 0 40px;
+      border-bottom: 1px solid #E0E0E0;
+    }
+    .page-header-inner { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    .page-eyebrow {
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .28em; text-transform: uppercase; color: #006847;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+    }
+    .page-eyebrow::before { content: ''; display: block; width: 24px; height: 2px; background: #006847; }
+    .page-title {
+      font-family: var(--font-d); font-size: clamp(2.4rem, 6vw, 4.2rem);
+      letter-spacing: .03em; line-height: .92; color: #111; margin-bottom: 14px;
+    }
+    .page-title em { color: #006847; font-style: normal; }
+    .page-desc {
+      font-family: var(--font-b); font-size: .88rem; color: #666;
+      line-height: 1.7; max-width: 560px;
+    }
+
+    /* ── Section headers ── */
+    .section-header {
+      max-width: 1160px; margin: 52px auto 24px; padding: 0 24px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .section-label {
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: #006847;
+      white-space: nowrap;
+    }
+    .section-rule { flex: 1; height: 1px; background: #E0E0E0; }
+
+    /* ── Cards grid ── */
+    .cards-grid {
+      max-width: 1160px; margin: 0 auto 16px; padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    /* ── Card ── */
+    .info-card {
+      background: #FAFAFA;
+      border: 1px solid #E0E0E0;
+      padding: 20px 22px 18px;
+      display: flex; flex-direction: column;
+      transition: border-color .2s, box-shadow .2s;
+      position: relative;
+    }
+    .info-card:hover {
+      border-color: #006847;
+      box-shadow: 0 6px 20px rgba(0,0,0,.07);
+    }
+    .card-tag {
+      font-family: var(--font-c); font-size: .52rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: #006847;
+      margin-bottom: 8px;
+    }
+    .card-name {
+      font-family: var(--font-d); font-size: 1.35rem; letter-spacing: .04em;
+      color: #111; line-height: 1; margin-bottom: 10px;
+    }
+    .card-preview {
+      font-family: var(--font-b); font-size: .8rem; color: #666;
+      line-height: 1.65; flex: 1; margin-bottom: 16px;
+    }
+    .see-more-btn {
+      align-self: flex-start;
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .16em; text-transform: uppercase;
+      background: none; border: 1px solid rgba(0,104,71,.4);
+      color: #006847; padding: 6px 14px; cursor: pointer;
+      transition: background .18s, border-color .18s;
+    }
+    .see-more-btn:hover { background: rgba(0,104,71,.08); border-color: #006847; }
+
+    /* ── General info card variant ── */
+    .info-card.general {
+      background: #111;
+      border-color: #222;
+    }
+    .info-card.general .card-tag  { color: #006847; }
+    .info-card.general .card-name { color: #F0F0F0; }
+    .info-card.general .card-preview { color: #666; }
+    .info-card.general .see-more-btn { color: #006847; border-color: rgba(0,104,71,.3); }
+    .info-card.general .see-more-btn:hover { background: rgba(0,104,71,.1); border-color: #006847; }
+    .info-card.general:hover { border-color: #006847; box-shadow: 0 6px 24px rgba(0,0,0,.4); }
+
+    /* ── Fullscreen overlay ── */
+    #info-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(6px);
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    #info-overlay.open { display: flex; }
+
+    #info-panel {
+      background: #FFFFFF;
+      border: 1px solid #E0E0E0;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: panelIn .22s ease;
+    }
+    @keyframes panelIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    #info-panel::-webkit-scrollbar { width: 4px; }
+    #info-panel::-webkit-scrollbar-thumb { background: #D0D0D0; }
+
+    .panel-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 24px 28px 18px; border-bottom: 1px solid #E8E8E8;
+      position: sticky; top: 0; background: #F8F8F8; z-index: 1;
+    }
+    .panel-tag {
+      font-family: var(--font-c); font-size: .58rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: #006847;
+      margin-bottom: 4px;
+    }
+    .panel-name {
+      font-family: var(--font-d); font-size: clamp(1.6rem, 4vw, 2.2rem);
+      letter-spacing: .04em; color: #111; line-height: 1;
+    }
+    .panel-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.1rem; color: #666; padding: 4px 8px;
+      flex-shrink: 0; margin-left: 12px; margin-top: 2px;
+      transition: color .18s;
+    }
+    .panel-close:hover { color: #111; }
+
+    .panel-body { padding: 24px 28px 36px; }
+    .panel-section { margin-bottom: 28px; }
+    .panel-section:last-child { margin-bottom: 0; }
+    .panel-section-title {
+      font-family: var(--font-c); font-size: .6rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: #006847;
+      margin-bottom: 10px; padding-bottom: 6px;
+      border-bottom: 1px solid #E8E8E8;
+    }
+    .panel-text {
+      font-family: var(--font-b); font-size: .875rem; color: #333;
+      line-height: 1.8;
+    }
+    .panel-text + .panel-text { margin-top: 10px; }
+    .panel-tag-row {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+    }
+    .panel-pill {
+      font-family: var(--font-c); font-size: .56rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: rgba(0,104,71,.1); color: #006847;
+      border: 1px solid rgba(0,104,71,.2); padding: 3px 10px;
+    }
+    .panel-disclaimer {
+      margin-top: 28px; padding: 12px 16px;
+      background: #F6F6F6; border-left: 2px solid #D0D0D0;
+      font-size: .72rem; color: #666; font-style: italic; line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #F6F6F6; border-top: 1px solid #E0E0E0;
+      padding: 28px 0; margin-top: auto;
+    }
+    .footer-inner {
+      max-width: 1160px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .footer-copy {
+      font-family: var(--font-c); font-size: .58rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: #666;
+    }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-link {
+      font-family: var(--font-c); font-size: .58rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: #666;
+      text-decoration: none; transition: color .18s;
+    }
+    .footer-link:hover { color: #006847; }
+
+    @media (max-width: 767px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .page-header { padding: 32px 0 24px; }
+      .panel-head { padding: 18px 20px 14px; }
+      .panel-body { padding: 18px 20px 28px; }
+    }
+    @media (max-width: 480px) {
+      #info-overlay { padding: 0; align-items: flex-end; }
+      #info-panel { max-height: 92vh; border-bottom: none; animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav placeholder (reused from site) -->
+  <div id="nav-mount"></div>
+
+  <!-- Page Header -->
+  <main id="main-content">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-eyebrow">Research Library</div>
+      <h1 class="page-title">Compound <em>Overviews</em></h1>
+      <p class="page-desc">General research information on the compounds we carry. All content is for informational purposes only and does not constitute medical advice.</p>
+    </div>
+  </div>
+
+  <!-- Intro + category overview (moved from homepage) -->
+  <div class="page-header-inner" style="padding-top:36px;padding-bottom:8px">
+    <h2 style="font-family:var(--font-d);font-size:clamp(1.5rem,3.2vw,2.1rem);letter-spacing:.03em;color:#111;line-height:1;margin-bottom:14px">Research Peptides in the Rio Grande Valley &amp; Nationwide</h2>
+    <p style="font-family:var(--font-b);font-size:.9rem;color:#555;line-height:1.8;max-width:760px;margin-bottom:36px">956 Labs is an online research peptide store supplying research-grade peptides to researchers, laboratories, and institutions. Based in the 956 — the Rio Grande Valley of South Texas, serving McAllen, Edinburg, Harlingen, Brownsville and beyond — we ship research peptides nationwide with fast USPS delivery. Every compound is intended strictly for in-vitro and laboratory research use.</p>
+
+    <div class="cards-grid" style="margin-bottom:8px">
+      <div class="info-card general" style="cursor:default">
+        <div class="card-tag">GLP &amp; Metabolic</div>
+        <div class="card-name" style="font-size:1.15rem">GLP &amp; Metabolic Peptides</div>
+        <div class="card-preview">Research compounds including Semaglutide, Tirzepatide, and Retatrutide — GLP-1 and triple receptor agonists studied for metabolic research. Lyophilized research vials.</div>
+      </div>
+      <div class="info-card general" style="cursor:default">
+        <div class="card-tag">Growth Hormone</div>
+        <div class="card-name" style="font-size:1.15rem">Growth Hormone Peptides</div>
+        <div class="card-preview">Research-grade Ipamorelin, CJC-1295, Tesamorelin, and AOD-9604 — growth hormone secretagogues and GHRH analogues for laboratory research.</div>
+      </div>
+      <div class="info-card general" style="cursor:default">
+        <div class="card-tag">Tissue Repair</div>
+        <div class="card-name" style="font-size:1.15rem">Tissue Repair Peptides</div>
+        <div class="card-preview">BPC-157, TB-500, and BPC-157/TB-500 blends — among the most-studied research peptides for tissue repair in preclinical models.</div>
+      </div>
+      <div class="info-card general" style="cursor:default">
+        <div class="card-tag">Copper &amp; Specialty</div>
+        <div class="card-name" style="font-size:1.15rem">Copper &amp; Specialty Peptides</div>
+        <div class="card-preview">GHK-Cu and AHK-Cu copper peptides, MOTS-c, plus BAC water and reconstitution supplies — everything a research setting needs in one place.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- General Info Section -->
+  <div class="section-header">
+    <span class="section-label">General</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid" id="general-cards">
+
+    <div class="info-card general">
+      <div class="card-tag">Foundation</div>
+      <div class="card-name">What Is a Research Peptide?</div>
+      <div class="card-preview">Peptides are short chains of amino acids — the building blocks of proteins. Research peptides are synthetic compounds studied in laboratory settings for their biological activity.</div>
+      <button class="see-more-btn" onclick="openCard('what-is-peptide')">See more →</button>
+    </div>
+
+    <div class="info-card general">
+      <div class="card-tag">Handling</div>
+      <div class="card-name">Reconstitution</div>
+      <div class="card-preview">Most lyophilized (freeze-dried) peptides require reconstitution with bacteriostatic water before use in a research setting. Proper technique ensures stability and accurate concentration.</div>
+      <button class="see-more-btn" onclick="openCard('reconstitution')">See more →</button>
+    </div>
+
+    <div class="info-card general">
+      <div class="card-tag">Storage</div>
+      <div class="card-name">Storage Guidelines</div>
+      <div class="card-preview">Peptides are sensitive to heat, light, and humidity. Lyophilized peptides should be stored at −20°C. Once reconstituted, refrigerate at 2–8°C and use within 28 days.</div>
+      <button class="see-more-btn" onclick="openCard('storage')">See more →</button>
+    </div>
+
+  </div>
+
+  <!-- GLP / Metabolic Section -->
+  <div class="section-header">
+    <span class="section-label">GLP &amp; Metabolic Peptides</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="info-card">
+      <div class="card-tag">GLP-1 Agonist</div>
+      <div class="card-name">Semaglutide</div>
+      <div class="card-preview">A long-acting GLP-1 receptor agonist extensively studied for its role in metabolic homeostasis, appetite regulation, and cellular energy balance.</div>
+      <button class="see-more-btn" onclick="openCard('semaglutide')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Dual GIP/GLP-1 Agonist</div>
+      <div class="card-name">Tirzepatide</div>
+      <div class="card-preview">A dual GIP and GLP-1 receptor agonist. Research focuses on its effects on insulin sensitivity, lipid metabolism, and energy homeostasis.</div>
+      <button class="see-more-btn" onclick="openCard('tirzepatide')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Triple Agonist</div>
+      <div class="card-name">Retatrutide</div>
+      <div class="card-preview">A triple GLP-1, GIP, and glucagon receptor agonist. Among the newest compounds in metabolic research, studied for effects on energy expenditure and adipose tissue.</div>
+      <button class="see-more-btn" onclick="openCard('retatrutide')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">hGH Fragment</div>
+      <div class="card-name">AOD-9604</div>
+      <div class="card-preview">A modified fragment of human growth hormone (residues 176–191). Research focuses specifically on lipolytic activity without the growth-promoting effects of full hGH.</div>
+      <button class="see-more-btn" onclick="openCard('aod9604')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Mitochondrial Peptide</div>
+      <div class="card-name">MOTS-c</div>
+      <div class="card-preview">A mitochondrial-derived peptide that regulates metabolic homeostasis. Research focuses on insulin sensitivity, exercise response, and cellular aging pathways.</div>
+      <button class="see-more-btn" onclick="openCard('motsc')">See more →</button>
+    </div>
+
+  </div>
+
+  <!-- GH / Growth Section -->
+  <div class="section-header">
+    <span class="section-label">Growth Hormone Peptides</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="info-card">
+      <div class="card-tag">GHRH Analogue</div>
+      <div class="card-name">Tesamorelin</div>
+      <div class="card-preview">A GHRH analogue that stimulates pulsatile growth hormone release. Research examines its role in visceral adipose reduction and IGF-1 axis regulation.</div>
+      <button class="see-more-btn" onclick="openCard('tesamorelin')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">GH Secretagogue</div>
+      <div class="card-name">Ipamorelin</div>
+      <div class="card-preview">A selective ghrelin receptor agonist. Research focuses on pulsatile GH release with minimal effect on cortisol and prolactin compared to other secretagogues.</div>
+      <button class="see-more-btn" onclick="openCard('ipamorelin')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Long-Acting GHRH</div>
+      <div class="card-name">CJC-1295</div>
+      <div class="card-preview">A long-acting GHRH analogue studied for extended half-life via Drug Affinity Complex (DAC) technology and sustained GH/IGF-1 elevation in preclinical models.</div>
+      <button class="see-more-btn" onclick="openCard('cjc1295')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Combination</div>
+      <div class="card-name">CJC-1295 / Ipamorelin</div>
+      <div class="card-preview">A combined GHRH analogue and secretagogue. Research examines synergistic GH pulse amplification — the GHRH analogue sets the pulse frequency, ipamorelin amplifies the release.</div>
+      <button class="see-more-btn" onclick="openCard('cjc-ipa')">See more →</button>
+    </div>
+
+  </div>
+
+  <!-- Tissue & Repair Section -->
+  <div class="section-header">
+    <span class="section-label">Tissue &amp; Repair Peptides</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="info-card">
+      <div class="card-tag">Gastric Pentadecapeptide</div>
+      <div class="card-name">BPC-157</div>
+      <div class="card-preview">Derived from a human gastric protein. Extensively studied in preclinical models for tissue repair, angiogenesis, and gastrointestinal integrity.</div>
+      <button class="see-more-btn" onclick="openCard('bpc157')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Thymosin Fragment</div>
+      <div class="card-name">TB-500</div>
+      <div class="card-preview">A synthetic peptide fragment of Thymosin Beta-4. Research focuses on actin binding, cell migration, and wound healing mechanisms in preclinical models.</div>
+      <button class="see-more-btn" onclick="openCard('tb500')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Combination</div>
+      <div class="card-name">BPC-157 + TB-500</div>
+      <div class="card-preview">A frequently studied pairing in preclinical models. BPC-157 supports local tissue signaling while TB-500 contributes systemic actin regulation and cell mobility.</div>
+      <button class="see-more-btn" onclick="openCard('bpc-tb500')">See more →</button>
+    </div>
+
+  </div>
+
+  <!-- Copper Peptide Section -->
+  <div class="section-header">
+    <span class="section-label">Copper Peptides</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="info-card">
+      <div class="card-tag">Copper Complex</div>
+      <div class="card-name">GHK-Cu</div>
+      <div class="card-preview">A naturally occurring copper peptide found in human plasma. Research areas include collagen synthesis stimulation, antioxidant activity, and tissue regeneration signaling.</div>
+      <button class="see-more-btn" onclick="openCard('ghkcu')">See more →</button>
+    </div>
+
+    <div class="info-card">
+      <div class="card-tag">Tripeptide Complex</div>
+      <div class="card-name">AHK-Cu</div>
+      <div class="card-preview">A tripeptide copper complex. Research explores its role in hair follicle biology, scalp microcirculation, and extracellular matrix remodeling.</div>
+      <button class="see-more-btn" onclick="openCard('ahkcu')">See more →</button>
+    </div>
+
+  </div>
+
+
+  <!-- Vitamins & Injectables Section -->
+  <div class="section-header">
+    <span class="section-label">Vitamins &amp; Injectables</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+    <div class="info-card">
+      <div class="card-tag">Essential Vitamin</div>
+      <div class="card-name">Vitamin B12</div>
+      <div class="card-preview">An essential coenzyme involved in DNA synthesis, red blood cell formation, and neurological function. Injectable form for direct bioavailability in research models.</div>
+      <button class="see-more-btn" onclick="openCard('b12')">See more &rarr;</button>
+    </div>
+    <div class="info-card">
+      <div class="card-tag">Cellular Coenzyme</div>
+      <div class="card-name">NAD+ 100mg</div>
+      <div class="card-preview">Nicotinamide Adenine Dinucleotide — a critical coenzyme in cellular energy metabolism. Research focuses on mitochondrial function, sirtuin pathway activation, and cellular aging.</div>
+      <button class="see-more-btn" onclick="openCard('nad')">See more &rarr;</button>
+    </div>
+    <div class="info-card">
+      <div class="card-tag">Lipotropic Formula</div>
+      <div class="card-name">Lipo-C with B12</div>
+      <div class="card-preview">MIC formula (methionine, inositol, choline) combined with Vitamin B12. Research focuses on hepatic lipid metabolism and fat mobilization pathways.</div>
+      <button class="see-more-btn" onclick="openCard('lipoc')">See more &rarr;</button>
+    </div>
+    <div class="info-card">
+      <div class="card-tag">High-Strength Formula</div>
+      <div class="card-name">Lipo-C Fat Blaster 526mg</div>
+      <div class="card-preview">Enhanced lipotropic complex at 526mg concentration. Comprehensive MIC + vitamin formula for advanced lipid metabolism research protocols.</div>
+      <button class="see-more-btn" onclick="openCard('lipoc-fb')">See more &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Immune & Thymic Section -->
+  <div class="section-header">
+    <span class="section-label">Immune &amp; Thymic Peptides</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+    <div class="info-card">
+      <div class="card-tag">Thymic Peptide Complex</div>
+      <div class="card-name">Thymalin 10mg</div>
+      <div class="card-preview">A naturally derived thymic peptide complex. Research focuses on immune system modulation, T-lymphocyte activity, and restoration of thymic function.</div>
+      <button class="see-more-btn" onclick="openCard('thymalin')">See more &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Growth Hormone Section -->
+  <div class="section-header">
+    <span class="section-label">Growth Hormone</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+    <div class="info-card">
+      <div class="card-tag">Pituitary Protein</div>
+      <div class="card-name">HGH 15iu</div>
+      <div class="card-preview">Human Growth Hormone — a 191 amino acid protein produced by the anterior pituitary. Research examines body composition, cellular repair, IGF-1 axis regulation, and metabolic function.</div>
+      <button class="see-more-btn" onclick="openCard('hgh')">See more &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Reconstitution Section -->
+  <div class="section-header">
+    <span class="section-label">Supplies</span>
+    <div class="section-rule"></div>
+  </div>
+  <div class="cards-grid">
+    <div class="info-card">
+      <div class="card-tag">Reconstitution Solution</div>
+      <div class="card-name">BAC Water</div>
+      <div class="card-preview">Bacteriostatic water preserved with 0.9% benzyl alcohol. The standard reconstitution solution for lyophilized research peptides — the benzyl alcohol inhibits microbial growth.</div>
+      <button class="see-more-btn" onclick="openCard('bacwater')">See more →</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-copy">© 2025 956 Labs — Research purposes only</div>
+      <div class="footer-links">
+        <a href="index.html" class="footer-link">Shop</a>
+        <a href="information.html" class="footer-link" style="color:#006847">Research Info</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Fullscreen overlay -->
+  <div id="info-overlay" onclick="if(event.target===this)closeCard()">
+    <div id="info-panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-tag" id="panel-tag"></div>
+          <div class="panel-name" id="panel-name"></div>
+        </div>
+        <button class="panel-close" onclick="closeCard()">✕</button>
+      </div>
+      <div class="panel-body" id="panel-body"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import './js/auth.js?v=15';
+    import './js/cart.js?v=19';
+    import { loadProducts } from './js/products.js?v=15';
+    await Promise.all([window.initPage('information'), loadProducts()]);
+  </script>
+
+  <script>
+    const CARDS = {
+      'what-is-peptide': {
+        tag: 'Foundation',
+        name: 'What Is a Research Peptide?',
+        sections: [
+          { title: 'Overview', text: 'Peptides are short-chain amino acid sequences — the structural building blocks of proteins. A peptide is defined by its length: typically 2–50 amino acids. Above that, they\'re classified as polypeptides or proteins. The body naturally produces thousands of different peptides that regulate virtually every biological function.' },
+          { title: 'What Makes Them "Research" Peptides?', text: 'The term "research peptide" refers to compounds synthesized for laboratory research. They are not approved for human therapeutic use by the FDA and are sold strictly for in vitro or in vivo preclinical research purposes. The growing body of preclinical literature has generated significant interest in their biological properties.' },
+          { title: 'How They\'re Made', text: 'Research peptides are produced via solid-phase peptide synthesis (SPPS) — a reliable method that builds the peptide chain one amino acid at a time on a solid support resin. High-performance liquid chromatography (HPLC) is then used to purify the compound to research grade.' },
+          { title: 'Delivery in Research', text: 'Lyophilized (freeze-dried) peptides must be reconstituted before use. Bacteriostatic water (BAC water) is the standard reconstitution solution, as the benzyl alcohol preservative maintains sterility for extended storage after reconstitution.' },
+        ],
+        pills: ['Amino Acids', 'SPPS Synthesis', 'HPLC Purity', 'Lyophilized']
+      },
+      'reconstitution': {
+        tag: 'Handling',
+        name: 'Reconstitution Guide',
+        sections: [
+          { title: 'What Is Reconstitution?', text: 'Lyophilized peptides are freeze-dried powders that must be dissolved into a solution before use in a research setting. The process is called reconstitution. The standard diluent is Bacteriostatic Water (BAC Water), which contains 0.9% benzyl alcohol as a preservative.' },
+          { title: 'General Process', text: 'Using a sterile syringe, draw the desired volume of BAC water and inject it slowly down the side of the vial — do not inject directly onto the powder. Allow the liquid to flow down and dissolve naturally. Swirling gently is acceptable; shaking is not, as it can degrade the peptide chain.' },
+          { title: 'Calculating Concentration', text: 'If a vial contains 10mg of peptide and you add 2ml of BAC water, the resulting concentration is 5mg/ml (5,000mcg/ml). Common research concentrations vary by compound. Document your reconstitution concentration for accurate dosing in research protocols.' },
+          { title: 'Storage After Reconstitution', text: 'Reconstituted peptides should be refrigerated at 2–8°C (standard refrigerator temperature) and kept away from light. Most reconstituted peptides remain stable for 28–42 days under proper refrigeration. Never freeze a reconstituted peptide solution.' },
+        ],
+        pills: ['BAC Water', 'Sterile Syringe', '2–8°C Storage', '28 Day Window']
+      },
+      'storage': {
+        tag: 'Storage',
+        name: 'Storage Guidelines',
+        sections: [
+          { title: 'Lyophilized (Dry) Peptides', text: 'Unopened, lyophilized peptide vials should be stored at −20°C (freezer) for long-term stability. For short-term storage (under 4 weeks), refrigeration at 2–8°C is generally acceptable. Keep away from light and humidity.' },
+          { title: 'Reconstituted Peptides', text: 'Once dissolved in BAC water, peptides should be stored in the refrigerator at 2–8°C only — never freeze a reconstituted peptide, as the water crystallization process can damage the peptide chain. Use within 28 days of reconstitution.' },
+          { title: 'Handling Tips', text: 'Avoid repeated freeze-thaw cycles for lyophilized peptides if possible. Always use clean, sterile equipment when handling peptide vials. Keep vials sealed when not in use. Peptides exposed to direct sunlight, high temperatures, or moisture may degrade rapidly.' },
+          { title: 'Signs of Degradation', text: 'Discoloration, visible particulates, or unusual odor in reconstituted solutions may indicate degradation. Lyophilized powders that appear to have absorbed moisture (clumping or discoloration) should be assessed before use in research protocols.' },
+        ],
+        pills: ['−20°C Lyophilized', '2–8°C Reconstituted', 'No Freeze-Thaw', 'Light Protected']
+      },
+      'semaglutide': {
+        tag: 'GLP-1 Agonist',
+        name: 'Semaglutide',
+        sections: [
+          { title: 'Overview', text: 'Semaglutide is a glucagon-like peptide-1 (GLP-1) receptor agonist developed as an analogue of human GLP-1 with approximately 94% sequence homology. Its extended half-life (approximately 7 days) results from albumin binding and a fatty acid chain modification.' },
+          { title: 'Research Areas', text: 'Preclinical and clinical research has examined semaglutide\'s role in glycemic regulation, appetite suppression via central nervous system GLP-1 receptors, gastric emptying, and cardiovascular endpoints. It has been studied in the context of type 2 diabetes management and metabolic disease.' },
+          { title: 'Receptor Mechanism', text: 'GLP-1 receptors are distributed widely — in the pancreas, brain, heart, kidney, and gastrointestinal tract. Activation of pancreatic receptors promotes glucose-dependent insulin secretion and suppresses glucagon. Central receptor activation modulates appetite signaling in the hypothalamus and brainstem.' },
+          { title: 'Research Form', text: 'Available as a lyophilized powder requiring reconstitution. Research grade semaglutide is intended for laboratory and preclinical investigation only. Not approved for human therapeutic use outside of specifically licensed pharmaceutical products.' },
+        ],
+        pills: ['GLP-1 Receptor', 'Metabolic Research', '~7 Day Half-Life', 'Lyophilized']
+      },
+      'tirzepatide': {
+        tag: 'Dual GIP/GLP-1 Agonist',
+        name: 'Tirzepatide',
+        sections: [
+          { title: 'Overview', text: 'Tirzepatide is a single synthetic peptide that acts as a dual agonist at both the glucose-dependent insulinotropic polypeptide (GIP) receptor and the GLP-1 receptor. It is a 39-amino acid peptide with a C18 fatty diacid moiety for albumin binding, which extends its half-life to approximately 5 days.' },
+          { title: 'Dual Receptor Activity', text: 'The dual GIP/GLP-1 agonism is thought to produce complementary and potentially synergistic metabolic effects. GIP receptors are expressed in adipose tissue, brain, bone, and the gastrointestinal tract in addition to the pancreas, potentially broadening the metabolic impact relative to GLP-1-only agents.' },
+          { title: 'Research Areas', text: 'Research has examined tirzepatide\'s effects on insulin secretion, glucagon suppression, gastric emptying, body composition changes, and lipid metabolism. Preclinical studies have also investigated its effects on energy expenditure and adipose tissue function.' },
+          { title: 'Research Form', text: 'Supplied as lyophilized powder. Intended strictly for laboratory research purposes. Reconstitute with BAC water under sterile conditions.' },
+        ],
+        pills: ['GIP + GLP-1', 'Dual Agonist', '~5 Day Half-Life', 'Metabolic Research']
+      },
+      'retatrutide': {
+        tag: 'Triple Agonist',
+        name: 'Retatrutide',
+        sections: [
+          { title: 'Overview', text: 'Retatrutide (GLP-1/GIP/glucagon triple agonist) is a next-generation metabolic peptide that activates three receptor systems simultaneously: GLP-1, GIP, and glucagon. This triple mechanism is the basis for significant research interest in its energy expenditure profile.' },
+          { title: 'Glucagon Component', text: 'The addition of glucagon receptor agonism is a key differentiator from dual agonists. Glucagon signaling promotes hepatic glucose output and thermogenesis. In the context of a combined GLP-1/GIP background (which suppresses the hyperglycemic effects of glucagon), the net result studied in research is increased energy expenditure without significant glycemic perturbation.' },
+          { title: 'Research Areas', text: 'Preclinical and early clinical research has examined retatrutide\'s effects on adipose tissue, liver fat, energy expenditure, body composition, and glycemic markers. It represents one of the most actively studied new compounds in metabolic peptide research as of 2024–2025.' },
+          { title: 'Research Form', text: 'Available lyophilized. Requires reconstitution with BAC water. For research purposes only.' },
+        ],
+        pills: ['Triple Agonist', 'GLP-1/GIP/Glucagon', 'Energy Expenditure', 'Emerging Research']
+      },
+      'aod9604': {
+        tag: 'hGH Fragment',
+        name: 'AOD-9604',
+        sections: [
+          { title: 'Overview', text: 'AOD-9604 (Anti-Obesity Drug 9604) is a synthetic peptide fragment corresponding to the C-terminal region of human growth hormone — specifically amino acids 176–191. It was developed to study the lipolytic (fat-mobilizing) effects of hGH in isolation from its growth-promoting effects.' },
+          { title: 'Mechanism of Interest', text: 'Full hGH activates both the GH receptor and triggers the release of IGF-1, which promotes tissue growth. The 176–191 fragment does not interact with the GH receptor in the same manner and has not been shown to raise IGF-1. Research has focused on its potential to stimulate lipolysis in adipose tissue through a distinct β3-adrenergic pathway.' },
+          { title: 'Research Context', text: 'Preclinical studies demonstrated fat reduction in obese animal models. Clinical trials were conducted but did not achieve primary endpoints for weight loss at the doses tested. Research interest continues around its tissue-specific activity and mechanism.' },
+          { title: 'Research Form', text: 'Lyophilized powder. Reconstitute with BAC water for research use.' },
+        ],
+        pills: ['hGH Fragment 176-191', 'Lipolytic Research', 'No IGF-1 Effect', 'Lyophilized']
+      },
+      'motsc': {
+        tag: 'Mitochondrial Peptide',
+        name: 'MOTS-c',
+        sections: [
+          { title: 'Overview', text: 'MOTS-c (Mitochondrial Open Reading Frame of the 12S rRNA Type-c) is a peptide encoded within the mitochondrial genome — specifically the 12S rRNA gene. It is 16 amino acids in length. Its discovery expanded understanding of the mitochondrial genome\'s peptide-coding capacity.' },
+          { title: 'Biological Role', text: 'MOTS-c regulates cellular metabolic pathways including the folate cycle and AMPK pathway. Research has shown it translocates to the nucleus under metabolic stress conditions where it modulates gene expression related to metabolic adaptation.' },
+          { title: 'Research Areas', text: 'Studies have examined MOTS-c in the context of insulin sensitivity, exercise adaptation, aging, and metabolic syndrome. Animal studies showed improved glucose uptake and insulin action, as well as effects on skeletal muscle metabolism during exercise.' },
+          { title: 'Research Form', text: 'Supplied lyophilized. Reconstitute with BAC water under aseptic conditions for research use.' },
+        ],
+        pills: ['Mitochondrial Origin', 'AMPK Pathway', 'Metabolic Research', '16 Amino Acids']
+      },
+      'tesamorelin': {
+        tag: 'GHRH Analogue',
+        name: 'Tesamorelin',
+        sections: [
+          { title: 'Overview', text: 'Tesamorelin is a synthetic analogue of growth hormone releasing hormone (GHRH) — specifically a stabilized form of the 44-amino acid GHRH(1-44) sequence with a trans-3-hexenoic acid group added to improve stability. It stimulates pituitary release of endogenous growth hormone.' },
+          { title: 'Mechanism', text: 'Tesamorelin acts at pituitary GHRH receptors to promote GH release in a pulsatile fashion — mirroring the body\'s natural GH secretion pattern. This is distinct from exogenous GH administration, which suppresses endogenous production through negative feedback.' },
+          { title: 'Research Areas', text: 'Significant research has focused on tesamorelin\'s effects on visceral adipose tissue, IGF-1 levels, and body composition. It has been studied in HIV-associated lipodystrophy and more broadly in the context of metabolic research and aging.' },
+          { title: 'Research Form', text: 'Lyophilized peptide. Must be reconstituted with BAC water before use in research protocols.' },
+        ],
+        pills: ['GHRH Analogue', 'Pituitary Stimulation', 'Pulsatile GH', 'IGF-1 Research']
+      },
+      'ipamorelin': {
+        tag: 'GH Secretagogue',
+        name: 'Ipamorelin',
+        sections: [
+          { title: 'Overview', text: 'Ipamorelin is a pentapeptide (5 amino acids) ghrelin receptor agonist and selective GH secretagogue. It stimulates GH release from the anterior pituitary with a high degree of selectivity — notably without significant effects on cortisol, prolactin, or ACTH at research doses.' },
+          { title: 'Selectivity Advantage', text: 'Many GH secretagogues stimulate non-GH hormones including cortisol and prolactin, which complicates research interpretation. Ipamorelin\'s selectivity for GH release makes it a cleaner research tool for studying GH-mediated effects in isolation.' },
+          { title: 'Ghrelin Receptor Mechanism', text: 'Ipamorelin is a synthetic ghrelin mimetic — it binds the growth hormone secretagogue receptor (GHSR-1a) but was developed to dissociate the appetite-stimulating properties of ghrelin from the GH-releasing properties. Research has examined its effects on GH pulse amplitude and frequency.' },
+          { title: 'Research Form', text: 'Lyophilized pentapeptide. Reconstitute with BAC water. Short plasma half-life (~2 hours) is relevant to research timing protocols.' },
+        ],
+        pills: ['Ghrelin Receptor', 'Selective GH Release', 'No Cortisol Effect', 'Pentapeptide']
+      },
+      'cjc1295': {
+        tag: 'Long-Acting GHRH',
+        name: 'CJC-1295',
+        sections: [
+          { title: 'Overview', text: 'CJC-1295 is a tetrasubstituted 30-amino acid peptide analogue of GHRH(1-29). The DAC (Drug Affinity Complex) formulation contains a maleimidoproprionic acid (MPA) group that covalently bonds to serum albumin following administration, dramatically extending its half-life to 6–8 days.' },
+          { title: 'DAC Technology', text: 'The covalent albumin binding achieved by the DAC modification means CJC-1295 (with DAC) functions as a "GHRH depot" — providing extended, low-level stimulation of pituitary GH release rather than acute peaks. This creates a different GH secretion pattern compared to short-acting GHRH analogues.' },
+          { title: 'Research Areas', text: 'Research has examined CJC-1295\'s effects on basal and pulsatile GH secretion, IGF-1 elevation, body composition, and its interaction with endogenous GHRH feedback mechanisms. Its long half-life makes it a useful research model for sustained GH axis stimulation.' },
+          { title: 'Research Form', text: 'Lyophilized. Reconstitute with BAC water for research protocols.' },
+        ],
+        pills: ['GHRH Analogue', 'DAC Technology', '6-8 Day Half-Life', 'Albumin Binding']
+      },
+      'cjc-ipa': {
+        tag: 'Combination',
+        name: 'CJC-1295 / Ipamorelin',
+        sections: [
+          { title: 'Overview', text: 'CJC-1295 / Ipamorelin is a combination of two complementary GH-stimulating peptides: CJC-1295 (a long-acting GHRH analogue) and Ipamorelin (a ghrelin receptor agonist / GH secretagogue). The combination is frequently studied together because each peptide activates GH release through a distinct receptor pathway.' },
+          { title: 'Synergy Rationale', text: 'GHRH (mimicked by CJC-1295) and ghrelin/secretagogues (mimicked by Ipamorelin) act at separate receptor populations on pituitary somatotroph cells. Preclinical research has shown that co-administration of GHRH and a GH secretagogue produces significantly greater GH pulse amplitude than either agent alone — a synergistic rather than simply additive effect.' },
+          { title: 'Research Considerations', text: 'The differing half-lives of the two compounds (CJC-1295 ~6-8 days vs. Ipamorelin ~2 hours) create complex kinetics in research models. Studies have examined both simultaneous and staggered administration to characterize GH pulse patterns.' },
+          { title: 'Research Form', text: 'Available as a combination lyophilized preparation. Reconstitute with BAC water for research use.' },
+        ],
+        pills: ['GHRH + Secretagogue', 'Synergistic GH', 'Dual Mechanism', 'Combination Research']
+      },
+      'bpc157': {
+        tag: 'Gastric Pentadecapeptide',
+        name: 'BPC-157',
+        sections: [
+          { title: 'Overview', text: 'BPC-157 (Body Protective Compound 157) is a pentadecapeptide (15 amino acids) derived from a protein found in human gastric juice. It is a partial sequence of a naturally occurring gastroprotective protein. The synthetic version has been studied extensively in preclinical models.' },
+          { title: 'Research Areas', text: 'Preclinical studies across multiple animal models have examined BPC-157\'s effects on tendon, ligament, and muscle tissue healing; gastrointestinal integrity and ulcer protection; angiogenesis; and neurological pathways. It appears to interact with multiple growth factor systems including VEGF and EGF.' },
+          { title: 'Gastrointestinal Interest', text: 'BPC-157 was initially identified through gastrointestinal research. Studies in animal models have shown protective effects on gastric mucosa, intestinal tissue, and the enteric nervous system. Interest has since expanded to systemic effects in orthopedic and neurological research contexts.' },
+          { title: 'Research Form', text: 'Available lyophilized. Highly stable relative to many peptides. Reconstitute with BAC water. Stable in acidic environments, which has implications for gastrointestinal research models.' },
+        ],
+        pills: ['15 Amino Acids', 'Multi-Tissue Research', 'Angiogenesis', 'GI Protective']
+      },
+      'tb500': {
+        tag: 'Thymosin Fragment',
+        name: 'TB-500',
+        sections: [
+          { title: 'Overview', text: 'TB-500 is a synthetic peptide fragment corresponding to amino acids 17–23 of Thymosin Beta-4 (Tβ4), a naturally occurring 43-amino acid protein found in virtually all human and animal cells. The active fragment retains the actin-binding domain of the full protein.' },
+          { title: 'Actin Binding Mechanism', text: 'Thymosin Beta-4 is one of the main actin-sequestering proteins in the cell. By binding to G-actin (globular actin) monomers, it regulates the actin-cytoskeleton dynamics that are critical for cell migration, proliferation, and survival. These processes are fundamental to tissue repair and regeneration.' },
+          { title: 'Research Areas', text: 'Research has examined TB-500\'s effects on wound healing, hair follicle activity, cardiac repair, and inflammatory modulation. Studies in animal models have investigated its role in both local and systemic tissue repair contexts.' },
+          { title: 'Research Form', text: 'Lyophilized powder. Reconstitute with BAC water under aseptic conditions.' },
+        ],
+        pills: ['Thymosin Beta-4', 'Actin Binding', 'Cell Migration', 'Wound Healing']
+      },
+      'bpc-tb500': {
+        tag: 'Combination',
+        name: 'BPC-157 + TB-500',
+        sections: [
+          { title: 'Overview', text: 'The BPC-157 + TB-500 combination is one of the most frequently studied peptide pairings in preclinical tissue repair research. The two compounds approach tissue regeneration through complementary but distinct mechanisms — making them a logical combination for multi-pathway research models.' },
+          { title: 'Mechanism Complementarity', text: 'BPC-157 primarily influences local tissue signaling through VEGF-driven angiogenesis and growth factor modulation, with strong activity in gastrointestinal and orthopedic research models. TB-500\'s mechanism centers on actin cytoskeleton regulation and cell mobility — processes that support tissue regeneration at a cellular level throughout the body.' },
+          { title: 'Research Rationale', text: 'The hypothesis driving combination research is that BPC-157 supports tissue vascularization and local repair signaling while TB-500 facilitates the cell migration required to populate and rebuild damaged tissue. Preclinical studies have investigated whether the combination produces additive or synergistic effects.' },
+          { title: 'Research Form', text: 'Available as a pre-combined lyophilized preparation at fixed ratios, or as individual peptides. Reconstitute with BAC water.' },
+        ],
+        pills: ['Combination Research', 'Multi-Pathway', 'Angiogenesis + Actin', 'Tissue Repair']
+      },
+      'ghkcu': {
+        tag: 'Copper Peptide',
+        name: 'GHK-Cu',
+        sections: [
+          { title: 'Overview', text: 'GHK-Cu (Glycyl-L-histidyl-L-lysine copper complex) is a naturally occurring tripeptide-copper complex found in human plasma, saliva, and urine. Plasma levels of GHK-Cu decline significantly with age, which has prompted research into its role in tissue maintenance and repair.' },
+          { title: 'Biological Activity', text: 'GHK-Cu has been identified as a potent biological signal that activates collagen, elastin, glycosaminoglycan, and decorin synthesis in skin fibroblasts. It has been shown to stimulate expression of tissue remodeling enzymes including MMPs and their inhibitors TIMPs, suggesting a role in regulated extracellular matrix remodeling.' },
+          { title: 'Research Areas', text: 'Research has examined GHK-Cu in wound healing, skin repair and anti-aging contexts, hair growth signaling, antioxidant mechanisms, and anti-inflammatory pathways. Its copper-chelating properties are also under investigation for their role in modulating copper-dependent enzyme systems.' },
+          { title: 'Research Form', text: 'Lyophilized copper-peptide complex. Reconstitute with BAC water. Store protected from light.' },
+        ],
+        pills: ['Copper Complex', 'Collagen Synthesis', 'Antioxidant', 'Matrix Remodeling']
+      },
+      'ahkcu': {
+        tag: 'Copper Peptide',
+        name: 'AHK-Cu',
+        sections: [
+          { title: 'Overview', text: 'AHK-Cu (Alanyl-histidyl-lysine copper complex) is a tripeptide-copper complex closely related to GHK-Cu in structure. Like GHK-Cu, it forms a stable complex with copper(II) ions. Research interest has focused on its activity in hair follicle biology and scalp tissue.' },
+          { title: 'Hair Follicle Research', text: 'Preclinical studies have examined AHK-Cu\'s effects on dermal papilla cells — the cells at the base of hair follicles that control hair growth cycling. The peptide has been studied for effects on follicle proliferation, growth factor expression, and the transition between hair growth phases.' },
+          { title: 'Mechanisms', text: 'AHK-Cu\'s activity is thought to stem from both the peptide sequence itself (which may interact with cell surface receptors) and the copper ion it delivers. Copper is an essential cofactor for lysyl oxidase, which crosslinks collagen and elastin in connective tissue including the dermal environment of hair follicles.' },
+          { title: 'Research Form', text: 'Lyophilized copper-peptide complex. Reconstitute with BAC water for research use. Light-sensitive — store in amber or foil-covered vials.' },
+        ],
+        pills: ['Copper Complex', 'Hair Follicle Research', 'Dermal Papilla', 'Copper Delivery']
+      },
+      'bacwater': {
+        tag: 'Reconstitution Solution',
+        name: 'BAC Water',
+        sections: [
+          { title: 'Overview', text: 'Bacteriostatic water (BAC water) is sterile water for injection that has been preserved with 0.9% benzyl alcohol (9mg/mL). It is the standard reconstitution vehicle for lyophilized research peptides and is designed for multi-dose use.' },
+          { title: 'Why BAC Water, Not Sterile Water?', text: 'Plain sterile water for injection is a single-use product — once the vial is opened and the stopper punctured, there is no antimicrobial protection against microbial contamination from repeat needle insertions. Benzyl alcohol\'s bacteriostatic properties allow multiple entries into the reconstituted peptide vial over the storage period (typically up to 28 days).' },
+          { title: 'Benzyl Alcohol Concentration', text: 'The 0.9% benzyl alcohol concentration is the standard pharmaceutical preservative level. It is bacteriostatic (inhibits bacterial growth) rather than bactericidal at this concentration, meaning it does not kill bacteria outright but prevents their proliferation. This is sufficient for maintaining sterility in a properly handled research environment.' },
+          { title: 'Usage in Research', text: 'Using a sterile syringe, draw the desired volume of BAC water and inject slowly into the peptide vial, allowing it to dissolve naturally. Do not shake. Label reconstituted vials with the date and concentration. Refrigerate reconstituted peptides at 2–8°C.' },
+        ],
+        pills: ['0.9% Benzyl Alcohol', 'Multi-Dose Use', 'Bacteriostatic', 'Reconstitution Vehicle']
+      },
+
+      'b12': { tag: 'Essential Vitamin', name: 'Vitamin B12', sections: [
+        { title: 'Overview', text: 'Vitamin B12 (cobalamin) is an essential water-soluble vitamin that cannot be synthesized by the human body. The two main bioactive forms are methylcobalamin and cyanocobalamin. Injectable B12 bypasses gastrointestinal absorption, making it the most direct delivery method for research purposes.' },
+        { title: 'Biological Role', text: 'B12 is a cofactor for methionine synthase (which regenerates methionine from homocysteine) and methylmalonyl-CoA mutase (which metabolizes odd-chain fatty acids). These reactions affect DNA synthesis, myelin formation, and cellular energy production across virtually all cell types.' },
+        { title: 'Research Areas', text: 'Research has examined B12 in the context of neurological function, homocysteine regulation, red blood cell formation, energy metabolism, and methylation pathways. Injectable administration provides complete bioavailability and controlled dosing in research models.' },
+        { title: 'Research Form', text: 'Injectable solution. Available as cyanocobalamin or methylcobalamin depending on formulation. Refrigerate at 2-8C and protect from light.' }
+      ], pills: ['Cobalamin', 'Methylation', 'Neurological Research', 'DNA Synthesis'] },
+
+      'nad': { tag: 'Cellular Coenzyme', name: 'NAD+ 100mg', sections: [
+        { title: 'Overview', text: 'NAD+ (Nicotinamide Adenine Dinucleotide) is a coenzyme found in all living cells, essential for hundreds of metabolic reactions. It exists as NAD+ (oxidized) and NADH (reduced). The NAD+/NADH ratio is a critical indicator of cellular redox state and energy status.' },
+        { title: 'Sirtuin Connection', text: 'NAD+ is the obligate substrate for sirtuin enzymes (SIRT1-7) — NAD+-dependent deacetylases involved in gene expression regulation, DNA repair, metabolism, and aging. Declining NAD+ levels with age are associated with reduced sirtuin activity, making NAD+ replenishment a central topic in aging research.' },
+        { title: 'Mitochondrial Role', text: 'In the electron transport chain, NAD+ accepts electrons to become NADH and donates them to generate ATP. NAD+ availability directly impacts mitochondrial function and cellular energy production, making it foundational to metabolic research.' },
+        { title: 'Research Form', text: '100mg lyophilized NAD+ for reconstitution with BAC water. Reconstitute immediately before use. Sensitive to degradation by light and heat — store refrigerated and protected from light.' }
+      ], pills: ['Sirtuin Substrate', 'Mitochondrial Function', 'Aging Research', 'DNA Repair'] },
+
+      'lipoc': { tag: 'Lipotropic Formula', name: 'Lipo-C with B12', sections: [
+        { title: 'Overview', text: 'Lipo-C is an injectable MIC formula — Methionine, Inositol, and Choline — combined with Vitamin B12. Lipotropic agents facilitate the removal and transport of fat from the liver, preventing abnormal hepatic fat accumulation. The injectable form ensures complete bioavailability.' },
+        { title: 'MIC Components', text: 'Methionine is an essential amino acid and lipotropic agent participating in phosphatidylcholine synthesis. Inositol is a carbocyclic sugar regulating insulin signaling and lipid metabolism. Choline is a precursor to phosphatidylcholine and acetylcholine, with central roles in hepatic fat transport via VLDL particles.' },
+        { title: 'B12 Component', text: 'Vitamin B12 supports the methylation reactions tied to methionine metabolism and overall lipid handling. B12 deficiency impairs the methionine cycle, which can compromise lipotropic activity across the whole formula.' },
+        { title: 'Research Form', text: 'Injectable solution. Store refrigerated at 2-8C.' }
+      ], pills: ['MIC Formula', 'Hepatic Lipid Research', 'Methionine + Inositol + Choline', 'Injectable'] },
+
+      'lipoc-fb': { tag: 'High-Strength Formula', name: 'Lipo-C Fat Blaster 526mg', sections: [
+        { title: 'Overview', text: 'The Fat Blaster 526mg is a high-concentration lipotropic injection at 526mg total compound concentration. It contains the MIC base (methionine, inositol, choline) combined with additional compounds such as L-carnitine, chromium, and vitamins for a comprehensive multi-pathway lipid research formula.' },
+        { title: 'L-Carnitine Component', text: 'L-carnitine is required for the transport of long-chain fatty acids across the inner mitochondrial membrane for beta-oxidation. Research has studied its role in fat oxidation, energy production in muscle tissue, and cardiovascular function.' },
+        { title: 'Research Context', text: 'The comprehensive MIC+carnitine+vitamin matrix provides researchers a multi-pathway model for studying lipid mobilization, where each component acts on a distinct step of hepatic fat processing.' },
+        { title: 'Research Form', text: 'Injectable solution at 526mg total concentration. Store refrigerated at 2-8C, protected from light.' }
+      ], pills: ['526mg Complex', 'L-Carnitine + MIC', 'Multi-Pathway', 'Lipid Oxidation Research'] },
+
+      'thymalin': { tag: 'Thymic Peptide Complex', name: 'Thymalin 10mg', sections: [
+        { title: 'Overview', text: 'Thymalin is a naturally derived peptide complex isolated from thymic tissue, containing a mixture of small molecular weight thymic peptides. The thymus is the primary organ for T-lymphocyte maturation and immune education, and undergoes progressive involution with age.' },
+        { title: 'Thymic Function', text: 'The thymus is most active during childhood and diminishes significantly by middle age. This involution is associated with declining T-cell output and immune surveillance. Research into thymic peptides is motivated by understanding and potentially modeling thymic function restoration.' },
+        { title: 'Research Areas', text: 'Studies have examined thymalin effects on T-lymphocyte populations, natural killer cell activity, cytokine profiles, and immune restoration in animal models. It has been investigated in the context of aging-related immune decline and recovery from immunosuppression.' },
+        { title: 'Research Form', text: '10mg lyophilized complex. Reconstitute with BAC water. Store at -20C before reconstitution; refrigerate at 2-8C after.' }
+      ], pills: ['Thymic Origin', 'T-Lymphocyte Research', 'Immune Modulation', 'Natural Complex'] },
+
+      'hgh': { tag: 'Pituitary Protein', name: 'HGH 15iu', sections: [
+        { title: 'Overview', text: 'Human Growth Hormone (hGH, somatropin) is a 191 amino acid single-chain polypeptide produced by somatotroph cells of the anterior pituitary gland. It is one of the most extensively studied protein hormones in research, with effects on virtually every tissue in the body.' },
+        { title: 'Direct vs IGF-1 Effects', text: 'HGH exerts direct effects by binding GH receptors in adipose tissue, liver, muscle, and bone, and indirect effects mediated through IGF-1 (Insulin-like Growth Factor 1), primarily produced in the liver. Research often distinguishes between GH-mediated and IGF-1-mediated effects.' },
+        { title: 'Research Areas', text: 'Extensive research has examined hGH in: body composition (lean mass vs fat mass), bone density, cartilage maintenance, cardiac function, lipid metabolism, glucose homeostasis, wound healing, and aging. It remains one of the most actively researched protein hormones in preclinical literature.' },
+        { title: 'Research Form', text: 'Recombinant hGH (rhGH), lyophilized. 15iu vial — reconstitute with BAC water. Store at -20C before reconstitution; refrigerate at 2-8C after. Use reconstituted solution within 28 days.' }
+      ], pills: ['191 Amino Acids', 'IGF-1 Axis', 'Body Composition Research', 'Pituitary Hormone'] },
+    };
+
+    function openCard(id) {
+      const card = CARDS[id];
+      if (!card) return;
+
+      document.getElementById('panel-tag').textContent  = card.tag;
+      document.getElementById('panel-name').textContent = card.name;
+
+      const body = document.getElementById('panel-body');
+      body.innerHTML = card.sections.map(s =>
+        `<div class="panel-section">
+          <div class="panel-section-title">${s.title}</div>
+          <p class="panel-text">${s.text}</p>
+        </div>`
+      ).join('') +
+      (card.pills ? `<div class="panel-tag-row">${card.pills.map(p => `<span class="panel-pill">${p}</span>`).join('')}</div>` : '') +
+      `<div class="panel-disclaimer">This information is for general research reference only. Nothing on this page constitutes medical advice, a treatment recommendation, or an endorsement for human use. All compounds sold by 956 Labs are for licensed research purposes only.</div>`;
+
+      document.getElementById('info-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCard() {
+      document.getElementById('info-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCard(); });
+  </script>
+
+</body>
+</html>

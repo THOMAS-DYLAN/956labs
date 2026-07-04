@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <link rel="preconnect" href="https://utqviljholfvpfztfuvx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://utqviljholfvpfztfuvx.supabase.co">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — 956 Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap"></noscript>
+  <link rel="modulepreload" href="js/supabase.js">
+  <link rel="modulepreload" href="js/auth.js?v=15">
+  <link rel="modulepreload" href="js/cart.js?v=19">
+  <link rel="modulepreload" href="js/products.js?v=15">
+  <link rel="stylesheet" href="css/site.css?v=4" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .dash-header {
+      background: #F6F6F6; border-bottom: 1px solid var(--border);
+      padding: 48px 0 36px; position: relative; overflow: hidden;
+    }
+    .dash-header-inner {
+      position: relative; z-index: 1;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .dash-greeting {
+      font-family: var(--font-d); font-size: clamp(2rem,5vw,3.2rem);
+      line-height: .95; letter-spacing: .03em; color: #111111;
+    }
+    .dash-greeting em { color: #006847; font-style: normal; }
+    .dash-since {
+      font-family: var(--font-c); font-size: .68rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--smoke); margin-top: 8px;
+    }
+    .member-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: rgba(0,104,71,.12); color: var(--red);
+      border: 1px solid rgba(0,104,71,.22); padding: 5px 14px; border-radius: 999px;
+    }
+
+    .dash-body { padding: 40px 0 80px; flex: 1; }
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+    .panel { background: #F6F6F6; border: 1px solid #E0E0E0; }
+    .panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px; border-bottom: 1px solid var(--border);
+    }
+    .panel-title {
+      font-family: var(--font-c); font-size: .68rem; font-weight: 700;
+      letter-spacing: .22em; text-transform: uppercase; color: var(--smoke);
+    }
+    .panel-action {
+      font-family: var(--font-c); font-size: .66rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--red);
+      text-decoration: underline; text-underline-offset: 3px; transition: color .18s;
+    }
+    .panel-action:hover { color: var(--red-hot); }
+    .panel-body { padding: 6px 0; }
+
+    /* ── Order Cards ──────────────────────────────────── */
+    .order-card {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #F6F6F6; border: 1px solid #E0E0E0;
+      padding: 16px; margin-bottom: 10px;
+    }
+    .order-card:last-child { margin-bottom: 0; }
+    .order-card-thumb {
+      width: 56px; height: 56px; flex-shrink: 0;
+      border: 1px solid #E0E0E0;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .order-card-body { flex: 1; min-width: 0; }
+    .order-card-header {
+      display: flex; align-items: baseline;
+      justify-content: space-between; gap: 12px; margin-bottom: 8px;
+    }
+    .order-card-name {
+      font-family: var(--font-c); font-size: .88rem; font-weight: 700;
+      letter-spacing: .05em; text-transform: uppercase; color: #111111;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .order-card-total {
+      font-family: var(--font-d); font-size: 1.2rem;
+      color: #111111; letter-spacing: .04em; flex-shrink: 0;
+    }
+    .order-card-bottom {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .order-card-meta {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    }
+    .order-card-meta-item { display: flex; align-items: center; gap: 4px; line-height: 1; }
+    .order-card-meta-label {
+      font-family: var(--font-c); font-size: .66rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--smoke);
+    }
+    .order-card-meta-val {
+      font-family: var(--font-c); font-size: .66rem;
+      font-weight: 600; letter-spacing: .04em; color: var(--ash);
+    }
+    .order-review-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--font-c); font-size: .6rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--smoke); text-decoration: none;
+      border: 1px solid #E0E0E0; padding: 4px 10px; flex-shrink: 0;
+      transition: color .18s, border-color .18s;
+    }
+    .order-review-link:hover { color: var(--red); border-color: rgba(0,104,71,.4); }
+    .order-review-link { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-c); font-size: .58rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--smoke); text-decoration: none; border: 1px solid #E0E0E0; padding: 3px 8px; transition: color .18s, border-color .18s; }
+    .order-review-link:hover { color: var(--red); border-color: rgba(0,104,71,.4); }
+    .order-price { font-family: var(--font-d); font-size: 1.05rem; color: #111111; letter-spacing: .04em; margin-bottom: 4px; }
+    .order-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-c); font-size: .58rem; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px;
+    }
+    .order-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .status-delivered  { background: rgba(34,100,34,.2);  color: #5BC75B; } .status-delivered::before  { background: #5BC75B; }
+    .status-shipped    { background: rgba(30,80,180,.2);  color: #6E9EF5; } .status-shipped::before    { background: #6E9EF5; }
+    .status-processing { background: rgba(200,140,0,.2);  color: #00875A; } .status-processing::before { background: #00875A; }
+    .order-arrow { color: var(--smoke); margin-left: 6px; transition: transform .18s, color .18s; }
+    .order-row:hover .order-arrow { transform: translateX(3px); color: var(--red); }
+
+    .orders-empty {
+      padding: 40px 22px; text-align: center;
+      font-family: var(--font-c); font-size: .72rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--smoke);
+    }
+    .orders-empty a { display: inline-block; margin-top: 14px; color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+
+    .info-row { display: flex; align-items: center; padding: 13px 22px; border-bottom: 1px solid var(--border); gap: 12px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-family: var(--font-c); font-size: .63rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--smoke); width: 105px; flex-shrink: 0; }
+    .info-val { font-size: .87rem; color: var(--light); flex: 1; }
+    .info-val.empty { color: var(--smoke); font-style: italic; }
+    .info-val.locked { color: var(--ash); }
+    .info-edit-btn { font-family: var(--font-c); font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--smoke); flex-shrink: 0; text-decoration: underline; text-underline-offset: 3px; transition: color .18s; }
+    .info-edit-btn:hover { color: var(--red); }
+    .locked-icon { font-size: .7rem; color: var(--smoke); flex-shrink: 0; margin-left: 4px; opacity: .5; }
+    .info-edit-wrap { display: none; flex: 1; align-items: center; gap: 8px; }
+    .info-edit-wrap.open { display: flex; }
+    .info-edit-wrap.open ~ .info-val, .info-edit-wrap.open ~ .info-edit-btn { display: none; }
+    .info-input { flex: 1; padding: 7px 11px; background: #FFFFFF; color: var(--light); border: 1px solid #E0E0E0; font-size: .87rem; outline: none; transition: border-color .18s; }
+    .info-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(0,104,71,.12); }
+    .info-save { font-family: var(--font-c); font-size: .63rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; background: var(--red); color: #fff; padding: 7px 13px; transition: background .18s; flex-shrink: 0; }
+    .info-save:hover { background: var(--red-hot); }
+    .info-cancel { font-family: var(--font-c); font-size: .63rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--smoke); padding: 7px 6px; text-decoration: underline; text-underline-offset: 3px; transition: color .18s; flex-shrink: 0; }
+    .info-cancel:hover { color: var(--light); }
+
+    .quick-actions { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+    .quick-btn { display:inline-flex; align-items:center; gap:6px; font-family:var(--font-c); font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:10px 20px; transition:all .18s; }
+    .quick-btn-primary { background:var(--red); color:#fff; clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px)); }
+    .quick-btn-primary:hover { background:var(--red-hot); }
+    .quick-btn-secondary { border:1px solid #E0E0E0; color:var(--smoke); }
+    .quick-btn-secondary:hover { color:var(--light); border-color:var(--ash); }
+    @media (max-width: 860px) { .dash-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) {
+      .info-row { flex-wrap: wrap; padding: 12px 16px; gap: 6px; }
+      .info-label { width: 100%; margin-bottom: 2px; }
+      .info-val { font-size: .82rem; }
+      .info-edit-btn { margin-left: auto; }
+      .dash-grid { grid-template-columns: 1fr; }
+      .panel { margin-bottom: 16px; }
+      .dash-header { padding: 28px 16px 20px; }
+    }
+  </style>
+  <meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;top:0;left:0;padding:8px 16px;background:var(--red);color:#fff;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;z-index:999;transform:translateY(-100%);transition:transform .2s;will-change:transform" onfocus="this.style.transform='translateY(0)'" onblur="this.style.transform='translateY(-100%)'">Skip to content</a>
+  <div id="nav-mount"></div>
+  <div id="banner-mount"></div>
+
+  <div class="dash-header">
+    <div class="dash-header-inner container">
+      <div>
+        <div class="dash-greeting">Welcome back,<br/><em id="dash-name">—</em></div>
+        <div class="dash-since" id="dash-since">Member since —</div>
+        <div class="quick-actions">
+          <a href="dashboard.html" class="quick-btn quick-btn-primary">Browse Shop →</a>
+          <a href="orders.html" class="quick-btn quick-btn-secondary">View All Orders</a>
+          <a href="testimonials.html" class="quick-btn quick-btn-secondary" style="background:#CE1126;color:#fff;border-color:#CE1126">Customer Reviews</a>
+        </div>
+      </div>
+      <span class="member-badge">⬡ Active Researcher</span>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="container">
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Recent Orders <span style="color:var(--border);font-weight:400;font-family:var(--font-b);text-transform:none;letter-spacing:0;font-size:.7rem">(last 5)</span></span>
+            <a href="orders.html" class="panel-action">View All →</a>
+          </div>
+          <div class="panel-body" id="orders-panel"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Account Information</span>
+          </div>
+          <div class="panel-body" id="account-panel"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-mount"></div>
+
+  <script type="module">
+    window.CART_SOURCE = '956labs';
+    import './js/auth.js?v=15';
+    import './js/cart.js?v=19';
+    import { loadProducts, getProduct, miniPepperSVG } from './js/products.js?v=15';
+
+    let profile = {}, recentOrders = [], defaultAddr = null;
+    try {
+      const _r = await Promise.all([
+        window.initPage('home'),
+        loadProducts(),
+        Auth.getProfile(),
+        Auth.getRecentOrders(),
+        Auth.getDefaultAddress(),
+      ]);
+      profile      = _r[2] || {};
+      recentOrders = _r[3] || [];
+      defaultAddr  = _r[4] || null;
+    } catch(e) { console.error('Dashboard load error:', e); }
+
+    const firstName = profile?.first_name || '';
+    const lastName  = profile?.last_name  || '';
+    document.getElementById('dash-name').textContent =
+      (firstName + (lastName ? ' ' + lastName : '') || 'Researcher') + '.';
+    document.getElementById('dash-since').textContent =
+      'Member since ' + Auth.formatDate(profile?.member_since);
+
+    const ordersPanel = document.getElementById('orders-panel');
+    if (!recentOrders.length) {
+      ordersPanel.innerHTML = '<div class="orders-empty">No orders yet.<br/><a href="dashboard.html">Browse the catalog and place your first order →</a></div>';
+    } else {
+      ordersPanel.innerHTML = recentOrders.map(o => {
+        const pid     = o.product_id;
+        const product = getProduct(pid);
+        const bg = '#F0F0F0';
+        const thumb   = product ? miniPepperSVG(product) : '';
+        const date    = new Date(o.ordered_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        return `
+          <div class="order-card">
+            <div class="order-card-thumb" style="background:#F0F0F0">${thumb}</div>
+            <div class="order-card-body">
+              <div class="order-card-header">
+                <div class="order-card-name">${o.product_name}</div>
+                <div class="order-card-total">$${Number(o.total).toFixed(2)}</div>
+              </div>
+              <div class="order-card-bottom">
+                <div class="order-card-meta">
+                  <span class="order-card-meta-item"><span class="order-card-meta-label">Date</span><span class="order-card-meta-val">${date}</span></span>
+                  <span class="order-card-meta-item"><span class="order-card-meta-label">Qty</span><span class="order-card-meta-val">${o.qty}</span></span>
+                  <span class="order-card-meta-item"><span class="order-card-meta-label">Unit</span><span class="order-card-meta-val">$${Number(o.unit_price).toFixed(2)}</span></span>
+                  ${o.shipping_carrier ? `<span class="order-card-meta-item"><span class="order-card-meta-label">Via</span><span class="order-card-meta-val">${o.shipping_carrier}</span></span>` : ''}
+                </div>
+                <a href="product.html?id=${pid}#reviews" onclick="event.stopPropagation()" class="order-review-link">★ Write a Review</a>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    const defaultAddrId = defaultAddr?.id || null;
+
+    const PROFILE_FIELDS = [
+      { key:'email',      label:'Email',      type:'email', placeholder:'you@example.com', note:'Changing email sends a confirmation link.' },
+      { key:'first_name', label:'First Name', type:'text',  placeholder:'Jane'  },
+      { key:'last_name',  label:'Last Name',  type:'text',  placeholder:'Smith' },
+      { key:'phone',      label:'Phone',      type:'tel',   placeholder:'+1 555 000 0000' },
+    ];
+
+    const ADDRESS_FIELDS = [
+      { key:'street_line1', label:'Street',    type:'text', placeholder:'123 Main St' },
+      { key:'street_line2', label:'Apt/Suite', type:'text', placeholder:'Apt 4B'      },
+      { key:'city',         label:'City',      type:'text', placeholder:'Austin'      },
+      { key:'state',        label:'State',     type:'text', placeholder:'TX'          },
+      { key:'zip',          label:'ZIP',       type:'text', placeholder:'78701'       },
+      { key:'country',      label:'Country',   type:'text', placeholder:'US'          },
+    ];
+
+    function makeInfoRow(f, val, note = '') {
+      return `
+        <div class="info-row">
+          <div class="info-label">${f.label}</div>
+          <div class="info-edit-wrap" id="wrap-${f.key}">
+            <input class="info-input" id="input-${f.key}" type="${f.type}" value="${val}" placeholder="${f.placeholder}" />
+            <button class="info-save"   onclick="saveField('${f.key}')">Save</button>
+            <button class="info-cancel" onclick="cancelEdit('${f.key}')">Cancel</button>
+          </div>
+          <div>
+            <div class="info-val${val?'':' empty'}" id="val-${f.key}">${val || 'Not set'}</div>
+            ${note ? `<div style="font-size:.62rem;color:var(--smoke);margin-top:2px;font-style:italic">${note}</div>` : ''}
+          </div>
+          <button class="info-edit-btn" onclick="startEdit('${f.key}')">Edit</button>
+        </div>`;
+    }
+
+    document.getElementById('account-panel').innerHTML =
+      `<div style="padding:14px 22px 6px;font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--smoke);border-bottom:1px solid var(--border)">Personal</div>` +
+      PROFILE_FIELDS.map(f => makeInfoRow(f, profile?.[f.key] || '', f.note)).join('') +
+      `<div class="info-row">
+        <div class="info-label">Member Since</div>
+        <div class="info-val locked">${Auth.formatDate(profile?.member_since)}</div>
+        <span class="locked-icon" title="Cannot be changed">🔒</span>
+      </div>` +
+      `<div style="padding:14px 22px 6px;font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--smoke);border-bottom:1px solid var(--border);margin-top:8px">Default Shipping Address</div>` +
+      ADDRESS_FIELDS.map(f => makeInfoRow({ ...f, key: 'addr_' + f.key }, defaultAddr?.[f.key] || '')).join('') +
+      `<div style="padding:10px 22px 14px">
+        <button onclick="saveAddress()" style="font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:var(--red);color:#fff;padding:8px 18px;transition:background .18s" onmouseover="this.style.background='var(--red-hot)'" onmouseout="this.style.background='var(--red)'">Save Address</button>
+      </div>`;
+
+    window.startEdit  = key => { document.getElementById('wrap-'+key).classList.add('open'); document.getElementById('input-'+key).focus(); };
+    window.cancelEdit = key => { document.getElementById('wrap-'+key).classList.remove('open'); };
+    window.saveField  = async key => {
+      const val = document.getElementById('input-'+key)?.value.trim() || '';
+      if (key.startsWith('addr_')) {
+        const fieldName = key.replace('addr_', '');
+        const current   = await Auth.getDefaultAddress() || {};
+        const result    = await Auth.saveAddress({ id: current.id || null, label: 'Default', first_name: current.first_name||'', last_name: current.last_name||'', street_line1: current.street_line1||'', street_line2: current.street_line2||'', city: current.city||'', state: current.state||'', zip: current.zip||'', country: current.country||'United States', is_default: true, [fieldName]: val });
+        if (!result.ok) { alert('Failed to save: ' + result.err); return; }
+        const el = document.getElementById('val-'+key);
+        if (el) { el.textContent = val || 'Not set'; el.className = 'info-val' + (val ? '' : ' empty'); }
+        cancelEdit(key); return;
+      }
+      await Auth.updateField(key, val);
+      const el = document.getElementById('val-'+key);
+      if (el) { el.textContent = val || 'Not set'; el.className = 'info-val' + (val ? '' : ' empty'); }
+      cancelEdit(key);
+      if (key === 'first_name' || key === 'last_name') {
+        const p = await Auth.getProfile();
+        document.getElementById('dash-name').textContent = ((p?.first_name||'') + (p?.last_name ? ' '+p.last_name : '') || 'Researcher') + '.';
+      }
+    };
+    window.saveAddress = async () => {
+      const get = k => (document.getElementById('input-addr_'+k)?.value.trim() || '');
+      const addr = { id: defaultAddrId, label: 'Default', first_name: profile?.first_name||'', last_name: profile?.last_name||'', street_line1: get('street_line1'), street_line2: get('street_line2'), city: get('city'), state: get('state'), zip: get('zip'), country: get('country') || 'US', is_default: true };
+      const result = await Auth.saveAddress(addr);
+      if (result.ok) {
+        ['street_line1','street_line2','city','state','zip','country'].forEach(k => {
+          const el = document.getElementById('val-addr_'+k);
+          const val = addr[k];
+          if (el) { el.textContent = val || 'Not set'; el.className = 'info-val' + (val ? '' : ' empty'); }
+          const wrap = document.getElementById('wrap-addr_'+k);
+          if (wrap) wrap.classList.remove('open');
+        });
+      }
+    };
+  </script>
+</body>
+</html>

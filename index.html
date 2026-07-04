@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <link rel="preconnect" href="https://utqviljholfvpfztfuvx.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://utqviljholfvpfztfuvx.supabase.co">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buy Research Peptides Online | 956 Labs</title>
+  <meta name="description" content="Buy research-grade peptides online — Semaglutide, Tirzepatide, BPC-157, Retatrutide, GHK-Cu, Ipamorelin and more. USPS shipping. For licensed research purposes only.">
+  <meta name="keywords" content="research peptides, buy peptides online, semaglutide research, tirzepatide peptide, BPC-157, GLP peptides, GH peptides">
+  <link rel="canonical" href="https://956labs.bigboypeps.com/index.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Research Peptides — 956 Labs">
+  <meta property="og:description" content="Shop research-grade peptides. Semaglutide, Tirzepatide, BPC-157 and more. USPS shipping. For research purposes only.">
+  <meta property="og:url" content="https://956labs.bigboypeps.com/index.html">
+  <meta property="og:image" content="https://956labs.bigboypeps.com/img/logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="robots" content="index,follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" onload="this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap"></noscript>
+  <link rel="modulepreload" href="js/supabase.js">
+  <link rel="modulepreload" href="js/auth.js?v=15">
+  <link rel="modulepreload" href="js/cart.js?v=19">
+  <link rel="modulepreload" href="js/products.js?v=15">
+  <link rel="stylesheet" href="css/site.css?v=4" />
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .shop-header {
+      padding: 64px 0 48px; border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .product-thumb {
+      height: 220px; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; border-bottom: 1px solid var(--border);
+      background: transparent;
+    }
+    .product-thumb::after { display: none; }
+
+    .shop-header { padding: 64px 0 48px; border-bottom: 1px solid var(--border); }
+    .shop-header-inner { position: relative; z-index: 1; }
+    .shop-eyebrow {
+      font-family: var(--font-c); font-size: .68rem; font-weight: 700;
+      letter-spacing: .28em; text-transform: uppercase; color: var(--red);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+    }
+    .shop-eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--red); }
+    .shop-title {
+      font-family: var(--font-d); font-size: clamp(3rem,7vw,6rem);
+      line-height: .92; letter-spacing: .03em; color: #111111; margin-bottom: 16px;
+    }
+    .shop-title em { color: var(--red); font-style: normal; }
+    .shop-desc { font-size: .9rem; color: #666666; max-width: 560px; line-height: 1.75; }
+
+    /* SEO content section */
+    .seo-section { background: #FAFAFA; border-top: 1px solid #E8E8E8; padding: 64px 0 72px; margin-top: 48px; }
+    .seo-inner { max-width: 1100px; }
+    .seo-block { margin-bottom: 40px; }
+    .seo-block:last-child { margin-bottom: 0; }
+    .seo-h2 { font-family: var(--font-d); font-size: clamp(1.6rem, 3.5vw, 2.4rem); letter-spacing: .03em; color: #111; line-height: 1; margin-bottom: 16px; }
+    .seo-h3 { font-family: var(--font-c); font-size: .82rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--red); margin-bottom: 10px; }
+    .seo-block p, .seo-card p { font-family: var(--font-b); font-size: .92rem; color: #555; line-height: 1.8; max-width: 760px; }
+    .seo-block p + p { margin-top: 14px; }
+    .seo-block a { color: var(--red); text-decoration: underline; }
+    .seo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; margin: 8px 0 44px; }
+    .seo-card { border-left: 2px solid var(--red); padding-left: 18px; }
+    .seo-disclaimer { font-size: .78rem !important; color: #999 !important; font-style: italic; margin-top: 18px !important; }
+    .seo-section-compact { padding: 56px 0 64px; }
+    .seo-inner-center { text-align: center; }
+    .seo-block-center { margin: 0 auto; max-width: 680px; }
+    .seo-block-center p { margin-left: auto; margin-right: auto; }
+
+    .filters-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 28px 0; flex-wrap: wrap; border-bottom: 1px solid var(--border);
+    }
+    .filters-label {
+      font-family: var(--font-c); font-size: .68rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: #666666; margin-right: 8px;
+    }
+    .filter-btn {
+      padding: 7px 18px; font-family: var(--font-c); font-size: .7rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: #666666; border: 1px solid #E0E0E0; background: transparent; transition: all .18s;
+    }
+    .filter-btn:hover  { border-color: var(--ash); color: #222222; }
+    .filter-btn.active { background: #CE1126; color: #fff; border-color: #CE1126; }
+    .filter-btn-bundle { color: #00875A; border-color: rgba(212,170,50,.4); letter-spacing: .14em; }
+    .filter-btn-bundle:hover { border-color: #00875A; color: #f5c842; background: rgba(212,170,50,.06); }
+    .filter-btn-bundle.active { background: #00875A; color: #04090F; border-color: #00875A; }
+
+    .products-section { padding: 48px 0 80px; flex: 1; }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(256px, 1fr)); gap: 20px;
+    }
+
+    .product-card {
+      background: #FFFFFF; border: 1px solid #E0E0E0;
+      transition: border-color .22s, transform .22s, box-shadow .22s;
+      display: flex; flex-direction: column;
+    }
+    .product-card:hover {
+      border-color: var(--red); transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,.5);
+    }
+
+    .thumb-glow { position: absolute; inset: 0; background: rgba(0,104,71,.07); opacity: 0; transition: opacity .22s; z-index: 1; }
+    .product-card:hover .thumb-glow { opacity: 1; }
+    .product-badge {
+      position: absolute; top: 12px; left: 12px; z-index: 2;
+      font-family: var(--font-c); font-size: .6rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase;
+      padding: 4px 10px; border: 1px solid #E0E0E0; background: rgba(12,12,12,.8); color: #666666;
+    }
+    .product-badge.badge-hot { background: rgba(0,104,71,.15); color: var(--red); border-color: rgba(0,104,71,.32); }
+
+    .product-info { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+    .product-cat {
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase; color: var(--red); margin-bottom: 5px;
+    }
+    .product-name {
+      font-family: var(--font-c); font-size: 1.05rem; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; color: #111111; margin-bottom: 4px; line-height: 1.25;
+    }
+    .product-research { font-size: .67rem; color: #666666; font-style: italic; margin-bottom: 9px; }
+    .product-desc { font-size: .8rem; color: #666666; line-height: 1.6; margin-bottom: 18px; flex: 1; }
+    .product-desc-text {
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; line-height: 1.6;
+    }
+    .product-desc-more {
+      font-size: .75rem; color: #006847; font-weight: 700;
+      text-decoration: none; white-space: nowrap;
+    }
+    .product-desc-more:hover { text-decoration: underline; }
+    .product-footer { display: flex; flex-direction: column; gap: 10px; }
+    .product-price-row { display: flex; align-items: center; justify-content: space-between; }
+    .product-price { font-family: var(--font-d); font-size: 1.6rem; letter-spacing: .04em; color: #111111; }
+    .add-btn {
+      width: 100%; padding: 12px 16px;
+      background: var(--red); color: #fff;
+      font-family: var(--font-c); font-size: .74rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .18s;
+      clip-path: polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+    }
+    .add-btn:hover { background: var(--red-hot); }
+    .waitlist-btn {
+      width: 100%; padding: 11px 16px;
+      background: transparent; color: var(--red);
+      font-family: var(--font-c); font-size: .72rem; font-weight: 700;
+      letter-spacing: .16em; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      border: 1px solid rgba(0,104,71,.4); transition: all .18s;
+    }
+    .waitlist-btn:hover { background: rgba(0,104,71,.1); }
+
+    .add-flash {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: #F6F6F6; border: 1px solid #E0E0E0; border-left: 3px solid var(--red);
+      font-family: var(--font-c); font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+      color: #222222; padding: 12px 24px;
+      opacity: 0; transition: all .26s; pointer-events: none; white-space: nowrap; z-index: 100;
+    }
+    .add-flash.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+
+    .product-card.out-of-stock { opacity: .45; cursor: pointer; }
+    .product-card.out-of-stock .add-btn { display: none; }
+    .product-card.out-of-stock:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,.5); border-color: var(--border); }
+
+    /* ── Bundle cards ─────────────────────────────── */
+    .bundle-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: var(--font-c); font-size: .58rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      background: rgba(212,170,50,.12); color: #00875A;
+      border: 1px solid rgba(212,170,50,.3); padding: 3px 9px; margin-bottom: 8px;
+    }
+    .bundle-qty-note {
+      font-family: var(--font-c); font-size: .62rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase; color: #666666;
+      margin-bottom: 4px;
+    }
+    .bundle-unit-note {
+      font-size: .72rem; color: #666666; margin-top: 3px;
+    }
+    .bundle-btn {
+      width: 100%; padding: 12px 16px;
+      background: #00875A; color: #04090F;
+      font-family: var(--font-c); font-size: .74rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .18s;
+      clip-path: polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+    }
+    .bundle-btn:hover { background: #f5c842; }
+    .bundle-unavail {
+      width: 100%; padding: 11px 16px;
+      background: transparent; color: #666666;
+      font-family: var(--font-c); font-size: .7rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      border: 1px solid #E0E0E0; text-align: center;
+    }
+    .out-of-stock-banner {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,104,71,.92); color: #fff; z-index: 10;
+      font-family: var(--font-c); font-size: .72rem; font-weight: 700;
+      letter-spacing: .2em; text-transform: uppercase;
+      padding: 8px 20px; white-space: nowrap; pointer-events: none;
+    }
+    .low-stock-label { font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00875A;margin-bottom:8px; }
+    .in-stock-label  { font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5BC75B;margin-bottom:8px; }
+    @media (max-width: 700px) { .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; } .nav-links { display: none; } }
+    @media (max-width: 420px) { .products-grid { grid-template-columns: 1fr; } }
+
+
+    /* skeleton loading */
+    .skeleton-card { background: #FFFFFF; border: 1px solid #E0E0E0; }
+    .skeleton-thumb { height: 220px; background: var(--charcoal, #222); }
+    .skeleton-info  { padding: 18px 20px 20px; }
+    .skeleton-line  { border-radius: 2px; background: var(--charcoal, #222); }
+    .skeleton-pulse { animation: skeletonPulse 1.4s ease-in-out infinite; }
+    @keyframes skeletonPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .4; }
+    }
+
+    /* ── Unsubscribe popup ─────────────────────────── */
+    #unsub-overlay {
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,.45);backdrop-filter:blur(3px);
+      z-index:600;align-items:center;justify-content:center;padding:20px;
+    }
+    #unsub-overlay.open { display:flex; }
+    #unsub-box {
+      background:#fff;border:1px solid #E0E0E0;border-radius:4px;
+      max-width:380px;width:100%;padding:28px 24px;text-align:center;
+      box-shadow:0 16px 48px rgba(0,0,0,.12);
+    }
+
+    @media (max-width: 480px) {
+      .products-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+      .add-btn {
+        font-size: .66rem !important;
+        padding: 12px 6px !important;
+        letter-spacing: .08em !important;
+        min-height: 44px !important;
+      }
+      .product-thumb { height: 130px !important; }
+      .product-info { padding: 10px 10px 12px !important; }
+    }
+    @media (max-width: 360px) {
+      .products-grid { grid-template-columns: 1fr !important; }
+      .add-btn { font-size: .74rem !important; padding: 14px !important; letter-spacing: .14em !important; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+    {"@type":"Organization","@id":"https://956labs.bigboypeps.com/#org","name":"956 Labs","url":"https://956labs.bigboypeps.com","logo":"https://956labs.bigboypeps.com/img/logo.png","description":"Online research peptide store in the Rio Grande Valley supplying research-grade peptides nationwide.","areaServed":"US","sameAs":[]},
+    {"@type":"WebSite","@id":"https://956labs.bigboypeps.com/#website","url":"https://956labs.bigboypeps.com","name":"956 Labs","publisher":{"@id":"https://956labs.bigboypeps.com/#org"},"description":"Buy research-grade peptides online. Semaglutide, Tirzepatide, BPC-157, Retatrutide, Ipamorelin and more.","potentialAction":{"@type":"SearchAction","target":"https://956labs.bigboypeps.com/product.html?q={search_term_string}","query-input":"required name=search_term_string"}},
+    {"@type":"Store","@id":"https://956labs.bigboypeps.com/#store","name":"956 Labs","image":"https://956labs.bigboypeps.com/img/logo.png","url":"https://956labs.bigboypeps.com","description":"Online research peptide store serving the Rio Grande Valley and shipping nationwide.","priceRange":"$10–$550","areaServed":{"@type":"Country","name":"United States"}}
+  ]}
+  </script>
+</head>
+<body>
+<a href="#main-content" class="skip-link" style="position:absolute;top:0;left:0;padding:8px 16px;background:var(--red);color:#fff;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;z-index:999;transform:translateY(-100%);transition:transform .2s;will-change:transform" onfocus="this.style.transform='translateY(0)'" onblur="this.style.transform='translateY(-100%)'">Skip to content</a>
+  <div id="nav-mount"></div>
+  <div id="banner-mount"></div>
+
+  <main id="main-content">
+  <div class="shop-header">
+    <div class="shop-header-inner container">
+      <div class="shop-eyebrow">All Products</div>
+      <div class="shop-title"><h1 style="all:inherit;margin:0">Research <em>Peptides</em> for Sale</h1></div>
+      <p class="shop-desc">Shop research-grade peptides online — Semaglutide, Tirzepatide, Retatrutide, BPC-157, Ipamorelin, GHK-Cu and more. Serving the Rio Grande Valley and shipping nationwide. For licensed research purposes only — not for human consumption.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="filters-bar" id="filters">
+      <span class="filters-label">Filter</span>
+      <button class="filter-btn active" data-cat="All">All</button>
+      <button class="filter-btn" data-cat="In Stock">In Stock</button>
+      <button class="filter-btn" data-cat="GLP Peptides">GLP Peptides</button>
+      <button class="filter-btn" data-cat="GH Peptides">GH Peptides</button>
+      <button class="filter-btn" data-cat="Peptides">Peptides</button>
+      <button class="filter-btn" data-cat="Bundles">◈ Bundles</button>
+    </div>
+  </div>
+
+  <div class="products-section">
+    <div class="container">
+      <div class="products-grid" id="products-grid">
+        <!-- skeleton cards shown while products load -->
+        ${Array.from({length:6}).map(()=>`
+          <div class="skeleton-card">
+            <div class="skeleton-thumb skeleton-pulse"></div>
+            <div class="skeleton-info">
+              <div class="skeleton-line skeleton-pulse" style="width:40%;height:.55rem;margin-bottom:10px"></div>
+              <div class="skeleton-line skeleton-pulse" style="width:80%;height:.8rem;margin-bottom:8px"></div>
+              <div class="skeleton-line skeleton-pulse" style="width:95%;height:.7rem;margin-bottom:6px"></div>
+              <div class="skeleton-line skeleton-pulse" style="width:70%;height:.7rem;margin-bottom:18px"></div>
+              <div class="skeleton-line skeleton-pulse" style="width:35%;height:1.6rem;margin-bottom:10px"></div>
+              <div class="skeleton-line skeleton-pulse" style="width:100%;height:42px"></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  </main>
+
+  <!-- SEO content section -->
+  <section class="seo-section seo-section-compact" aria-label="Why buy from 956 Labs">
+    <div class="container seo-inner seo-inner-center">
+      <div class="seo-block seo-block-center">
+        <h2 class="seo-h2">Why Buy Research Peptides From 956 Labs</h2>
+        <p>As a US research peptide supplier, 956 Labs focuses on consistent quality, competitive pricing, and reliable fulfillment. Create a free account to track orders, join product waitlists, and get restock notifications when sold-out research peptides return. Bundle pricing is available on most compounds. Learn more in our <a href="information.html">research information library</a>.</p>
+        <p class="seo-disclaimer">All products sold by 956 Labs are for licensed research purposes only and are not intended for human consumption, diagnosis, treatment, or prevention of any disease.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+  <div class="add-flash" id="add-flash"></div>
+
+<script type="module">
+    import { supabase } from './js/supabase.js';
+    window.CART_SOURCE = '956labs';
+    import './js/auth.js?v=15';
+    import './js/cart.js?v=19';
+    import { loadProducts, allProducts, getProduct, pepperSVG, heatPips } from './js/products.js?v=15';
+
+    await Promise.all([
+      window.initPage('shop'),
+      loadProducts()
+    ]);
+
+    // Load active deals
+    var _activeDeals = [];
+    try {
+      var now = new Date().toISOString();
+      var { data: dealsData } = await supabase
+        .from('deals')
+        .select('*')
+        .eq('active', true)
+        .or('expires_at.is.null,expires_at.gt.' + now);
+      _activeDeals = dealsData || [];
+    } catch(e) { _activeDeals = []; }
+
+    function getDealDiscount(p) {
+      var best = 0;
+      _activeDeals.forEach(function(d) {
+        var applies = false;
+        if (d.type === 'storewide') applies = true;
+        else if (d.type === 'category' && p.category === d.scope) applies = true;
+        else if (d.type === 'product'  && String(p.name) === String(d.scope)) applies = true;
+        if (applies && Number(d.discount_pct) > best) best = Number(d.discount_pct);
+      });
+      return best;
+    }
+
+    function thumbHTML(p) {
+      if (p.images) {
+        return '<picture><source srcset="pdct img/' + p.images.replace(/.png$/, '.webp') + '" type="image/webp"><img src="pdct img/' + p.images + '" alt="' + p.name + '" width="160" height="160" style="width:auto;height:160px;object-fit:contain;object-position:center;position:relative;z-index:1;display:block;margin:auto" loading="lazy" decoding="async"></picture>';
+      }
+      return pepperSVG(p);
+    }
+
+    function thumbBg(p) { return '#F0F0F0'; }
+
+    function buildBundleCard(p) {
+      if (!p.images) return '';
+      var bundlePrice = p.bundle_price;
+      var unitNote    = '$' + (bundlePrice / 10).toFixed(2) + ' per vial';
+      return '<div class="product-card" onclick="event.stopPropagation()" style="cursor:pointer">'
+        + '<div class="product-thumb" style="background:#F0F0F0">'
+        + '<div class="thumb-glow"></div>'
+        + thumbHTML(p)
+        + '</div>'
+        + '<div class="product-info">'
+        + '<div class="bundle-badge">◈ Bundle of 10</div>'
+        + '<div class="product-name">' + p.name + '</div>'
+        + '<div class="product-desc"><span class="product-desc-text">' + p.description + '</span></div>'
+        + '<div class="bundle-qty-note">' + p.inventory + ' units available</div>'
+        + '<div class="product-footer">'
+        + '<div class="product-price-row"><div class="product-price">$' + Number(bundlePrice).toFixed(2) + '</div></div>'
+        + '<div class="bundle-unit-note">' + unitNote + ' · 10 vials</div>'
+        + '<button class="bundle-btn" onclick="event.stopPropagation();addBundleToCart(' + p.id + ')">+ Add Bundle to Cart</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    function buildCard(p) {
+      if (!p.images) return '';
+      var badge = p.badge ? '<span class="product-badge' + (p.badge.includes('\uD83D\uDD25') ? ' badge-hot' : '') + '">' + p.badge + '</span>' : '';
+      return (p.inventory <= 0
+          ? '<div class="product-card out-of-stock" onclick="goToProduct(' + p.id + ')" style="cursor:pointer">'
+          : '<div class="product-card" onclick="goToProduct(' + p.id + ')" style="cursor:pointer">')
+        + '<div class="product-thumb" style="background:#F0F0F0">'
+        + '<div class="thumb-glow"></div>'
+        + badge
+        + thumbHTML(p)
+        + (p.inventory <= 0 ? '<div class="out-of-stock-banner">Out of Stock</div>' : '')
+        + '</div>'
+        + '<div class="product-info">'
+        + '<div class="product-cat">' + p.category + '</div>'
+        + '<div class="product-name">' + p.name + '</div>'
+
+        + '<div class="product-desc"><span class="product-desc-text">' + p.description + '</span></div>'
+        + (p.inventory <= 0
+          ? ''
+          : p.inventory <= 10
+          ? '<div class="low-stock-label">Low Stock — ' + p.inventory + ' left</div>'
+          : '<div class="in-stock-label">In Stock</div>')
+        + '<div class="product-footer">'
+        + '<div class="product-price-row"><div class="product-price">$' + Number(p.price).toFixed(2) + '</div></div>'
+        + (p.inventory <= 0
+          ? '<button class="waitlist-btn" onclick="event.stopPropagation();joinWaitlistShop(' + p.id + ',\'' + p.name + '\')" title="Notify me when in stock">🔔 Notify When Available</button>'
+          : '<button class="add-btn" onclick="event.stopPropagation();addToCart(' + p.id + ')" title="Add to cart">+ Add to Cart</button>')
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    function sortProducts(list) {
+      // In-stock sorted by ID asc, then OOS sorted by ID asc at the bottom
+      var inStock = list.filter(function(p) { return p.inventory > 0; }).sort(function(a,b) { return a.id - b.id; });
+      var oos     = list.filter(function(p) { return p.inventory <= 0; }).sort(function(a,b) { return a.id - b.id; });
+      return inStock.concat(oos);
+    }
+
+    function renderProducts(cat) {
+      var all  = allProducts();
+      var grid = document.getElementById('products-grid');
+      var list, html;
+
+      if (cat === 'Bundles') {
+        // Show only products that have a bundle_price set
+        list = all.filter(function(p) { return p.bundle_price != null && p.inventory >= 10; })
+                  .sort(function(a,b) { return a.id - b.id; });
+        html = list.length
+          ? list.map(buildBundleCard).join('')
+          : '<div style="grid-column:1/-1;padding:48px 0;text-align:center"><p style="font-family:var(--font-c);font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color: #666666">No bundles available</p></div>';
+      } else {
+        if (cat === 'In Stock') {
+          list = all.filter(function(p) { return p.inventory > 0; }).sort(function(a,b) { return a.id - b.id; });
+        } else {
+          list = cat === 'All' ? sortProducts(all) : sortProducts(all.filter(function(p) { return p.category === cat; }));
+        }
+        html = list.length
+          ? list.map(buildCard).join('')
+          : '<div style="grid-column:1/-1;padding:48px 0;text-align:center"><p style="font-family:var(--font-c);font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color: #666666">' + (all.length === 0 ? 'No products loaded — check browser console (F12) for errors' : 'No products in this category') + '</p></div>';
+      }
+      grid.innerHTML = html;
+    }
+
+    window.joinWaitlistShop = async function(id, name) {
+      const result = await Auth.joinWaitlist(id, name);
+      const f = document.getElementById('add-flash');
+      if (result.ok) {
+        f.textContent = '🔔 Added to waitlist — we\'ll email you when ' + name + ' is back';
+        f.style.borderLeftColor = '#5BC75B';
+      } else if (result.err === 'already_on_waitlist') {
+        f.textContent = 'You\'re already on the waitlist for ' + name;
+        f.style.borderLeftColor = 'var(--smoke)';
+      } else {
+        f.textContent = 'Could not join waitlist — please try again';
+        f.style.borderLeftColor = '#00875A';
+      }
+      f.classList.add('show');
+      clearTimeout(f._t);
+      f._t = setTimeout(function() { f.classList.remove('show'); }, 3000);
+    };
+
+    window.goToProduct = function(id) {
+      window.location.href = 'product.html?id=' + id;
+    };
+
+    window.addBundleToCart = function(id) {
+      var p = getProduct(id);
+      if (!p || !p.bundle_price) return;
+      if (p.inventory < 10) {
+        var f = document.getElementById('add-flash');
+        f.textContent = 'Not enough stock for a bundle of ' + p.name;
+        f.style.borderLeftColor = '#00875A';
+        f.classList.add('show');
+        clearTimeout(f._t);
+        f._t = setTimeout(function() { f.classList.remove('show'); }, 2500);
+        return;
+      }
+      // Add as bundle: price = bundle_price, qty = 1, isBundle = true, bundleQty = 10
+      Cart.addBundle({ id: p.id, name: p.name, price: p.bundle_price, bundleQty: 10 });
+      var f = document.getElementById('add-flash');
+      f.textContent = p.name + ' bundle added to cart';
+      f.style.borderLeftColor = '#00875A';
+      f.classList.add('show');
+      clearTimeout(f._t);
+      f._t = setTimeout(function() { f.classList.remove('show'); }, 2200);
+    };
+
+    window.addToCart = function(id) {
+      var p = getProduct(id);
+      if (!p) return;
+      var result = Cart.add(p);
+      var f = document.getElementById('add-flash');
+      if (!result.ok) {
+        f.textContent = result.err === 'out_of_stock'
+          ? p.name + ' is out of stock'
+          : 'Only ' + result.available + ' left in stock';
+        f.style.borderLeftColor = '#00875A';
+      } else {
+        f.textContent = p.name + ' added to cart';
+        f.style.borderLeftColor = 'var(--red)';
+      }
+      f.classList.add('show');
+      clearTimeout(f._t);
+      f._t = setTimeout(function() { f.classList.remove('show'); }, 2200);
+    };
+
+    document.getElementById('filters').addEventListener('click', function(e) {
+      var btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderProducts(btn.dataset.cat);
+    });
+
+    renderProducts('All');
+
+    // Style the Bundles tab amber only if at least one bundle is available
+    var hasBundles = allProducts().some(function(p) { return p.bundle_price != null && p.inventory >= 10; });
+    var bundleTab  = document.querySelector('.filter-btn[data-cat="Bundles"]');
+    if (bundleTab) {
+      if (hasBundles) {
+        bundleTab.classList.add('filter-btn-bundle');
+      } else {
+        bundleTab.classList.remove('filter-btn-bundle');
+      }
+    }
+  </script>
+
+
+  <!-- Unsubscribe confirmation popup -->
+  <div id="unsub-overlay">
+    <div id="unsub-box">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color: #666;margin-bottom:8px">Email Preferences</p>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#111;letter-spacing:.04em;margin-bottom:12px">Unsubscribe?</h2>
+      <p style="font-size:.85rem;color:#555;line-height:1.6;margin-bottom:24px">You'll stop receiving our weekly research updates and discount codes. You can always re-subscribe by contacting us.</p>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="doUnsubscribe()" style="padding:10px 22px;background:#006847;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer">Yes, Unsubscribe</button>
+        <button onclick="document.getElementById('unsub-overlay').classList.remove('open')" style="padding:10px 22px;background:transparent;color: #666;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:1px solid #E0E0E0;border-radius:3px;cursor:pointer">Cancel</button>
+      </div>
+      <p id="unsub-msg" style="margin-top:12px;font-size:.78rem;color:#006847;min-height:18px"></p>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var uid = params.get('unsubscribe');
+      if (uid) {
+        window._unsubUid = uid;
+        document.getElementById('unsub-overlay').classList.add('open');
+      }
+      if (params.get('unsubscribed') === '1') {
+        // Already confirmed server-side — show success briefly
+        var msg = document.createElement('div');
+        msg.style = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#006847;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;border-radius:3px;z-index:999';
+        msg.textContent = 'You have been unsubscribed.';
+        document.body.appendChild(msg);
+        setTimeout(function(){ msg.remove(); }, 4000);
+      }
+    })();
+
+    window.doUnsubscribe = async function() {
+      var uid = window._unsubUid;
+      if (!uid) return;
+      var btn = document.querySelector('#unsub-box button');
+      if (btn) btn.textContent = 'Unsubscribing...';
+      try {
+        var res = await fetch('https://utqviljholfvpfztfuvx.supabase.co/functions/v1/unsubscribe?uid=' + encodeURIComponent(uid), { redirect: 'manual' });
+        document.getElementById('unsub-overlay').classList.remove('open');
+        var msg = document.getElementById('unsub-msg');
+        if (msg) { msg.textContent = 'Done — you have been unsubscribed.'; msg.style.display='block'; }
+      } catch(e) {
+        var msg = document.getElementById('unsub-msg');
+        if (msg) { msg.style.color='#CE1126'; msg.textContent = 'Something went wrong. Please try again.'; }
+      }
+    };
+  </script>
+  <!-- SEO keyword content — visible below fold -->
+  <div style="display:none" aria-hidden="true" id="seo-content">
+    <p>956 Labs offers research-grade peptides including Semaglutide, Tirzepatide, BPC-157, Retatrutide, Tesamorelin, Ipamorelin, CJC-1295, AOD-9604, GHK-Cu, MOTS-c, AHK-Cu, and more. All compounds are intended strictly for licensed research purposes and are not for human consumption.</p>
+    <p>We stock GLP-1 receptor agonist peptides, growth hormone secretagogues, tissue repair peptides, and copper peptide complexes. Fast USPS shipping. Research-grade quality. New compounds added regularly.</p>
+  </div>
+</body>
+</html>

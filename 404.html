@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — 956 Labs</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #006847;
+      --font-d: 'Bebas Neue', sans-serif;
+      --font-c: 'Barlow Condensed', sans-serif;
+      --font-b: 'Barlow', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      font-family: var(--font-b);
+    }
+    .four-oh-four {
+      font-family: var(--font-d);
+      font-size: clamp(6rem, 20vw, 14rem);
+      line-height: 1;
+      letter-spacing: .04em;
+      color: #F0F0F0;
+      user-select: none;
+      position: relative;
+    }
+    .four-oh-four span { color: #006847; }
+    .label {
+      font-family: var(--font-c);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: #006847;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: var(--font-d);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      letter-spacing: .04em;
+      color: #111;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: .95rem;
+      color: #666;
+      line-height: 1.7;
+      max-width: 400px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .btn {
+      display: inline-block;
+      background: #006847;
+      color: #fff;
+      font-family: var(--font-c);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: 14px 32px;
+      text-decoration: none;
+      transition: opacity .18s;
+    }
+    .btn:hover { opacity: .85; }
+    .content { text-align: center; }
+  </style>
+
+  <script>
+    // If this was a known deprecated page, redirect instantly
+    var path = window.location.pathname.replace(/\/$/,'');
+    var deprecated = {
+      '/shop.html': 'index.html',
+      '/956labs/shop.html': 'index.html',
+      '/friday-promo-graphic.html': 'index.html',
+    };
+    var dest = deprecated[path];
+    if (dest) {
+      window.location.replace(dest);
+    } else {
+      // Unknown 404 — redirect home after 4 seconds
+      setTimeout(function() { window.location.replace('index.html'); }, 4000);
+    }
+  </script>
+</head>
+<body>
+  <div class="four-oh-four">4<span>0</span>4</div>
+  <div class="content">
+    <p class="label">Page Not Found</p>
+    <h1>Nothing here.</h1>
+    <p>The page you're looking for doesn't exist or may have moved. Head back to the shop.</p>
+    <a href="/index.html" class="btn">Back to Shop</a>
+  </div>
+</body>
+</html>

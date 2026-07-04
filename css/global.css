@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap');
+
+:root {
+  /* Primary accent — Mexican flag green */
+  --red:     #006847;
+  --red-hot: #00875A;
+
+  /* Secondary accent — Mexican flag red */
+  --err:     #CE1126;
+
+  /* 956 Labs named aliases */
+  --green:    #006847;
+  --green-hi: #00875A;
+  --red2:     #CE1126;
+
+  /* Surfaces — white */
+  --black:   #FFFFFF;
+  --off:     #F6F6F6;
+  --card:    #FFFFFF;
+  --border:  #E0E0E0;
+  --smoke:   #666666;
+  --ash:     #555555;
+  --light:   #222222;
+  --white:   #111111;
+
+  --font-d: 'Bebas Neue', sans-serif;
+  --font-b: 'Barlow', sans-serif;
+  --font-c: 'Barlow Condensed', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-b);
+  background: #FFFFFF;
+  color: #222222;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+button { cursor: pointer; font-family: var(--font-b); border: none; background: none; }
+input  { font-family: var(--font-b); }
+a      { color: inherit; text-decoration: none; }
+img    { max-width: 100%; height: auto; display: block; }
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+@media (min-width: 480px)  { .container { padding: 0 20px; } }
+@media (min-width: 768px)  { .container { padding: 0 28px; } }
+@media (min-width: 1024px) { .container { padding: 0 32px; max-width: 1200px; } }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .4; }
+}
+
+/* Mobile sign out tab — hidden on desktop */
+.nav-signout-tab { display: none; }
+
+/* 956 Labs — research banner uses red accent */
+.research-banner {
+  background: #F6F6F6;
+  border-bottom: 2px solid #CE1126;
+}
+.research-banner p {
+  color: #CE1126 !important;
+}
+.research-banner p span {
+  color: #666666 !important;
+}
+
+/* 956 Labs — out of stock / error uses red */
+.oos-label, .add-to-cart-btn.oos {
+  border-color: rgba(206,17,38,.4) !important;
+  color: #CE1126 !important;
+}
