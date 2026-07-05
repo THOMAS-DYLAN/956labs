@@ -54,6 +54,7 @@ async function _fetchFromSupabase() {
     .from('products')
     .select('id, name, category, price, potency, badge, thumb_color, shape_key, images, inventory, active, bundle_price')
     .eq('active', true)
+      .or('publish_at.is.null,publish_at.lte.' + new Date().toISOString())
     .order('id');
 
   const phase2 = supabase

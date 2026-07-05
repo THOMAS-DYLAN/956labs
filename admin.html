@@ -13,6 +13,8 @@
     :root {
       --gold:   #006847;
       --gold-l: #00875A;
+      --red:    #CE1126;
+      --blue:   #1A4FA0;
       --ink:    #111111;
       --paper:  #F6F6F6;
       --white:  #FFFFFF;
@@ -484,7 +486,7 @@
       font-size:1rem; padding:5px 8px; width:80px; border-radius:2px; text-align:right; }
     .price-input:focus { outline:none; border-color:var(--gold); }
     .save-row-btn { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.1em;
-      text-transform:uppercase; background:var(--gold); color:#000; border:none; padding:6px 12px;
+      text-transform:uppercase; background:var(--gold); color:#fff; border:none; padding:6px 12px;
       border-radius:2px; cursor:pointer; transition:opacity .15s; }
     .save-row-btn:hover { opacity:.8; }
     .save-row-btn.saved { background:#2a7a2a; color:#fff; }
@@ -499,7 +501,7 @@
     .dc-section-title { font-family:var(--font-c); font-size:.75rem; font-weight:700; letter-spacing:.15em;
       text-transform:uppercase; color:#EEF4FF; }
     .dc-add-btn { font-family:var(--font-c); font-size:.6rem; font-weight:700; letter-spacing:.1em;
-      text-transform:uppercase; background:var(--gold); color:#000; border:none; padding:7px 14px;
+      text-transform:uppercase; background:var(--gold); color:#fff; border:none; padding:7px 14px;
       border-radius:2px; cursor:pointer; }
     .dc-add-btn:hover { opacity:.85; }
     .dc-table { width:100%; border-collapse:collapse; font-size:.82rem; }
@@ -745,7 +747,7 @@
             </div>
             <div class="ap-field">
               <div class="ap-label">Category</div>
-              <select class="ap-select" id="ap-category">
+              <select class="ap-select" id="ap-category" onchange="toggleNewCat(this.value)">
                 <option value="">— Select —</option>
               </select>
             </div>
@@ -778,6 +780,10 @@
             <div class="ap-field">
               <div class="ap-label">Description</div>
               <textarea class="ap-textarea" id="ap-desc" placeholder="Research compound description…"></textarea>
+            </div>
+            <div class="ap-field" style="margin-top:4px">
+              <div class="ap-label">Schedule Publish Date <span style="font-weight:400;opacity:.5">(optional — leave blank to publish now)</span></div>
+              <input class="ap-input" id="ap-publish-at" type="datetime-local" />
             </div>
             <button class="ap-submit" id="ap-submit" onclick="submitProduct()">Add Product</button>
             <div class="ap-msg" id="ap-msg"></div>
@@ -1479,13 +1485,19 @@
   };
   setPotency(3);
 
+
+  window.toggleNewCat = function(val) {
+    var el = document.getElementById('ap-new-cat');
+    if (el) el.style.display = val === '__new__' ? '' : 'none';
+  };
   function populateCategoryDropdown() {
     var sel = document.getElementById('ap-category');
     if (!sel) return;
     var cats = Array.from(new Set((_productsData||[]).map(function(p){return p.category;}).filter(Boolean))).sort();
     if (!cats.length) cats = ['GLP-1','GHK-Cu','BPC','Peptide','Nootropic','Vitamin','HGH','Other'];
     sel.innerHTML = '<option value="">— Select —</option>'
-      + cats.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+      + cats.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('')
+          + '<option value="__new__">+ New category…</option>';
   }
 
   window.handleImgDrop = function(e) {
@@ -1542,7 +1554,6 @@
 
   window.submitProduct = async function() {
     var name      = (document.getElementById('ap-name').value||'').trim();
-    var category  = document.getElementById('ap-category').value;
     var price     = parseFloat(document.getElementById('ap-price').value);
     var bundle    = document.getElementById('ap-bundle').value;
     var inventory = parseInt(document.getElementById('ap-inventory').value)||0;
@@ -1550,7 +1561,10 @@
     var msgEl     = document.getElementById('ap-msg');
     var btn       = document.getElementById('ap-submit');
     msgEl.className='ap-msg'; msgEl.textContent='';
+    var category = document.getElementById('ap-category').value;
+    if (category === '__new__') category = (document.getElementById('ap-new-cat').value||'').trim();
     if (!name)        { msgEl.className='ap-msg err'; msgEl.textContent='Product name is required.'; return; }
+    if (!category)    { msgEl.className='ap-msg err'; msgEl.textContent='Please select or enter a category.'; return; }
     if (isNaN(price)) { msgEl.className='ap-msg err'; msgEl.textContent='Valid price is required.'; return; }
     btn.disabled=true; btn.textContent='Saving…';
     try {
@@ -1572,6 +1586,7 @@
       var addRes = await fetch(ADMIN_URL, { method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ password:_pw, action:'addProduct',
           name:name, category:category, price:price,
+          publish_at: document.getElementById('ap-publish-at')?.value || null,
           bundle_price: bundle ? parseFloat(bundle) : null,
           inventory:inventory, potency:_apPotency,
           description:desc, images:imageFilename })
@@ -1592,6 +1607,7 @@
       var el=document.getElementById(id); if(el) el.value='';
     });
     var sel=document.getElementById('ap-category'); if(sel) sel.value='';
+    var pa=document.getElementById('ap-publish-at'); if(pa) pa.value='';
     var msg=document.getElementById('ap-msg'); if(msg) msg.textContent='';
     var dz=document.getElementById('img-dropzone'); if(dz) dz.style.display='';
     var pw=document.getElementById('img-preview-wrap'); if(pw) pw.style.display='none';
@@ -1615,8 +1631,7 @@
         var canvas = document.createElement('canvas');
         canvas.width = 500; canvas.height = 500;
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, 500, 500);
+        ctx.clearRect(0, 0, 500, 500);
         // Scale to fit within 500x500 maintaining aspect ratio
         var scale = Math.min(400 / img.width, 400 / img.height);
         var sw = Math.round(img.width * scale);
