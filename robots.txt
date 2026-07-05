@@ -5,4 +5,4 @@ Disallow: /dashboard.html
 Disallow: /orders.html
 Disallow: /reset.html
 
-Sitemap: https://956labs.bigboypeps.com/sitemap.xml
+Sitemap: https://956labs.ctxlabz.com/sitemap.xml

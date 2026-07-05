@@ -12,8 +12,8 @@
   <meta name="description" content="Research-grade peptides from 956 Labs — Semaglutide, Tirzepatide, BPC-157, Retatrutide and more. For licensed research purposes only.">
   <meta property="og:type" content="product">
   <meta property="og:title" content="Research Peptides — 956 Labs">
-  <meta property="og:url" content="https://956labs.bigboypeps.com/product.html">
-  <meta property="og:image" content="https://956labs.bigboypeps.com/img/logo.png">
+  <meta property="og:url" content="https://956labs.ctxlabz.com/product.html">
+  <meta property="og:image" content="https://956labs.ctxlabz.com/img/logo.png">
   <link rel="canonical" href="https://956labs.ctxlabz.com/product.html">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Research-grade peptides for the Rio Grande Valley — McAllen, Edinburg, Harlingen, Brownsville. For research purposes only."/>
@@ -450,12 +450,12 @@
     function updateProductMeta(p, rating) {
       var title = p.name + ' Research Peptide | Buy Online | 956 Labs';
       document.title = title;
-      var og = {'og:title': title, 'og:description': p.name + ': Research-grade peptide from 956 Labs. For research purposes only.', 'og:url': 'https://956labs.bigboypeps.com/product.html?id=' + p.id};
+      var og = {'og:title': title, 'og:description': p.name + ': Research-grade peptide from 956 Labs. For research purposes only.', 'og:url': 'https://956labs.ctxlabz.com/product.html?id=' + p.id};
       Object.entries(og).forEach(([k,v]) => { var el = document.querySelector('meta[property="'+k+'"]'); if(el) el.setAttribute('content',v); });
       var canon = document.querySelector('link[rel="canonical"]');
       if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
-      canon.href = 'https://956labs.bigboypeps.com/product.html?id=' + p.id;
-      var ld = {"@context":"https://schema.org","@type":"Product","name":p.name + " Research Peptide","description":(p.description||("Research-grade " + p.name + " peptide for licensed research purposes only.")),"image":(p.images?"https://956labs.bigboypeps.com/pdct img/"+p.images:"https://956labs.bigboypeps.com/img/logo.png"),"category":(p.category||"Research Peptides"),"brand":{"@type":"Brand","name":"956 Labs"},"offers":{"@type":"Offer","url":"https://956labs.bigboypeps.com/product.html?id="+p.id,"price":p.price,"priceCurrency":"USD","availability":p.inventory>0?"https://schema.org/InStock":"https://schema.org/OutOfStock","seller":{"@type":"Organization","name":"956 Labs"}}};
+      canon.href = 'https://956labs.ctxlabz.com/product.html?id=' + p.id;
+      var ld = {"@context":"https://schema.org","@type":"Product","name":p.name + " Research Peptide","description":(p.description||("Research-grade " + p.name + " peptide for licensed research purposes only.")),"image":(p.images?"https://956labs.ctxlabz.com/pdct img/"+p.images:"https://956labs.ctxlabz.com/img/logo.png"),"category":(p.category||"Research Peptides"),"brand":{"@type":"Brand","name":"956 Labs"},"offers":{"@type":"Offer","url":"https://956labs.ctxlabz.com/product.html?id="+p.id,"price":p.price,"priceCurrency":"USD","availability":p.inventory>0?"https://schema.org/InStock":"https://schema.org/OutOfStock","seller":{"@type":"Organization","name":"956 Labs"}}};
       if (rating && rating.count > 0) { ld.aggregateRating = {"@type":"AggregateRating","ratingValue":rating.average,"reviewCount":rating.count}; }
       var s = document.getElementById('product-ld'); if(s) s.remove();
       s = document.createElement('script'); s.id='product-ld'; s.type='application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s);

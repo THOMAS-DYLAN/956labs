@@ -10,7 +10,7 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-const FROM_EMAIL = 'noreply@bigboypeps.com';
+const FROM_EMAIL = 'noreply@956labs.ctxlabz.com';
 
 // Types
 interface ProductRow {
@@ -187,7 +187,7 @@ function buildEmail(
               <table cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="background:#CC1F1F;">
-                    <a href="https://956labs.bigboypeps.com/index.html"
+                    <a href="https://956labs.ctxlabz.com/index.html"
                       style="display:inline-block;padding:14px 32px;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
                       Shop Now →
                     </a>

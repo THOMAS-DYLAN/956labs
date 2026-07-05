@@ -75,7 +75,7 @@ window.Auth = {
       password,
       options: {
         data: { first_name: firstName, last_name: lastName, source: '956labs' },
-        emailRedirectTo: 'https://956labs.bigboypeps.com/dashboard.html',
+        emailRedirectTo: 'https://956labs.ctxlabz.com/dashboard.html',
       }
     });
 
@@ -115,7 +115,7 @@ window.Auth = {
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
-      options: { emailRedirectTo: 'https://bigboypeps.com/dashboard.html' },
+      options: { emailRedirectTo: 'https://956labs.ctxlabz.com/dashboard.html' },
     });
     return error ? { ok: false, err: error.message } : { ok: true };
   },
@@ -231,7 +231,6 @@ window.Auth = {
       qty
     });
     return error ? { ok: false } : { ok: true };
-    return orderRow?.id || null;
   },
 
   async incrementInventory(productId, qty) {
@@ -286,7 +285,6 @@ window.Auth = {
       paypal_name:     order.paypal_name     || null,
       zelle_handle:    order.zelle_handle    || null,
       bitcoin_handle:  order.bitcoin_handle  || null,
-      discount_code:   order.discount_code  || null,
       discount_code:   order.discount_code  || null,
       discount_pct:    order.discount_pct   || null,
       source_site:     order.source_site     || '956labs',

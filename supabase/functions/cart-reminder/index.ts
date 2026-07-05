@@ -15,9 +15,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const SUPABASE_URL   = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY   = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const FROM_EMAIL     = "noreply@bigboypeps.com";
+const FROM_EMAIL     = "noreply@956labs.ctxlabz.com";
 const STORE_NAME     = "956 Labs";
-const SHOP_URL       = "https://956labs.bigboypeps.com/index.html";
+const SHOP_URL       = "https://956labs.ctxlabz.com/index.html";
 
 // Days between reminders: [first, second, third, monthly...]
 const REMINDER_DELAYS = [7, 7, 30]; // after 3rd, every 30 days
@@ -134,7 +134,7 @@ serve(async (req) => {
   <!-- CTA block — full-width background breaks Gmail signature detection -->
   <div style="background:${row.source === '956labs' ? '#006847' : '#111111'};padding:28px 32px;text-align:center">
     <p style="margin:0 0 16px;font-size:13px;color:#cccccc;line-height:1.6">Ready to complete your order? Use code <strong style="color:${row.source === '956labs' ? '#ffffff' : '#006847'}">DYLAN10</strong> for 10% off.</p>
-    <a href="${row.source === '956labs' ? 'https://956labs.bigboypeps.com/index.html' : SHOP_URL}" style="display:inline-block;background:#006847;color:#ffffff;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:14px 36px;text-decoration:none;border-radius:3px">
+    <a href="${row.source === '956labs' ? 'https://956labs.ctxlabz.com/index.html' : SHOP_URL}" style="display:inline-block;background:#006847;color:#ffffff;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:14px 36px;text-decoration:none;border-radius:3px">
       Complete My Order →
     </a>
   </div>
@@ -142,7 +142,7 @@ serve(async (req) => {
   <div style="background:#f6f6f6;padding:16px 32px;text-align:center;border-top:2px solid #CE1126">
     <p style="margin:0;font-size:11px;color:#999999;line-height:1.6">
       For research purposes only &middot; Not for human consumption<br>
-      <a href="https://956labs.bigboypeps.com/index.html?unsubscribe=${row.user_id}" style="color:#bbbbbb;text-decoration:underline">Unsubscribe</a>
+      <a href="https://956labs.ctxlabz.com/index.html?unsubscribe=${row.user_id}" style="color:#bbbbbb;text-decoration:underline">Unsubscribe</a>
     </p>
   </div>
 

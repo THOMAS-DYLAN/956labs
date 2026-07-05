@@ -39,8 +39,8 @@ const BRANDS: Record<string, {
   },
   "956labs": {
     name:        "956 Labs",
-    from:        "noreply@bigboypeps.com",
-    shopUrl:     "https://956labs.bigboypeps.com/index.html",
+    from:        "noreply@956labs.ctxlabz.com",
+    shopUrl:     "https://956labs.ctxlabz.com/index.html",
     unsubBase:   "https://utqviljholfvpfztfuvx.supabase.co/functions/v1/unsubscribe",
     headerBg:    "#006847",
     accentBg:    "#CE1126",
