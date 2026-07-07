@@ -34,7 +34,7 @@ serve(async (req) => {
 
     const { data: entries, error } = await sb
       .from("waitlist")
-      .select("*, products(name, inventory, price)")
+      .select("*, products!inner(name, inventory, price)")
       .eq("notified", true)
       .gt("products.inventory", 0);
 

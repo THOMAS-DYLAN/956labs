@@ -142,7 +142,7 @@ serve(async (req) => {
   <div style="background:#f6f6f6;padding:16px 32px;text-align:center;border-top:2px solid #CE1126">
     <p style="margin:0;font-size:11px;color:#999999;line-height:1.6">
       For research purposes only &middot; Not for human consumption<br>
-      <a href="https://956labs.ctxlabz.com/index.html?unsubscribe=${row.user_id}" style="color:#bbbbbb;text-decoration:underline">Unsubscribe</a>
+      <a href="https://utqviljholfvpfztfuvx.supabase.co/functions/v1/unsubscribe?uid=${row.user_id}" style="color:#bbbbbb;text-decoration:underline">Unsubscribe</a>
     </p>
   </div>
 

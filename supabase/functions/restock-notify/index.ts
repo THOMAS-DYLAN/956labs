@@ -79,7 +79,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: FROM_EMAIL,
+            from: `956 Labs <${FROM_EMAIL}>`,
             to: entry.email,
             subject: `${productName} is back in stock — 956 Labs`,
             html: buildEmail(
@@ -162,16 +162,16 @@ function buildEmail(
         <table width="560" cellpadding="0" cellspacing="0" style="background:#141414;border:1px solid #2a2a2a;max-width:560px;width:100%;">
 
           <tr>
-            <td style="background:#CC1F1F;padding:24px 36px;">
+            <td style="background:#006847;padding:24px 36px;">
               <p style="margin:0;font-size:22px;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#fff;">
-                BIGBOYPEPS
+                956 LABS
               </p>
             </td>
           </tr>
 
           <tr>
             <td style="padding:36px;">
-              <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#CC1F1F;">
+              <p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#CE1126;">
                 Back In Stock
               </p>
 

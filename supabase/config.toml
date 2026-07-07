@@ -401,3 +401,19 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+# ── Scheduled Edge Functions ─────────────────────────────────────────────────
+# These schedules trigger the functions automatically on the Supabase platform.
+# Cron syntax uses UTC. 14:00 UTC = 9am CT (CST) / 10am CDT.
+
+[functions.weekly-email]
+# Every Monday at 9am CT (14:00 UTC)
+schedule = "0 14 * * 1"
+
+[functions.cart-reminder]
+# Every day at 10am CT (15:00 UTC)
+schedule = "0 15 * * *"
+
+[functions.waitlist-reminder]
+# Every day at 3pm CT (20:00 UTC)
+schedule = "0 20 * * *"

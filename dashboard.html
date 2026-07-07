@@ -224,6 +224,7 @@
 
   <script type="module">
     window.CART_SOURCE = '956labs';
+    import { supabase } from './js/supabase.js';
     import './js/auth.js?v=15';
     import './js/cart.js?v=19';
     import { loadProducts, getProduct, miniPepperSVG } from './js/products.js?v=15';
@@ -319,6 +320,23 @@
     document.getElementById('account-panel').innerHTML =
       `<div style="padding:14px 22px 6px;font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--smoke);border-bottom:1px solid var(--border)">Personal</div>` +
       PROFILE_FIELDS.map(f => makeInfoRow(f, profile?.[f.key] || '', f.note)).join('') +
+      `<div class="info-row" id="pw-row">
+        <div class="info-label">Password</div>
+        <div id="pw-locked" style="flex:1;display:flex;align-items:center;gap:10px">
+          <button id="pw-eye-btn" onclick="startPwVerify()" title="Reveal to change password" style="background:none;border:none;cursor:pointer;padding:2px 6px;color:var(--smoke);font-size:.95rem;line-height:1;opacity:.65;transition:opacity .18s;flex-shrink:0" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.65'">👁</button>
+          <span class="info-val locked" style="letter-spacing:.22em;font-size:.8rem">••••••••</span>
+        </div>
+        <div id="pw-verify-wrap" style="flex:1;display:none;align-items:center;gap:8px">
+          <input class="info-input" id="pw-verify-input" type="password" placeholder="Current password" autocomplete="current-password" />
+          <button class="info-save" onclick="verifyCurrentPassword()">Verify</button>
+          <button class="info-cancel" onclick="cancelPwVerify()">Cancel</button>
+        </div>
+        <div id="pw-edit-wrap" style="flex:1;display:none;align-items:center;gap:8px">
+          <input class="info-input" id="pw-new-input" type="password" placeholder="New password (8+ chars)" autocomplete="new-password" />
+          <button class="info-save" onclick="saveNewPassword()">Save</button>
+          <button class="info-cancel" onclick="cancelPwEdit()">Cancel</button>
+        </div>
+      </div>` +
       `<div class="info-row">
         <div class="info-label">Member Since</div>
         <div class="info-val locked">${Auth.formatDate(profile?.member_since)}</div>
@@ -365,6 +383,47 @@
           if (wrap) wrap.classList.remove('open');
         });
       }
+    };
+
+    window.startPwVerify = () => {
+      document.getElementById('pw-locked').style.display = 'none';
+      document.getElementById('pw-verify-wrap').style.display = 'flex';
+      document.getElementById('pw-verify-input').focus();
+    };
+    window.cancelPwVerify = () => {
+      document.getElementById('pw-verify-wrap').style.display = 'none';
+      document.getElementById('pw-verify-input').value = '';
+      document.getElementById('pw-locked').style.display = 'flex';
+    };
+    window.verifyCurrentPassword = async () => {
+      const entered = document.getElementById('pw-verify-input').value;
+      if (!entered) return;
+      const user = await Auth.getUser();
+      const { error } = await supabase.auth.signInWithPassword({ email: user.email, password: entered });
+      if (error) {
+        const inp = document.getElementById('pw-verify-input');
+        inp.value = '';
+        inp.placeholder = 'Incorrect — try again';
+        inp.style.borderColor = 'var(--red)';
+        setTimeout(() => { inp.placeholder = 'Current password'; inp.style.borderColor = ''; }, 2500);
+        return;
+      }
+      document.getElementById('pw-verify-wrap').style.display = 'none';
+      document.getElementById('pw-verify-input').value = '';
+      document.getElementById('pw-edit-wrap').style.display = 'flex';
+      document.getElementById('pw-new-input').focus();
+    };
+    window.cancelPwEdit = () => {
+      document.getElementById('pw-edit-wrap').style.display = 'none';
+      document.getElementById('pw-new-input').value = '';
+      document.getElementById('pw-locked').style.display = 'flex';
+    };
+    window.saveNewPassword = async () => {
+      const newPw = document.getElementById('pw-new-input').value.trim();
+      if (newPw.length < 8) { alert('Password must be at least 8 characters.'); return; }
+      const { error } = await supabase.auth.updateUser({ password: newPw });
+      if (error) { alert('Failed to update password: ' + error.message); return; }
+      cancelPwEdit();
     };
   </script>
 </body>

@@ -30,12 +30,12 @@ const BRANDS: Record<string, {
   accentBg: string;
 }> = {
   bbp: {
-    name:        "BigBoyPeps",
-    from:        "noreply@bigboypeps.com",
-    shopUrl:     "https://bigboypeps.com/shop.html",
-    unsubBase:   "https://bigboypeps.com/supabase/functions/v1/unsubscribe",
-    headerBg:    "#006847",
-    accentBg:    "#CE1126",
+    name:        "CTXLabz",
+    from:        "noreply@ctxlabz.com",
+    shopUrl:     "https://ctxlabz.com/shop.html",
+    unsubBase:   "https://utqviljholfvpfztfuvx.supabase.co/functions/v1/unsubscribe",
+    headerBg:    "#1A4FA0",
+    accentBg:    "#CC1126",
   },
   "956labs": {
     name:        "956 Labs",

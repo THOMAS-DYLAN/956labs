@@ -302,6 +302,7 @@ function buildBBPAuthPopupHTML() {
     + '<div style="display:flex;border-bottom:1px solid #112033">'
     + '<button id="auth-tab-login" onclick="authPopupSwitchTab(\'login\')" style="flex:1;padding:12px;font-family:\'Barlow Condensed\',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid #006847;color:#006847;cursor:pointer">Sign In</button>'
     + '<button id="auth-tab-register" onclick="authPopupSwitchTab(\'register\')" style="flex:1;padding:12px;font-family:\'Barlow Condensed\',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid transparent;color:#6A8FAD;cursor:pointer">Register</button>'
+    + '<button id="auth-tab-reset" onclick="authPopupSwitchTab(\'reset\')" style="padding:12px 14px;font-family:\'Barlow Condensed\',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid transparent;color:#6A8FAD;cursor:pointer;white-space:nowrap">Forgot?</button>'
     + '</div>'
     + '<div style="padding:20px">'
     // LOGIN
@@ -327,6 +328,15 @@ function buildBBPAuthPopupHTML() {
     + '<input id="popup-reg-pass" type="password" placeholder="Min. 8 characters" style="' + s + '"/></div>'
     + '<button onclick="popupDoRegister()" style="width:100%;padding:12px;background:#006847;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Create Account & Continue</button>'
     + '<div id="popup-reg-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#CE1126;margin-top:8px;min-height:16px"></div>'
+    + '</div>'
+    // RESET
+    + '<div id="auth-form-reset" style="display:none">'
+    + '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:.78rem;letter-spacing:.04em;color:#6A8FAD;margin-bottom:16px;line-height:1.55">Enter your email and we\'ll send you a reset link.</p>'
+    + '<div style="margin-bottom:16px"><label style="display:block;font-family:\'Barlow Condensed\',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6A8FAD;margin-bottom:4px">Email</label>'
+    + '<input id="popup-reset-email" type="email" placeholder="you@example.com" style="' + s + '"/></div>'
+    + '<button onclick="popupDoResetPassword()" style="width:100%;padding:12px;background:#006847;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Send Reset Email</button>'
+    + '<div id="popup-reset-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#CE1126;margin-top:8px;min-height:16px"></div>'
+    + '<div id="popup-reset-ok" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;font-weight:700;color:#5BC75B;margin-top:8px;display:none">Check your email for a reset link.</div>'
     + '</div>'
     + '</div>'
     + '</div>'
@@ -408,13 +418,20 @@ window.closeAuthPopup = function() {
 window.authPopupSwitchTab = function(tab) {
   var lf = document.getElementById('auth-form-login');
   var rf = document.getElementById('auth-form-register');
+  var tf = document.getElementById('auth-form-reset');
   var lt = document.getElementById('auth-tab-login');
   var rt = document.getElementById('auth-tab-register');
-  var isLogin = tab === 'login';
-  if (lf) lf.style.display = isLogin ? 'block' : 'none';
-  if (rf) rf.style.display = isLogin ? 'none' : 'block';
-  if (lt) { lt.style.borderBottomColor = isLogin ? '#006847' : 'transparent'; lt.style.color = isLogin ? '#006847' : '#6A8FAD'; }
-  if (rt) { rt.style.borderBottomColor = isLogin ? 'transparent' : '#006847'; rt.style.color = isLogin ? '#6A8FAD' : '#006847'; }
+  var tt = document.getElementById('auth-tab-reset');
+  var accent = '#006847';
+  if (lf) lf.style.display = tab === 'login'    ? 'block' : 'none';
+  if (rf) rf.style.display = tab === 'register' ? 'block' : 'none';
+  if (tf) tf.style.display = tab === 'reset'    ? 'block' : 'none';
+  [{ el: lt, id: 'login' }, { el: rt, id: 'register' }, { el: tt, id: 'reset' }].forEach(function(t) {
+    if (!t.el) return;
+    var active = t.id === tab;
+    t.el.style.borderBottomColor = active ? accent : 'transparent';
+    t.el.style.color             = active ? accent : '#6A8FAD';
+  });
 };
 
 window.popupDoLogin = async function() {
@@ -459,6 +476,20 @@ window.popupDoRegister = async function() {
     if (window._authPopupCallback) { window._authPopupCallback(); }
     else { window.location.reload(); }
   }
+};
+
+window.popupDoResetPassword = async function() {
+  var email = document.getElementById('popup-reset-email')?.value.trim().toLowerCase();
+  var err   = document.getElementById('popup-reset-err');
+  var ok    = document.getElementById('popup-reset-ok');
+  if (err) err.textContent = '';
+  if (ok)  ok.style.display = 'none';
+  if (!email) { if (err) err.textContent = 'Please enter your email.'; return; }
+  var { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://956labs.ctxlabz.com/reset.html',
+  });
+  if (error) { if (err) err.textContent = error.message; return; }
+  if (ok) { ok.style.display = 'block'; }
 };
 
 // ── Page init ─────────────────────────────────────────────
