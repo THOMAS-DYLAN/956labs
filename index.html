@@ -370,9 +370,8 @@
     }
 
     function thumbHTML(p) {
-      if (p.images) {
-        return '<picture><source srcset="pdct img/' + p.images.replace(/.png$/, '.webp') + '" type="image/webp"><img src="pdct img/' + p.images + '" alt="' + p.name + '" width="160" height="160" style="width:auto;height:160px;object-fit:contain;object-position:center;position:relative;z-index:1;display:block;margin:auto" loading="lazy" decoding="async"></picture>';
-      }
+      return '<img src="pdct img/product_01.png" alt="' + p.name + '" width="160" height="160" style="width:auto;height:160px;object-fit:contain;object-position:center;display:block;margin:auto" loading="lazy">';
+    }
       return pepperSVG(p);
     }
 

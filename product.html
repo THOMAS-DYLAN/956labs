@@ -368,7 +368,7 @@
       m.style.display = '';
       m.innerHTML = '<div class="related-section"><div class="related-title">More <em>Research</em></div><div class="related-row">'
         + others.map(r => '<div class="related-card" onclick="location.href=\'product.html?id='+r.id+'\'">'
-            + '<div class="related-thumb">' + (r.images ? '<img src="'+(r.images.startsWith('http') ? r.images : './pdct img/'+r.images)+'" alt="'+r.name+'" width="76" height="76"/>' : miniPepperSVG(r)) + '</div>'
+            + '<div class="related-thumb">' + (r.images ? '<img src="'+(r.images.startsWith('http') ? r.images : './pdct img/'+r.images)+'" alt="'+r.name+'" width="76" height="76"/>' : '<img src="pdct img/product_01.png" alt="' + r.name + '" width="76" height="76" style="object-fit:contain"/>")') + '</div>'
             + '<div class="related-info"><div class="related-name">'+r.name+'</div><div class="related-price">$'+Number(r.price).toFixed(2)+'</div></div>'
             + '</div>').join('')
         + '</div></div>';
