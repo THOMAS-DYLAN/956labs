@@ -246,7 +246,7 @@
       }
 
       const subtotal = items.reduce((s,i) => s + i.price * i.qty, 0);
-      const shipping = 15.00; // USPS Standard (starting price — selected at checkout)
+      const shipping = 25.00; // USPS Standard (starting price — selected at checkout)
       const total    = subtotal + shipping;
 
       layout.innerHTML = `
@@ -279,7 +279,7 @@
         <div class="summary-panel">
           <div class="summary-title">Order Summary</div>
           <div class="summary-row"><span>Subtotal</span><span class="val">$${subtotal.toFixed(2)}</span></div>
-          <div class="summary-row"><span>Shipping</span><span class="val">From $15.00</span></div>
+          <div class="summary-row"><span>Shipping</span><span class="val">From $25.00</span></div>
           <div class="summary-row" style="font-size:.72rem"><span style="font-style:italic">USPS Standard or UPS 2-Day Air — selected at checkout</span><span></span></div>
 
           <div class="summary-total">

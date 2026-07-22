@@ -535,7 +535,7 @@ const CASHAPP_USERNAME  = '$CTXLabs';
 
 // ── Shipping options ──────────────────────────────────────────
 const SHIPPING_OPTIONS = [
-  { id: 'usps', label: 'USPS Standard Shipping', carrier: 'USPS', days: '5–7 business days', price: 15.00 },
+  { id: 'usps', label: 'USPS Standard Shipping', carrier: 'USPS', days: '5–7 business days', price: 25.00 },
   { id: 'ups2', label: 'UPS 2-Day Air',           carrier: 'UPS',  days: '2 business days',  price: 40.00 },
 ];
 
@@ -1098,7 +1098,7 @@ async function sendOrderNotification(items, shipping, profile, paymentStatus, co
   var subtotal   = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
   var discountAmt = discount ? Math.round(subtotal * discount.pct) / 100 : 0;
   var discounted = subtotal - discountAmt;
-  var shipPrice  = shipping.shipping_price || 15;
+  var shipPrice  = shipping.shipping_price || 25;
   var orderTotal = discounted + shipPrice;
   var itemList   = items.map(function(i) {
     return i.qty + 'x ' + i.name + ' @ $' + Number(i.price).toFixed(2);
@@ -1168,7 +1168,7 @@ async function finishOrder(shipping, paymentStatus, skipInventory) {
   var subtotal    = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
   var discount    = _appliedDiscount;
   var discountAmt = discount ? Math.round(subtotal * discount.pct) / 100 : 0;
-  var shipPrice   = shipping.shipping_price || 15;
+  var shipPrice   = shipping.shipping_price || 25;
   var orderTotal  = subtotal - discountAmt + shipPrice;
 
   // ── Save orders + decrement inventory ─────────────────────
