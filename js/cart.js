@@ -1127,7 +1127,7 @@ function mountZelle() {
 
   container.innerHTML =
     '<div id="zelle-step1">'
-    + '<button onclick="document.getElementById('zelle-step1').style.display=\"none\";document.getElementById('zelle-step2').style.display=\"block\"" style="width:100%;padding:13px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'
+    + '<button onclick="document.getElementById(&quot;zelle-step1&quot;).style.display=&quot;none&quot;;document.getElementById(&quot;zelle-step2&quot;).style.display=&quot;block&quot;" style="width:100%;padding:13px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'
     + '<svg width="18" height="18" viewBox="0 0 48 48" fill="none"><path d="M8 8h32L24 40 8 8z" fill="#fff"/></svg>'
     + ' Pay with Zelle'
     + '</button>'
@@ -1141,7 +1141,7 @@ function mountZelle() {
     + '<input id="zelle-name-input" type="text" placeholder="Your name (as shown in Zelle)" style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--white);padding:10px 12px;font-family:var(--font-b);font-size:.82rem;outline:none" />'
     + '</div>'
     + '<div id="err-zelle" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:4px"></div>'
-    + '<button id="zelle-confirm-btn" onclick="window.confirmZelle()" style="width:100%;margin-top:12px;padding:12px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">I've Sent the Payment — Confirm Order</button>'
+    + '<button id="zelle-confirm-btn" onclick="window.confirmZelle()" style="width:100%;margin-top:12px;padding:12px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">I&#39;ve Sent the Payment &#8212; Confirm Order</button>'
     + '</div>';
 }
 
