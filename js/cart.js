@@ -1141,7 +1141,7 @@ function mountZelle() {
     + '<input id="zelle-name-input" type="text" placeholder="Your name (as shown in Zelle)" style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--white);padding:10px 12px;font-family:var(--font-b);font-size:.82rem;outline:none" />'
     + '</div>'
     + '<div id="err-zelle" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:4px"></div>'
-    + '<button id="zelle-confirm-btn" onclick="window.confirmZelle()" style="width:100%;margin-top:12px;padding:12px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">I&#39;ve Sent the Payment &#8212; Confirm Order</button>'
+    + '<button id="zelle-confirm-btn" onclick="window.confirmZelle()" style="width:100%;margin-top:12px;padding:12px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">I've Sent the Payment — Confirm Order</button>'
     + '</div>';
 }
 
@@ -1160,7 +1160,7 @@ window.confirmZelle = async function() {
   } catch(e) {
     console.error('Zelle order failed:', e);
     showCheckoutError('Order failed — ' + (e.message || 'please try again.'));
-    if (btn) { btn.disabled=false; btn.textContent='I've Sent the Payment — Confirm Order'; }
+    if (btn) { btn.disabled=false; btn.textContent='I\'ve Sent the Payment — Confirm Order'; }
   }
 };
 
