@@ -707,7 +707,7 @@ function renderCheckoutModal(items, profile, addr) {
     + '<div class="modal-section">'
     + '<div class="modal-section-title">Payment Method</div>'
     + '<div id="paypal-button-container"></div>'
-    + '<div id="paylater-button-container" style="margin-top:8px"></div>'
+    + '<div style="margin-top:10px;border-top:1px solid var(--border,#1a3a2a);padding-top:10px">'    + '<button id="paylater-btn" onclick="window.openPayLater()" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'    + '<span style="font-size:1rem">🐾</span> Pay in 4 with Afterpay'    + '</button>'    + '<p style="text-align:center;font-family:var(--font-b);font-size:.65rem;color:var(--smoke);margin:5px 0 0">4 interest-free payments. No credit check.</p>'    + '</div>'
     + '<div id="cashapp-container" style="margin-top:10px"></div>'
     + '<div id="zelle-container" style="margin-top:10px"></div>'
     + '<div id="zelle-container" style="margin-top:10px"></div>'
@@ -1141,7 +1141,7 @@ function mountZelle() {
     + '<input id="zelle-name-input" type="text" placeholder="Your name (as shown in Zelle)" style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--white);padding:10px 12px;font-family:var(--font-b);font-size:.82rem;outline:none" />'
     + '</div>'
     + '<div id="err-zelle" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:4px"></div>'
-    + '<button id="zelle-confirm-btn" onclick="window.confirmZelle()" style="width:100%;margin-top:12px;padding:12px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">I've Sent the Payment — Confirm Order</button>'
+    + '<button id="zelle-confirm-btn" onclick="window.confirmZelle()" style="width:100%;margin-top:12px;padding:12px;background:#6d1ed4;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer">I have Sent the Payment &#8212; Confirm Order</button>'
     + '</div>';
 }
 
@@ -1160,7 +1160,7 @@ window.confirmZelle = async function() {
   } catch(e) {
     console.error('Zelle order failed:', e);
     showCheckoutError('Order failed — ' + (e.message || 'please try again.'));
-    if (btn) { btn.disabled=false; btn.textContent='I\'ve Sent the Payment — Confirm Order'; }
+    if (btn) { btn.disabled=false; btn.textContent="I've Sent the Payment — Confirm Order"; }
   }
 };
 
