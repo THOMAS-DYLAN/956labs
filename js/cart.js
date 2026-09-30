@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-// CTXLabz — Cart + Shared UI
+// 956 Labs — Cart + Shared UI
 // ═══════════════════════════════════════════════════════
 
 import { supabase } from './supabase.js';
@@ -10,10 +10,8 @@ import { supabase } from './supabase.js';
 let _couponMap = {}; // populated on first applyDiscount call
 let _dealsCache = null; // active deals from DB
 
-var _couponMapLoaded = 0;
 async function _loadCoupons() {
-  const now = Date.now();
-  if (Object.keys(_couponMap).length && now - _couponMapLoaded < 300000) return; // cache 5 min
+  if (Object.keys(_couponMap).length) return; // already loaded
   try {
     const { data } = await supabase
       .from('coupon_codes')
@@ -21,7 +19,6 @@ async function _loadCoupons() {
       .eq('active', true);
     (data || []).forEach(r => {
       _couponMap[r.code.toUpperCase()] = { pct: Number(r.discount_pct), label: r.code };
-      _couponMapLoaded = Date.now();
     });
   } catch(e) { console.warn('Could not load coupon codes:', e); }
 }
@@ -173,17 +170,21 @@ window.Cart = {
 };
 
 // ── Nav logo ─────────────────────────────────────────────
-const NAV_LOGO = '<span style="display:flex;align-items:center;gap:8px"><img src="/img/logo.png" alt="CTXLabz" height="36" style="height:36px;width:auto;display:block;object-fit:contain" loading="eager"/><span style="font-family:var(--font-d,sans-serif);font-size:1.35rem;letter-spacing:.06em;line-height:1;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000"><span style="color:#CC1126">CT</span><span style="color:#EEF4FF">XL</span><span style="color:#EEF4FF">A</span><span style="color:#1A4FA0">BS</span></span></span>';
+const NAV_LOGO =
+  '<div style="display:flex;align-items:center;gap:9px">'
+  + '<img src="img/logo.png" alt="956 Labs" width="38" height="38" style="height:38px;width:38px;object-fit:contain;border-radius:3px;background:#FFFFFF;padding:2px" loading="eager"/>'
+  + '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#111111;line-height:1">956 <span style="color:#006847">Labs</span></span>'
+  + '</div>';
 
 // ── Build Nav ────────────────────────────────────────────
 window.buildNav = async function(activePage) {
   const { data } = await supabase.auth.getSession();
   const loggedIn = !!data.session;
   const count    = Cart.count();
-  const homeHref = loggedIn ? 'dashboard.html' : 'index.html';
+  const homeHref = loggedIn ? 'index.html' : 'index.html';
 
   const centerLinks = loggedIn
-    ? '<a href="dashboard.html" class="nav-link' + (activePage==='home'?' active':'') + '">Dashboard</a>'
+    ? '<a href="index.html" class="nav-link' + (activePage==='home'?' active':'') + '">Dashboard</a>'
     + '<a href="index.html" class="nav-link' + (activePage==='shop'?' active':'') + '">Shop</a>'
     + '<a href="orders.html" class="nav-link' + (activePage==='orders'?' active':'') + '">Orders</a>'
     : '';
@@ -191,7 +192,7 @@ window.buildNav = async function(activePage) {
   const rightSide = loggedIn
     ? '<button onclick="Auth.logout()" class="nav-signout">Sign Out</button>'
     + '<a href="cart.html" class="cart-nav-btn">Cart<span id="cart-badge" class="cart-badge" style="display:' + (count>0?'flex':'none') + '">' + count + '</span></a>'
-    : '<button onclick="window.showAuthPopup()" class="nav-signout" style="border-color:#CC1126;color:#CC1126">Sign In</button>';
+    : '<button onclick="window.showAuthPopup()" class="nav-signout" style="border-color:#006847;color:#006847">Sign In</button>';
 
   return '<nav><div class="nav-inner"><a href="' + homeHref + '" class="nav-brand">' + NAV_LOGO + '</a><div class="nav-links">' + centerLinks + '</div><div class="nav-right">' + rightSide + '</div></div></nav>';
 };
@@ -234,17 +235,17 @@ window.toggleMobileNav = function() {};
 window.closeMobileNav  = function() {};
 
 window.buildBanner = function() {
-  return '<div class="research-banner"><p>For Research Purposes Only <span>— Not for human consumption. Handle with appropriate care.</span></p></div>';
+  return '<div class="research-banner"><p>956 Labs — Rio Grande Valley <span>— Research purposes only · Not for human consumption</span></p></div>';
 };
 
 window.buildFooter = async function() {
   const { data } = await supabase.auth.getSession();
   const href = data.session ? 'dashboard.html' : 'index.html';
-  return '<footer><div class="footer-inner"><a href="' + href + '" class="footer-brand" style="text-decoration:none;display:flex;align-items:center"><span style="display:flex;align-items:center;gap:8px"><img src="/img/logo.png" alt="CTXLabz" height="32" style="height:32px;width:auto;display:block;object-fit:contain"/><span style="font-family:var(--font-d,sans-serif);font-size:1.35rem;letter-spacing:.06em;line-height:1;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000"><span style="color:#CC1126">CT</span><span style="color:#EEF4FF">XL</span><span style="color:#EEF4FF">A</span><span style="color:#1A4FA0">BS</span></span></span></a><div class="footer-copy" style="color:#1A4FA0">© 2025 CTXLabz · For research purposes only</div><div class="footer-links"><a href="information.html" class="footer-link" style="font-family:var(--font-c);font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;text-decoration:none">Research Info</a></div></div></footer>';
+  return '<footer><div class="footer-inner"><a href="' + href + '" class="footer-brand" style="text-decoration:none;display:flex;align-items:center"><img src="img/logo.png" alt="956 Labs" width="32" height="32" style="height:32px;width:32px;object-fit:contain"></a><div class="footer-copy" style="color:#CE1126">© 2025 956 Labs · For research purposes only</div><div class="footer-links"><a href="information.html" class="footer-link" style="font-family:var(--font-c);font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;text-decoration:none">Research Info</a></div></div></footer>';
 };
 
 function buildFooterFromSession() {
-  return '<footer><div class="footer-inner"><a href="dashboard.html" class="footer-brand" style="text-decoration:none;display:flex;align-items:center"><span style="display:flex;align-items:center;gap:8px"><img src="/img/logo.png" alt="CTXLabz" height="32" style="height:32px;width:auto;display:block;object-fit:contain"/><span style="font-family:var(--font-d,sans-serif);font-size:1.35rem;letter-spacing:.06em;line-height:1;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000"><span style="color:#CC1126">CT</span><span style="color:#EEF4FF">XL</span><span style="color:#EEF4FF">A</span><span style="color:#1A4FA0">BS</span></span></span></a><div class="footer-copy" style="color:#1A4FA0">© 2025 CTXLabz · For research purposes only</div><div class="footer-links"><a href="information.html" class="footer-link" style="font-family:var(--font-c);font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;text-decoration:none">Research Info</a></div></div></footer>';
+  return '<footer><div class="footer-inner"><a href="dashboard.html" class="footer-brand" style="text-decoration:none;display:flex;align-items:center"><img src="img/logo.png" alt="956 Labs" width="32" height="32" style="height:32px;width:32px;object-fit:contain" loading="lazy"></a><div class="footer-copy" style="color:#CE1126">© 2025 956 Labs · For research purposes only</div><div class="footer-links"><a href="information.html" class="footer-link" style="font-family:var(--font-c);font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;text-decoration:none">Research Info</a></div></div></footer>';
 }
 
 // ── Placeholder nav — renders instantly before auth ───────
@@ -276,7 +277,7 @@ function buildPublicNav(activePage) {
     + '<span class="nav-icon">◈</span><span class="nav-label">Shop</span></a>'
     + '</div>'
     + '<div class="nav-right">'
-    + '<button onclick="window.showAuthPopup()" class="nav-signout" style="border-color:#CC1126;color:#CC1126">Sign In</button>'
+    + '<button onclick="window.showAuthPopup()" class="nav-signout" style="border-color:#006847;color:#006847">Sign In</button>'
     + '<button onclick="window.showAuthPopup(function(){ window.location.href=\'cart.html\'; })" class="cart-nav-btn" style="cursor:pointer;border:none">'
     + '<span class="nav-icon">⊕</span><span class="nav-label">Cart</span>'
     + '<span id="cart-badge" class="cart-badge" style="' + badgeStyle + '">' + gc + '</span>'
@@ -286,10 +287,10 @@ function buildPublicNav(activePage) {
 }
 
 function buildPublicFooter() {
-  return '<footer style="background:#F6F6F6;border-top:1px solid #E0E0E0"><div class="footer-inner"><a href="index.html" class="footer-brand" style="text-decoration:none;display:flex;align-items:center"><span style="display:flex;align-items:center;gap:8px"><img src="/img/logo.png" alt="CTXLabz" height="32" style="height:32px;width:auto;display:block;object-fit:contain"/><span style="font-family:var(--font-d,sans-serif);font-size:1.35rem;letter-spacing:.06em;line-height:1;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000"><span style="color:#CC1126">CT</span><span style="color:#EEF4FF">XL</span><span style="color:#EEF4FF">A</span><span style="color:#1A4FA0">BS</span></span></span></a><div class="footer-copy" style="color:#1A4FA0">© 2025 CTXLabz · For research purposes only</div><div class="footer-links"><a href="information.html" class="footer-link" style="font-family:var(--font-c);font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;text-decoration:none">Research Info</a></div></div></footer>';
+  return '<footer style="background:#F6F6F6;border-top:1px solid #E0E0E0"><div class="footer-inner"><a href="index.html" class="footer-brand" style="text-decoration:none;display:flex;align-items:center"><img src="img/logo.png" alt="956 Labs" width="32" height="32" style="height:32px;width:32px;object-fit:contain" loading="lazy"></a><div class="footer-copy" style="color:#CE1126">© 2025 956 Labs · For research purposes only</div><div class="footer-links"><a href="information.html" class="footer-link" style="font-family:var(--font-c);font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;text-decoration:none">Research Info</a></div></div></footer>';
 }
 
-// ── CTXLabz Auth popup ───────────────────────────────────────
+// ── BBP Auth popup ───────────────────────────────────────
 function buildBBPAuthPopupHTML() {
   var s = 'background:#07111F;border:1px solid #112033;color:#EEF4FF;padding:10px 12px;font-size:14px;font-family:Barlow,sans-serif;width:100%;border-radius:2px;outline:none;box-sizing:border-box';
   return '<div id="auth-popup-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:20px">'
@@ -299,8 +300,9 @@ function buildBBPAuthPopupHTML() {
     + '<button onclick="closeAuthPopup()" style="background:none;border:none;font-size:18px;color:#6A8FAD;cursor:pointer;padding:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:2px">✕</button>'
     + '</div>'
     + '<div style="display:flex;border-bottom:1px solid #112033">'
-    + '<button id="auth-tab-login" onclick="authPopupSwitchTab(\'login\')" style="flex:1;padding:12px;font-family:\'Barlow Condensed\',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid #CC1126;color:#CC1126;cursor:pointer">Sign In</button>'
+    + '<button id="auth-tab-login" onclick="authPopupSwitchTab(\'login\')" style="flex:1;padding:12px;font-family:\'Barlow Condensed\',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid #006847;color:#006847;cursor:pointer">Sign In</button>'
     + '<button id="auth-tab-register" onclick="authPopupSwitchTab(\'register\')" style="flex:1;padding:12px;font-family:\'Barlow Condensed\',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid transparent;color:#6A8FAD;cursor:pointer">Register</button>'
+    + '<button id="auth-tab-reset" onclick="authPopupSwitchTab(\'reset\')" style="padding:12px 14px;font-family:\'Barlow Condensed\',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:#07111F;border:none;border-bottom:2px solid transparent;color:#6A8FAD;cursor:pointer;white-space:nowrap">Forgot?</button>'
     + '</div>'
     + '<div style="padding:20px">'
     // LOGIN
@@ -309,8 +311,8 @@ function buildBBPAuthPopupHTML() {
     + '<input id="popup-login-email" type="email" placeholder="you@example.com" style="' + s + '"/></div>'
     + '<div style="margin-bottom:16px"><label style="display:block;font-family:\'Barlow Condensed\',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6A8FAD;margin-bottom:4px">Password</label>'
     + '<input id="popup-login-pass" type="password" placeholder="••••••••" style="' + s + '"/></div>'
-    + '<button onclick="popupDoLogin()" style="width:100%;padding:12px;background:#CC1126;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Sign In & Continue</button>'
-    + '<div id="popup-login-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#E01535;margin-top:8px;min-height:16px"></div>'
+    + '<button onclick="popupDoLogin()" style="width:100%;padding:12px;background:#006847;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Sign In & Continue</button>'
+    + '<div id="popup-login-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#CE1126;margin-top:8px;min-height:16px"></div>'
     + '</div>'
     // REGISTER
     + '<div id="auth-form-register" style="display:none">'
@@ -324,8 +326,17 @@ function buildBBPAuthPopupHTML() {
     + '<input id="popup-reg-email" type="email" placeholder="you@example.com" style="' + s + '"/></div>'
     + '<div style="margin-bottom:16px"><label style="display:block;font-family:\'Barlow Condensed\',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6A8FAD;margin-bottom:4px">Password</label>'
     + '<input id="popup-reg-pass" type="password" placeholder="Min. 8 characters" style="' + s + '"/></div>'
-    + '<button onclick="popupDoRegister()" style="width:100%;padding:12px;background:#CC1126;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Create Account & Continue</button>'
-    + '<div id="popup-reg-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#E01535;margin-top:8px;min-height:16px"></div>'
+    + '<button onclick="popupDoRegister()" style="width:100%;padding:12px;background:#006847;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Create Account & Continue</button>'
+    + '<div id="popup-reg-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#CE1126;margin-top:8px;min-height:16px"></div>'
+    + '</div>'
+    // RESET
+    + '<div id="auth-form-reset" style="display:none">'
+    + '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:.78rem;letter-spacing:.04em;color:#6A8FAD;margin-bottom:16px;line-height:1.55">Enter your email and we\'ll send you a reset link.</p>'
+    + '<div style="margin-bottom:16px"><label style="display:block;font-family:\'Barlow Condensed\',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6A8FAD;margin-bottom:4px">Email</label>'
+    + '<input id="popup-reset-email" type="email" placeholder="you@example.com" style="' + s + '"/></div>'
+    + '<button onclick="popupDoResetPassword()" style="width:100%;padding:12px;background:#006847;color:#07111F;font-family:\'Barlow Condensed\',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:none;cursor:pointer;transition:background .18s">Send Reset Email</button>'
+    + '<div id="popup-reset-err" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;color:#CE1126;margin-top:8px;min-height:16px"></div>'
+    + '<div id="popup-reset-ok" style="font-family:\'Barlow Condensed\',sans-serif;font-size:.65rem;font-weight:700;color:#5BC75B;margin-top:8px;display:none">Check your email for a reset link.</div>'
     + '</div>'
     + '</div>'
     + '</div>'
@@ -350,11 +361,9 @@ async function trackCartUpdate() {
     // Only upsert to DB if logged in — guest carts can't be emailed
     var { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      // Use stored source so a 956labs user carting on CTXLabz still gets
-      // a 956labs-branded reminder. Only fall back to CART_SOURCE if unset.
-      var userSource = session.user.user_metadata?.source || window.CART_SOURCE || 'bbp';
-      // Stamp CTXLabz source on cart if not already tagged
-      if (!session.user.user_metadata?.source && typeof Auth !== 'undefined') Auth.stampSource();
+      // 956labs always wins — stamp and use 956labs as source
+      if (typeof Auth !== 'undefined') Auth.stampSource();
+      var userSource = session.user.user_metadata?.source || '956labs';
       await supabase.from('cart_reminders').upsert({
         user_id:          session.user.id,
         email:            session.user.email,
@@ -409,13 +418,20 @@ window.closeAuthPopup = function() {
 window.authPopupSwitchTab = function(tab) {
   var lf = document.getElementById('auth-form-login');
   var rf = document.getElementById('auth-form-register');
+  var tf = document.getElementById('auth-form-reset');
   var lt = document.getElementById('auth-tab-login');
   var rt = document.getElementById('auth-tab-register');
-  var isLogin = tab === 'login';
-  if (lf) lf.style.display = isLogin ? 'block' : 'none';
-  if (rf) rf.style.display = isLogin ? 'none' : 'block';
-  if (lt) { lt.style.borderBottomColor = isLogin ? '#CC1126' : 'transparent'; lt.style.color = isLogin ? '#CC1126' : '#6A8FAD'; }
-  if (rt) { rt.style.borderBottomColor = isLogin ? 'transparent' : '#CC1126'; rt.style.color = isLogin ? '#6A8FAD' : '#CC1126'; }
+  var tt = document.getElementById('auth-tab-reset');
+  var accent = '#006847';
+  if (lf) lf.style.display = tab === 'login'    ? 'block' : 'none';
+  if (rf) rf.style.display = tab === 'register' ? 'block' : 'none';
+  if (tf) tf.style.display = tab === 'reset'    ? 'block' : 'none';
+  [{ el: lt, id: 'login' }, { el: rt, id: 'register' }, { el: tt, id: 'reset' }].forEach(function(t) {
+    if (!t.el) return;
+    var active = t.id === tab;
+    t.el.style.borderBottomColor = active ? accent : 'transparent';
+    t.el.style.color             = active ? accent : '#6A8FAD';
+  });
 };
 
 window.popupDoLogin = async function() {
@@ -460,6 +476,20 @@ window.popupDoRegister = async function() {
     if (window._authPopupCallback) { window._authPopupCallback(); }
     else { window.location.reload(); }
   }
+};
+
+window.popupDoResetPassword = async function() {
+  var email = document.getElementById('popup-reset-email')?.value.trim().toLowerCase();
+  var err   = document.getElementById('popup-reset-err');
+  var ok    = document.getElementById('popup-reset-ok');
+  if (err) err.textContent = '';
+  if (ok)  ok.style.display = 'none';
+  if (!email) { if (err) err.textContent = 'Please enter your email.'; return; }
+  var { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://956labs.ctxlabz.com/reset.html',
+  });
+  if (error) { if (err) err.textContent = error.message; return; }
+  if (ok) { ok.style.display = 'block'; }
 };
 
 // ── Page init ─────────────────────────────────────────────
@@ -545,7 +575,7 @@ window.openCheckout = async function() {
   renderCheckoutModal(items, profile || {}, addr || {});
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
-  await Promise.all([mountPayPal(), mountCashApp(), mountZelle()]);
+  await Promise.all([mountPayPal(), mountCashApp(), mountZelle(), mountBitcoin()]);
 };
 
 window.closeCheckout = function() {
@@ -556,20 +586,6 @@ window.closeCheckout = function() {
 
 // ── Shipping rules ────────────────────────────────────────
 // ── Shipping validation ───────────────────────────────────
-
-// ── Checkout error banner ──────────────────────────────────────
-function showCheckoutError(msg) {
-  var banner = document.getElementById('checkout-error-banner');
-  if (!banner) return;
-  banner.textContent = msg;
-  banner.style.display = 'block';
-  // Banner is sticky — no scroll needed, it stays visible
-}
-function clearCheckoutError() {
-  var banner = document.getElementById('checkout-error-banner');
-  if (banner) banner.style.display = 'none';
-}
-
 const SHIP_RULES = [
   { id:'co-first',   err:'err-first',   test: v => v.length >= 1,               msg:'Required'        },
   { id:'co-last',    err:'err-last',    test: v => v.length >= 1,               msg:'Required'        },
@@ -635,11 +651,10 @@ function renderCheckoutModal(items, profile, addr) {
   }).join('');
 
   document.getElementById('checkout-modal').innerHTML =
-    '<div class="modal-head" style="position:sticky;top:0;z-index:11;background:var(--card,#F6F6F6)">'
+    '<div class="modal-head">'
     + '<div class="modal-title">Checkout</div>'
     + '<button class="modal-close" onclick="closeCheckout()">&#x2715;</button>'
     + '</div>'
-    + '<div id="checkout-error-banner" style="display:none;position:sticky;top:57px;z-index:10;flex-shrink:0;width:100%;box-sizing:border-box;background:rgba(200,15,35,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;padding:11px 18px;font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 3px 16px rgba(200,15,35,0.35);text-shadow:0 1px 2px rgba(0,0,0,0.3)"></div>'
     + '<div class="modal-body">'
 
     // ── SHIPPING ──────────────────────────────────────────
@@ -658,7 +673,7 @@ function renderCheckoutModal(items, profile, addr) {
     + '<div class="form-field"><label>State *</label><select id="co-state" onchange="validateShipping()"><option value="">— Select —</option>' + stateOptions + '</select><div class="field-err" id="err-state"></div></div>'
     + '<div class="form-field"><label>Country</label><select id="co-country"><option>United States</option><option>Canada</option><option>Other</option></select></div>'
     + '</div>'
-    + '<div class="form-field" style="margin-top:8px"><label>Phone Number <span style="font-weight:400;color:var(--smoke);font-size:.6rem;letter-spacing:.06em;text-transform:none"> *</span></label><input id="co-phone" type="tel" placeholder="(555) 000-0000" value="' + (profile.phone||'') + '" style="width:100%" /></div><div id=\"err-phone\" style=\"font-size:.62rem;color:#E01535;font-family:var(--font-c);letter-spacing:.06em;min-height:14px\"></div>'
+    + '<div class="form-field" style="margin-top:8px"><label>Phone Number <span style="font-weight:400;color:var(--smoke);font-size:.6rem;letter-spacing:.06em;text-transform:none"> *</span></label><input id="co-phone" type="tel" placeholder="(555) 000-0000" value="' + (profile.phone||'') + '" style="width:100%" /></div><div id=\"err-phone\" style=\"font-size:.62rem;color:#00875A;font-family:var(--font-c);letter-spacing:.06em;min-height:14px\"></div>'
     + '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--smoke);cursor:pointer"><input type="checkbox" id="co-save-addr" checked style="width:14px;height:14px;accent-color:var(--red)"/> Save address to my account</label>'
     + '</div>'
 
@@ -691,9 +706,12 @@ function renderCheckoutModal(items, profile, addr) {
     // ── PAYMENT ───────────────────────────────────────────
     + '<div class="modal-section">'
     + '<div class="modal-section-title">Payment Method</div>'
-    + '<div id="paypal-button-container"></div>'    + '<div style="margin-top:10px;border-top:1px solid var(--border,#112033);padding-top:10px">'    + '<button id="paylater-btn" onclick="window.openPayLater()" style="width:100%;padding:13px;background:#000;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'    + '<span style="font-size:1rem">🐾</span> Pay in 4 with Afterpay'    + '</button>'    + '<p style="text-align:center;font-family:var(--font-b);font-size:.65rem;color:var(--smoke);margin:5px 0 0">4 interest-free payments. No credit check.</p>'    + '</div>'
+    + '<div id="paypal-button-container"></div>'
+    + '<div id="paylater-button-container" style="margin-top:8px"></div>'
     + '<div id="cashapp-container" style="margin-top:10px"></div>'
     + '<div id="zelle-container" style="margin-top:10px"></div>'
+    + '<div id="zelle-container" style="margin-top:10px"></div>'
+    + '<div id="bitcoin-container" style="margin-top:10px"></div>'
     + '</div>'
 
     + '<p class="modal-disclaimer">All products are sold for research purposes only and not intended for human consumption.</p>'
@@ -756,98 +774,6 @@ window.applyDiscountInModal = async function() {
 };
 
 // ── Mount PayPal buttons ──────────────────────────────────
-var _pendingShipping = null;
-
-// ── Custom Pay in 4 ────────────────────────────────────────────
-window.openPayLater = function() {
-  var shipping = _pendingShipping || captureShipping();
-  clearCheckoutError();
-  if (!shippingValid()) {
-    var LABELS = {
-      'co-first':'First Name','co-last':'Last Name','co-email':'Email',
-      'co-phone':'Phone','co-street':'Street Address','co-city':'City',
-      'co-state':'State','co-zip':'ZIP Code'
-    };
-    var missing = SHIP_RULES
-      .filter(function(r){ var el=document.getElementById(r.id); return !el||!r.test(el.value.trim()); })
-      .map(function(r){ return LABELS[r.id]||r.id; });
-    showCheckoutError('Please complete: ' + missing.join(', '));
-    return;
-  }
-  _pendingShipping = captureShipping();
-
-  var items     = Cart.get();
-  var subtotal  = items.reduce(function(s,i){ return s+(i.price*i.qty); }, 0);
-  var shipPrice = _pendingShipping.shipping_price || 25;
-  var disc      = _appliedDiscount ? subtotal * (_appliedDiscount.pct/100) : 0;
-  var total     = Math.max(0, subtotal - disc + shipPrice);
-  var instalment = (total / 4).toFixed(2);
-
-  var overlay = document.createElement('div');
-  overlay.id  = 'paylater-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  overlay.innerHTML =
-    '<div style="background:var(--card,#0A1829);border:1px solid var(--border,#112033);border-radius:6px;width:100%;max-width:420px;padding:24px;font-family:var(--font-b)">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
-    + '<div style="font-family:var(--font-d);font-size:1.2rem;letter-spacing:.04em;color:var(--white,#EEF4FF)">Pay in 4</div>'
-    + '<button onclick="document.getElementById(&quot;paylater-overlay&quot;).remove()" style="background:none;border:none;color:var(--smoke);font-size:1.2rem;cursor:pointer">&#x2715;</button>'
-    + '</div>'
-    + '<p style="font-size:.8rem;color:var(--light,#C2DAFF);margin:0 0 16px">4 interest-free payments of <strong style="color:var(--white,#EEF4FF)">$' + instalment + '</strong></p>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">'
-    + ['Today','In 2 weeks','In 4 weeks','In 6 weeks'].map(function(label,i){
-        return '<div style="background:var(--surface,#07111F);border:1px solid var(--border,#112033);border-radius:4px;padding:10px;text-align:center">'
-          + '<div style="font-family:var(--font-c);font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--smoke);margin-bottom:4px">' + label + '</div>'
-          + '<div style="font-family:var(--font-d);font-size:1rem;color:var(--white,#EEF4FF)">$' + instalment + '</div>'
-          + '</div>';
-      }).join('')
-    + '</div>'
-    + '<p style="font-size:.68rem;color:var(--smoke);margin:0 0 16px">First payment due today. Remaining 3 payments billed automatically every 2 weeks via PayPal.</p>'
-    + '<button id="paylater-confirm-btn" style="width:100%;padding:13px;background:#CC1126;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer" onclick="window.confirmPayLater()">Pay $' + instalment + ' Now</button>'
-    + '<p id="paylater-msg" style="text-align:center;font-family:var(--font-c);font-size:.6rem;color:var(--smoke);margin:8px 0 0"></p>'
-    + '</div>';
-
-  document.body.appendChild(overlay);
-};
-
-window.confirmPayLater = async function() {
-  var btn = document.getElementById('paylater-confirm-btn');
-  var msg = document.getElementById('paylater-msg');
-  if (btn) { btn.disabled=true; btn.textContent='Opening PayPal…'; }
-
-  // Use PayPal to capture the first instalment only
-  var items     = Cart.get();
-  var subtotal  = items.reduce(function(s,i){ return s+(i.price*i.qty); }, 0);
-  var shipPrice = (_pendingShipping && _pendingShipping.shipping_price) || 25;
-  var disc      = _appliedDiscount ? subtotal * (_appliedDiscount.pct/100) : 0;
-  var total     = Math.max(0, subtotal - disc + shipPrice);
-  var firstPmt  = parseFloat((total / 4).toFixed(2));
-
-  try {
-    var order = await window.paypal.order.create({
-      intent: 'CAPTURE',
-      purchase_units: [{ amount: { value: String(firstPmt), currency_code:'USD' },
-        description: 'Pay in 4 — instalment 1 of 4' }]
-    });
-    var capture = await window.paypal.order.capture(order.id);
-    var payerEmail = capture?.payer?.email_address || '';
-
-    document.getElementById('paylater-overlay').remove();
-    var shippingData    = _pendingShipping;
-    shippingData.paypal_email = payerEmail;
-    shippingData.paypal_name  = ((capture?.payer?.name?.given_name||'')+' '+(capture?.payer?.name?.surname||'')).trim();
-    shippingData.pay_later    = true;
-    shippingData.instalment_total = total;
-    shippingData.instalment_amount = firstPmt;
-    await finishOrder(shippingData, 'pay_later');
-  } catch(e) {
-    console.error('Pay in 4 failed:', e);
-    if (msg) { msg.style.color='#E01535'; msg.textContent = 'Payment failed — ' + (e.message||'please try again.'); }
-    if (btn) { btn.disabled=false; btn.textContent='Try Again'; }
-  }
-};
-
-
-
 async function mountPayPal() {
   var container = document.getElementById('paypal-button-container');
   if (!container) return;
@@ -889,28 +815,14 @@ async function mountPayPal() {
       style: { layout:'vertical', color:'blue', shape:'rect', label:'paypal', height:48 },
 
       onClick: _ppHandlers.onClick = function(data, actions) {
-        clearCheckoutError();
         if (!shippingValid()) {
-          var LABELS = {
-            'co-first': 'First Name', 'co-last': 'Last Name',
-            'co-email': 'Email', 'co-phone': 'Phone',
-            'co-street': 'Street Address', 'co-city': 'City',
-            'co-state': 'State', 'co-zip': 'ZIP Code'
-          };
-          var missing = SHIP_RULES
-            .filter(function(r) { var el = document.getElementById(r.id); return !el || !r.test(el.value.trim()); })
-            .map(function(r) { return LABELS[r.id] || r.id; });
-          showCheckoutError('Please complete: ' + missing.join(', '));
           SHIP_RULES.forEach(function(r) {
-            var el = document.getElementById(r.id);
+            var el    = document.getElementById(r.id);
             var errEl = document.getElementById(r.err);
             if (el && errEl && !r.test(el.value.trim())) errEl.textContent = r.msg;
           });
-          _pendingShipping = null;
           return actions.reject();
         }
-        // Capture shipping now before PayPal opens (DOM may not be accessible later)
-        _pendingShipping = captureShipping();
         return actions.resolve();
       },
 
@@ -922,35 +834,19 @@ async function mountPayPal() {
       },
 
       onApprove: _ppHandlers.onApprove = async function(data, actions) {
-        clearCheckoutError();
-        var shippingData = _pendingShipping || captureShipping();
-        // Do NOT touch container.innerHTML here — it holds the PayPal
-        // iframe/window that actions.order.capture() still needs to
-        // talk to via postRobot. Wiping it now causes:
-        // "Can not send postrobot_method. Target window is closed."
-        showCheckoutError('Processing payment…');
-        try {
-          var captureResult = await actions.order.capture();
-          var payerEmail = captureResult?.payer?.email_address || '';
-          var payerName  = (captureResult?.payer?.name?.given_name || '') + ' ' + (captureResult?.payer?.name?.surname || '');
-          shippingData.paypal_email = payerEmail.trim();
-          shippingData.paypal_name  = payerName.trim();
-          clearCheckoutError();
-          // Safe to update the container now — capture() has resolved.
-          container.innerHTML = '<p style="font-family:var(--font-c);font-size:.68rem;text-align:center;color:var(--smoke);padding:12px 0">Finalizing order…</p>';
-          await finishOrder(shippingData);
-        } catch(captureErr) {
-          showCheckoutError('Payment capture failed — ' + (captureErr.message || 'please try again.'));
-          container.innerHTML = '';
-          mountPayPal();
-        }
+        var shippingData = captureShipping();
+        container.innerHTML = '<p style="font-family:var(--font-c);font-size:.68rem;text-align:center;color:var(--smoke);padding:12px 0">Processing payment…</p>';
+        var captureResult = await actions.order.capture();
+        var payerEmail = captureResult?.payer?.email_address || '';
+        var payerName  = (captureResult?.payer?.name?.given_name || '') + ' ' + (captureResult?.payer?.name?.surname || '');
+        shippingData.paypal_email = payerEmail.trim();
+        shippingData.paypal_name  = payerName.trim();
+        await finishOrder(shippingData);
       },
 
       onError: _ppHandlers.onError = function(err) {
         console.error('PayPal error:', err);
-        showCheckoutError('Payment failed — please try again or use a different payment method.');
-        container.innerHTML = '';
-        mountPayPal();
+        container.innerHTML = '<p style="color:#00875A;font-size:.72rem;text-align:center;font-family:var(--font-c);padding:12px 0">Payment failed — please try again.</p>';
       },
 
       onCancel: _ppHandlers.onCancel = function() {},
@@ -1005,9 +901,9 @@ function mountCashApp() {
     + 'Pay $' + total + ' with Cash App'
     + '</button>'
     + '<div id="cashapp-input-wrap" style="display:none;margin-top:10px">'
-    + '<label style="font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#888;display:block;margin-bottom:4px">Your $Cashtag <span style="color:#E01535">*</span></label>'
+    + '<label style="font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#888;display:block;margin-bottom:4px">Your $Cashtag <span style="color:#00875A">*</span></label>'
     + '<input id="cashapp-cashtag" type="text" placeholder="$YourCashTag" style="width:100%;background:#FFFFFF;border:1px solid #D8D8D8;color:#111;padding:10px 12px;font-size:16px;font-family:var(--font-b);outline:none;box-sizing:border-box;margin-bottom:6px" />'
-    + '<div id="err-cashtag" style="font-size:.62rem;color:#E01535;font-family:var(--font-c);min-height:14px;margin-bottom:6px"></div>'
+    + '<div id="err-cashtag" style="font-size:.62rem;color:#00875A;font-family:var(--font-c);min-height:14px;margin-bottom:6px"></div>'
     + '<button onclick="payCashApp()" style="width:100%;height:46px;background:#00D632;color:#000;border:none;border-radius:4px;cursor:pointer;font-family:var(--font-c);font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Confirm & Send to Cash App →</button>'
     + '<p style="font-size:.62rem;color:var(--smoke);text-align:center;margin-top:6px;font-style:italic;font-family:var(--font-c);letter-spacing:.06em">Send $' + total + ' to ' + CASHAPP_USERNAME + ' in Cash App</p>'
     + '</div>';
@@ -1027,6 +923,147 @@ window.showCashAppInput = function() {
 
 
 
+
+function mountZelle() {
+  var container = document.getElementById('zelle-container');
+  if (!container) return;
+
+  var items       = Cart.get();
+  var subtotal    = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
+  var ship        = getSelectedShipping().price;
+  var discount    = _appliedDiscount;
+  var discountAmt = discount ? Math.round(subtotal * discount.pct) / 100 : 0;
+  var total       = Math.max(0.01, subtotal + ship - discountAmt).toFixed(2);
+
+  container.innerHTML =
+    '<button id="zelle-btn" onclick="showZelleInput()" style="width:100%;height:48px;background:#6D1ED4;color:#fff;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--font-c);font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:opacity .18s" onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">'
+    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h11.5L4 19h16M13 5l-4 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    + 'Pay $' + total + ' with Zelle'
+    + '</button>'
+    + '<div id="zelle-input-wrap" style="display:none;margin-top:10px">'
+    + '<label style="font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#888;display:block;margin-bottom:4px">Your Zelle Phone or Email <span style="color:#006847">*</span></label>'
+    + '<input id="zelle-handle" type="text" placeholder="(555) 555-5555 or email@bank.com" style="width:100%;background:#FFFFFF;border:1px solid #D8D8D8;color:#111;padding:10px 12px;font-size:16px;font-family:var(--font-b);outline:none;box-sizing:border-box;margin-bottom:6px" />'
+    + '<div id="err-zelle" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);min-height:14px;margin-bottom:6px"></div>'
+    + '<button onclick="payZelle()" style="width:100%;height:46px;background:#6D1ED4;color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:var(--font-c);font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Confirm & Send via Zelle →</button>'
+    + '<p style="font-size:.62rem;color:var(--smoke);text-align:center;margin-top:6px;font-style:italic;font-family:var(--font-c);letter-spacing:.06em">Send $' + total + ' to (254) 589-3596 in your bank app</p>'
+    + '</div>';
+}
+
+window.showZelleInput = function() {
+  var wrap = document.getElementById('zelle-input-wrap');
+  var btn  = document.getElementById('zelle-btn');
+  if (wrap) wrap.style.display = 'block';
+  if (btn)  btn.style.display  = 'none';
+  setTimeout(function() {
+    var input = document.getElementById('zelle-handle');
+    if (input) input.focus();
+  }, 50);
+};
+
+window.payZelle = async function() {
+  var handle   = (document.getElementById('zelle-handle')?.value.trim() || '');
+  var errEl    = document.getElementById('err-zelle');
+  if (!handle) {
+    if (errEl) errEl.textContent = 'Please enter your Zelle phone or email.';
+    return;
+  }
+  if (errEl) errEl.textContent = '';
+
+  var items        = Cart.get();
+  var subtotal     = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
+  var ship         = getSelectedShipping().price;
+  var shippingData = captureShipping();
+  shippingData.zelle_handle = handle;
+  shippingData.payment_method = 'zelle';
+
+  if (!shippingValid()) {
+    SHIP_RULES.forEach(function(r) {
+      var el    = document.getElementById(r.id);
+      var errEl = document.getElementById(r.err);
+      if (el && errEl && !r.test(el.value.trim())) errEl.textContent = r.msg;
+    });
+    return;
+  }
+
+  // Open Zelle — try app deeplink on mobile, fall back to web
+  var zelleUrl = /Mobi|Android/i.test(navigator.userAgent)
+    ? 'zelle://send?phone=' + encodeURIComponent('2545893596')
+    : 'https://enroll.zellepay.com/pay-with-zelle';
+  window.open(zelleUrl, '_blank');
+
+  var btn = document.getElementById('zelle-btn') || document.querySelector('[onclick="payZelle()"]');
+  if (btn) {{ btn.disabled = true; btn.textContent = 'Awaiting Payment Verification…'; btn.style.background = '#888'; }}
+  await finishOrder(shippingData, 'pending_zelle');
+};
+
+function mountBitcoin() {
+  var container = document.getElementById('bitcoin-container');
+  if (!container) return;
+
+  var items       = Cart.get();
+  var subtotal    = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
+  var ship        = getSelectedShipping().price;
+  var discount    = _appliedDiscount;
+  var discountAmt = discount ? Math.round(subtotal * discount.pct) / 100 : 0;
+  var total       = Math.max(0.01, subtotal + ship - discountAmt).toFixed(2);
+
+  container.innerHTML =
+    '<button id="bitcoin-btn" onclick="showBitcoinInput()" style="width:100%;height:48px;background:#F7931A;color:#fff;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--font-c);font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:opacity .18s" onmouseover="this.style.opacity=\'.85\'" onmouseout="this.style.opacity=\'1\'">'
+    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm1 14.5V18h-2v-1.5c-1.66-.34-3-1.52-3-3s1.34-2.66 3-3V9h2v1.5c1.66.34 3 1.52 3 3s-1.34 2.66-3 3z" fill="#fff"/></svg>'
+    + 'Pay $' + total + ' with Bitcoin'
+    + '</button>'
+    + '<div id="bitcoin-input-wrap" style="display:none;margin-top:10px">'
+    + '<label style="font-family:var(--font-c);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#888;display:block;margin-bottom:4px">Your Cash App or BTC Address <span style="color:#006847">*</span></label>'
+    + '<input id="bitcoin-handle" type="text" placeholder="$CTXLabs or bc1q..." style="width:100%;background:#FFFFFF;border:1px solid #D8D8D8;color:#111;padding:10px 12px;font-size:16px;font-family:var(--font-b);outline:none;box-sizing:border-box;margin-bottom:6px" />'
+    + '<div id="err-bitcoin" style="font-size:.62rem;color:#006847;font-family:var(--font-c);min-height:14px;margin-bottom:6px"></div>'
+    + '<button onclick="payBitcoin()" style="width:100%;height:46px;background:#F7931A;color:#fff;border:none;border-radius:4px;cursor:pointer;font-family:var(--font-c);font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase">Confirm & Send Bitcoin →</button>'
+    + '<p style="font-size:.62rem;color:var(--smoke);text-align:center;margin-top:6px;font-style:italic;font-family:var(--font-c);letter-spacing:.06em">Send BTC to $CTXLabs via Cash App · USD equivalent: $' + total + '</p>'
+    + '</div>';
+}
+
+window.showBitcoinInput = function() {
+  var wrap = document.getElementById('bitcoin-input-wrap');
+  var btn  = document.getElementById('bitcoin-btn');
+  if (wrap) wrap.style.display = 'block';
+  if (btn)  btn.style.display  = 'none';
+  setTimeout(function() {
+    var input = document.getElementById('bitcoin-handle');
+    if (input) input.focus();
+  }, 50);
+};
+
+window.payBitcoin = async function() {
+  var handle = (document.getElementById('bitcoin-handle')?.value.trim() || '');
+  var errEl  = document.getElementById('err-bitcoin');
+  if (!handle) {
+    if (errEl) errEl.textContent = 'Please enter your Cash App or Bitcoin address.';
+    return;
+  }
+  if (errEl) errEl.textContent = '';
+
+  var items        = Cart.get();
+  var subtotal     = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
+  var ship         = getSelectedShipping().price;
+  var shippingData = captureShipping();
+  shippingData.bitcoin_handle = handle;
+  shippingData.payment_method = 'bitcoin';
+
+  if (!shippingValid()) {
+    SHIP_RULES.forEach(function(r) {
+      var el    = document.getElementById(r.id);
+      var errEl = document.getElementById(r.err);
+      if (el && errEl && !r.test(el.value.trim())) errEl.textContent = r.msg;
+    });
+    return;
+  }
+
+  // Open Cash App to send Bitcoin
+  window.open('https://cash.app/' + '$CTXLabs', '_blank');
+
+  var btn = document.querySelector('[onclick="payBitcoin()"]');
+  if (btn) {{ btn.disabled = true; btn.textContent = 'Awaiting Payment Verification…'; btn.style.background = '#888'; }}
+  await finishOrder(shippingData, 'pending_bitcoin');
+};
 window.payCashApp = async function() {
   if (!shippingValid()) {
     SHIP_RULES.forEach(function(r) {
@@ -1073,13 +1110,7 @@ window.payCashApp = async function() {
     btn.textContent = 'Awaiting Payment Verification…';
     btn.style.background = '#888';
   }
-  try {
-    await finishOrder(shippingData, 'pending_cashapp');
-  } catch(e) {
-    console.error('CashApp finishOrder failed:', e);
-    showCheckoutError('Order failed — ' + (e.message || 'please try again.'));
-    if (btn) { btn.disabled = false; btn.textContent = 'Confirm Payment'; btn.style.background = ''; }
-  }
+  await finishOrder(shippingData, 'pending_cashapp');
 };
 
 
@@ -1136,8 +1167,8 @@ window.confirmZelle = async function() {
 // ── Order notification (shared by finishOrder + test button) ──
 async function sendOrderNotification(items, shipping, profile, paymentStatus, confirmToken) {
   paymentStatus = paymentStatus || 'paid';
-  var isPending = ['pending_cashapp','pending_zelle','pending_bitcoin'].indexOf(paymentStatus) !== -1;
-  var payLabel   = paymentStatus === 'pending_cashapp' ? 'Cash App' : paymentStatus === 'pending_zelle' ? 'Zelle' : paymentStatus === 'pending_bitcoin' ? 'Bitcoin' : 'PayPal';
+  var isPending = ['pending_cashapp','pending_zelle','pending_bitcoin'].includes(paymentStatus);
+  var pmLabel   = paymentStatus === 'pending_zelle' ? 'Zelle' : paymentStatus === 'pending_bitcoin' ? 'Bitcoin' : 'Cash App';
   var confirmUrl = 'https://utqviljholfvpfztfuvx.supabase.co/functions/v1/confirm-order?token=' + (confirmToken || '');
   var discount   = _appliedDiscount;
   var subtotal   = items.reduce(function(s,i) { return s + i.price * i.qty; }, 0);
@@ -1154,13 +1185,13 @@ async function sendOrderNotification(items, shipping, profile, paymentStatus, co
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({
       access_key:  '8eec27a9-6e50-4206-a71a-a2c6f0c4c8bb',
-      to:          'Brandon.burnell@hotmail.com',
-      subject:     isPending ? '⚠ ' + payLabel.toUpperCase() + ' ORDER — AWAITING VERIFICATION' : '✅ New Order — CTXLabz',
-      from_name:   'CTXLabz Store',
+      subject:     (paymentStatus === 'pending_cashapp' ? '⚠ CASH APP — UNVERIFIED' : paymentStatus === 'pending_zelle' ? '⚠ ZELLE — UNVERIFIED' : paymentStatus === 'pending_bitcoin' ? '⚠ BITCOIN — UNVERIFIED' : '✅ New Order') + ' — 956 Labs',
+      from_name:   '956 Labs Store',
       name:        (shipping.first_name || '') + ' ' + (shipping.last_name || ''),
       email:       profile?.email || 'unknown',
       message:
-        '=== NEW ORDER ===\n' + (isPending ? '⚠ PAYMENT UNVERIFIED — ' + payLabel + '. Verify $' + orderTotal.toFixed(2) + ' received before shipping.\n' : '') + '\n' +
+        '=== NEW ORDER ===\n' + (isPending ? '⚠ PAYMENT UNVERIFIED — ' + pmLabel + '. Verify $' + orderTotal.toFixed(2) + ' received before shipping.\n' +
+        'Handle: ' + (shipping.cashapp_cashtag || shipping.zelle_handle || shipping.bitcoin_handle || '—') + '\n' : '') + '\n' +
         'CUSTOMER\n' +
         'Name: '  + (shipping.first_name || '') + ' ' + (shipping.last_name || '') + '\n' +
         'Email: ' + (profile?.email || 'unknown') + '\n' +
@@ -1179,8 +1210,6 @@ async function sendOrderNotification(items, shipping, profile, paymentStatus, co
         'Subtotal: $' + subtotal.toFixed(2) + '\n' +
         (shipping.paypal_email ? 'PayPal: ' + shipping.paypal_name + ' (' + shipping.paypal_email + ')\n' : '') +
         (shipping.cashapp_cashtag ? 'Customer $Cashtag: ' + shipping.cashapp_cashtag + '\n' : '') +
-        (paymentStatus === 'pending_zelle' ? 'Payment Method: Zelle\n' : '') +
-        (paymentStatus === 'pending_bitcoin' ? 'Payment Method: Bitcoin\n' : '') +
         (discount ? 'Discount (' + discount.code + ' ' + discount.pct + '%): -$' + discountAmt.toFixed(2) + '\n' : '') +
         'Shipping: $' + Number(shipPrice).toFixed(2) + '\n' +
         'TOTAL: $'    + orderTotal.toFixed(2) + '\n\n' +
@@ -1224,7 +1253,6 @@ async function finishOrder(shipping, paymentStatus, skipInventory) {
   var orderNumber  = crypto.randomUUID ? crypto.randomUUID() : (Math.random().toString(36).slice(2) + Date.now().toString(36));
   var orderIds = [];
 
-  // Fetch profile now so customer_email is available in createOrder
   var profile = await Auth.getProfile();
 
   try {
@@ -1258,6 +1286,12 @@ async function finishOrder(shipping, paymentStatus, skipInventory) {
         shipping_state:   shipping.state || null,
         shipping_zip:     shipping.zip || null,
         payment_method:   paymentStatus === 'pending_cashapp' ? 'cashapp' : paymentStatus === 'pending_zelle' ? 'zelle' : paymentStatus === 'pending_bitcoin' ? 'bitcoin' : 'paypal',
+        cashapp_cashtag:  shipping.cashapp_cashtag || null,
+        paypal_email:     shipping.paypal_email    || null,
+        paypal_name:      shipping.paypal_name     || null,
+        zelle_handle:     shipping.zelle_handle    || null,
+        bitcoin_handle:   shipping.bitcoin_handle  || null,
+        source_site:      window.CART_SOURCE || '956labs',
       });
       if (orderId) orderIds.push(orderId);
     }
@@ -1278,7 +1312,7 @@ async function finishOrder(shipping, paymentStatus, skipInventory) {
     + '<div class="order-success-icon">✓</div>'
     + '<h2>Order Confirmed.</h2>'
     + '<p>Your order is confirmed and on its way.<br/>Handle with appropriate care and caution.</p>'
-    + '<a href="index.html" style="display:inline-block;margin-top:24px;font-family:var(--font-c);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--red);color:var(--white);padding:12px 28px;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))">Back to Dashboard</a>'
+    + '<a href="dashboard.html" style="display:inline-block;margin-top:24px;font-family:var(--font-c);font-size:.75rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--red);color:var(--white);padding:12px 28px;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))">Back to Dashboard</a>'
     + '</div>';
 
   Cart.clear();
