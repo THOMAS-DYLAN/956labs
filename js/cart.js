@@ -9,6 +9,8 @@ import { supabase } from './supabase.js';
 // Falls back to empty object if the fetch fails.
 let _couponMap = {}; // populated on first applyDiscount call
 let _dealsCache = null; // active deals from DB
+const SQUARE_APP_ID = "sq0idp-C2w90yST1jqW55frQuSrpQ";
+const SQUARE_LOCATION_ID = "LDJ1E3KBXAGXS";
 
 async function _loadCoupons() {
   if (Object.keys(_couponMap).length) return; // already loaded
@@ -709,8 +711,8 @@ function renderCheckoutModal(items, profile, addr) {
     + '<div id="paypal-button-container"></div>'
     + '<div style="margin-top:10px;border-top:1px solid var(--border,#1a3a2a);padding-top:10px">'    + '<button id="paylater-btn" onclick="window.openPayLater()" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'    + '<span style="font-size:1rem">🐾</span> Pay in 4 with Afterpay'    + '</button>'    + '<p style="text-align:center;font-family:var(--font-b);font-size:.65rem;color:var(--smoke);margin:5px 0 0">4 interest-free payments. No credit check.</p>'    + '</div>'
     + '<div id="cashapp-container" style="margin-top:10px"></div>'
-    + '<div id="zelle-container" style="margin-top:10px"></div>'
-    + '<div id="zelle-container" style="margin-top:10px"></div>'
+    + '<div id="zelle-container" style="margin-top:10px"></div>'    + '<div id="square-cashapp-container" style="display:none;margin-top:10px"></div>'    + '<div id="square-afterpay-container" style="display:none;margin-top:10px"></div>'
+    + '<div id="zelle-container" style="margin-top:10px"></div>'    + '<div id="square-cashapp-container" style="display:none;margin-top:10px"></div>'    + '<div id="square-afterpay-container" style="display:none;margin-top:10px"></div>'
     + '<div id="bitcoin-container" style="margin-top:10px"></div>'
     + '</div>'
 
@@ -770,7 +772,7 @@ window.applyDiscountInModal = async function() {
   input.style.opacity = '.5';
 
   // Re-mount payment buttons so the charged total reflects the discount
-  Promise.all([mountPayPal(), mountCashApp(), mountZelle()]);
+  Promise.all([mountPayPal(), (SQUARE_APP_ID ? Promise.resolve() : mountCashApp()), mountZelle(), mountSquare()]);
 };
 
 // ── Mount PayPal buttons ──────────────────────────────────
@@ -1113,6 +1115,84 @@ window.payCashApp = async function() {
   await finishOrder(shippingData, 'pending_cashapp');
 };
 
+
+
+// ── Square (Cash App Pay + Afterpay) ──────────────────────────
+// Stays dormant until SQUARE_APP_ID and SQUARE_LOCATION_ID are set
+async function mountSquare() {
+  if (!SQUARE_APP_ID || !SQUARE_LOCATION_ID) return; // hidden until keys provided
+
+  // Load Square SDK if not already loaded
+  if (!window.Square) {
+    await new Promise(function(resolve, reject) {
+      var s = document.createElement('script');
+      s.src = 'https://web.squarecdn.com/v1/square.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  var items     = Cart.get();
+  var subtotal  = items.reduce(function(s,i){ return s+i.price*i.qty; }, 0);
+  var disc      = _appliedDiscount ? subtotal*(_appliedDiscount.pct/100) : 0;
+  var ship      = 25; // default
+  var total     = Math.max(0, subtotal - disc + ship);
+  var amountMoney = { amount: Math.round(total * 100), currency: 'USD' };
+
+  try {
+    var payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+
+    // ── Cash App Pay ─────────────────────────────────────────────
+    try {
+      var cashAppPay = await payments.cashAppPay(amountMoney, {
+        redirectURL: window.location.href,
+        referenceId: 'ctx-' + Date.now(),
+      });
+      var cashAppContainer = document.getElementById('square-cashapp-container');
+      if (cashAppContainer) {
+        cashAppContainer.style.display = 'block';
+        await cashAppPay.attach('#square-cashapp-container');
+        cashAppPay.addEventListener('ontokenization', async function(e) {
+          var token = e.detail?.tokenResult?.token;
+          if (!token) return;
+          var shippingData = _pendingShipping || captureShipping();
+          shippingData.square_token = token;
+          await finishOrder(shippingData, 'pending_cashapp');
+        });
+      }
+    } catch(caErr) {
+      console.warn('Square Cash App Pay unavailable:', caErr.message);
+    }
+
+    // ── Afterpay / Clearpay ──────────────────────────────────────
+    try {
+      var paymentRequest = payments.paymentRequest({
+        countryCode: 'US',
+        currencyCode: 'USD',
+        total: { amount: String((total).toFixed(2)), label: 'Total' },
+      });
+      var afterpay = await payments.afterpayClearpay(paymentRequest);
+      var apContainer = document.getElementById('square-afterpay-container');
+      if (apContainer) {
+        apContainer.style.display = 'block';
+        await afterpay.attach('#square-afterpay-container');
+        afterpay.addEventListener('ontokenization', async function(e) {
+          var token = e.detail?.tokenResult?.token;
+          if (!token) return;
+          var shippingData = _pendingShipping || captureShipping();
+          shippingData.square_token = token;
+          await finishOrder(shippingData, 'afterpay');
+        });
+      }
+    } catch(apErr) {
+      console.warn('Square Afterpay unavailable:', apErr.message);
+    }
+
+  } catch(sqErr) {
+    console.warn('Square payments init failed:', sqErr.message);
+  }
+}
 
 // ── Mount Zelle button ────────────────────────────────────
 function mountZelle() {
