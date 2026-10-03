@@ -1423,13 +1423,12 @@ async function mountSquare() {
         '<div id="sqca-box" style="border:1px solid var(--border);border-left:4px solid #00D632;border-radius:4px;padding:14px 16px">'
         +   '<div style="font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00A82A;margin-bottom:10px">Cash App Pay · $' + total.toFixed(2) + '</div>'
         +   '<div id="sqca-mount" style="min-height:48px"></div>'
-        +   '<div id="sqca-qr-host" style="display:none;position:relative;margin-top:12px"></div>'
+        +   '<div id="sqca-qr-host" style="display:none;position:relative;margin-top:12px;overflow:hidden;border-radius:6px"></div>'
         +   '<div id="sqca-err" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:6px"></div>'
         + '</div>';
       cashWrap.style.display = 'block';
       await cashAppPay.attach('#sqca-mount', { shape: 'semiround', width: 'full' });
-      var mnt = document.getElementById('sqca-mount');
-      if (mnt) mnt.addEventListener('click', sqcaWatchForPopup, true);   // capture: runs before Square's own handler
+      sqcaStartWatching();
     }
   } catch(caErr) {
     console.warn('Square Cash App Pay unavailable:', caErr.message);
@@ -1437,77 +1436,70 @@ async function mountSquare() {
   }
 }
 
-// Square shows the Cash App scan code as its own full-page dialog. Find it and pin it inside #sqca-box.
-function sqcaFixedLarge() {
-  var modal = document.getElementById('checkout-modal');
-  var out = [];
-  var nodes = document.querySelectorAll('body > *, body > * > *, body > * > * > *, #checkout-overlay *');
-  for (var i = 0; i < nodes.length; i++) {
-    var el = nodes[i];
-    if (el === modal || (modal && el.contains(modal)) || el.id === 'paylater-overlay') continue;
-    if (/^(SCRIPT|STYLE|LINK|META)$/.test(el.tagName)) continue;
-    var cs = getComputedStyle(el);
-    if (cs.position !== 'fixed' && cs.position !== 'absolute') continue;
-    if (el.id === 'checkout-overlay' || el.id === 'sqca-qr-host' || el.id === 'sqca-mount') continue;
-    var r = el.getBoundingClientRect();
-    if (r.width >= 280 && r.height >= 280) out.push(el);
+// Square draws the Cash App scan code inside a shadow DOM (invisible to normal queries).
+// Find the host whose shadow contents say "Scan to Pay" and pin it over #sqca-qr-host.
+var _sqcaTimer = null, _sqcaHost = null, _sqcaShown = false, _sqcaLoop = 0;
+
+function sqcaStartWatching() {
+  if (_sqcaTimer) clearInterval(_sqcaTimer);
+  _sqcaShown = false;
+  _sqcaTimer = setInterval(sqcaTick, 200);
+}
+
+function sqcaFindPopupHost() {
+  var all = document.querySelectorAll('*');
+  for (var i = 0; i < all.length; i++) {
+    var sr = all[i].shadowRoot;
+    if (sr && /Scan to Pay|QR code will refresh/i.test(sr.textContent || '')) return all[i];
   }
-  return out;
+  return null;
 }
 
-function sqcaWatchForPopup() {
-  var before = sqcaFixedLarge();
-  var started = Date.now();
-  var timer = setInterval(function() {
-    if (Date.now() - started > 8000) {
-      clearInterval(timer);
-      console.warn('[CTX] Cash App popup not found. Large positioned elements now:', sqcaFixedLarge().map(function(e){ return e.tagName + '#' + e.id + '.' + e.className; }));
-      return;
-    }
-    var fresh = sqcaFixedLarge().filter(function(el){ return before.indexOf(el) === -1; });
-    if (!fresh.length) return;
-    clearInterval(timer);
-    sqcaPinPopup(fresh[0]);
-  }, 120);
+function sqcaTick() {
+  var qr = document.getElementById('sqca-qr-host');
+  if (!qr) { clearInterval(_sqcaTimer); _sqcaTimer = null; return; }   // checkout closed
+  var h = sqcaFindPopupHost();
+  if (!h) {
+    if (_sqcaShown) { _sqcaShown = false; qr.style.display = 'none'; qr.style.minHeight = '0'; }
+    return;
+  }
+  _sqcaHost = h;
+  if (!_sqcaShown) {
+    _sqcaShown = true;
+    console.info('[CTX] Cash App scan popup pinned into checkout box:', h);
+    qr.style.display = 'block';
+    qr.style.minHeight = '520px';
+    qr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    sqcaFollow(++_sqcaLoop);
+  }
 }
 
-function sqcaPinPopup(root) {
-  var box  = document.getElementById('sqca-box');
-  var host = document.getElementById('sqca-qr-host');
+function sqcaFollow(token) {
+  if (!_sqcaShown || token !== _sqcaLoop) return;
+  var h = _sqcaHost, qr = document.getElementById('sqca-qr-host');
   var modal = document.getElementById('checkout-modal');
-  if (!box || !host) return;
-  console.info('[CTX] Cash App scan popup pinned into checkout box:', root);
-  host.style.display = 'block';
-  host.style.minHeight = '520px';
-  host.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-  function put(prop, val) { root.style.setProperty(prop, val, 'important'); }
-  (function follow() {
-    if (!root.isConnected) {            // Square closed the popup (paid / cancelled)
-      host.style.display = 'none';
-      host.style.minHeight = '0';
-      return;
-    }
-    var r = host.getBoundingClientRect();
-    var m = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight, left: 0, right: window.innerWidth };
-    var isFixed = getComputedStyle(root).position === 'fixed';
+  if (h && qr && h.isConnected) {
+    var put = function(prop, val) { h.style.setProperty(prop, val, 'important'); };
+    var r = qr.getBoundingClientRect();
+    put('display', 'block');
+    put('position', 'fixed');
+    put('inset', 'auto');
+    put('transform', 'translateZ(0)');        // makes this host the reference box for the popup's own fixed positioning
+    put('z-index', '2147483000');
+    put('margin', '0');
+    put('overflow', 'hidden');
+    put('width', r.width + 'px');
+    put('height', r.height + 'px');
     var top = r.top, left = r.left;
-    if (!isFixed) {                         // absolute: offsets are relative to its containing block
-      var cb = root.offsetParent || document.body, cr = cb.getBoundingClientRect();
-      top  = r.top  - cr.top  - cb.clientTop  + cb.scrollTop;
-      left = r.left - cr.left - cb.clientLeft + cb.scrollLeft;
-    }
-    put('top', top + 'px');         put('left', left + 'px');
-    put('width', r.width + 'px');   put('height', r.height + 'px');
-    put('right', 'auto');           put('bottom', 'auto');
-    put('transform', 'none');       put('margin', '0');
-    put('background', 'transparent');
-    put('backdrop-filter', 'none'); put('-webkit-backdrop-filter', 'none');
-    // clip to the scrolling modal so it can't draw over the header when scrolled
+    put('top', top + 'px'); put('left', left + 'px');
+    var a = h.getBoundingClientRect();         // correct for any transformed ancestor
+    top += r.top - a.top; left += r.left - a.left;
+    put('top', top + 'px'); put('left', left + 'px');
+    var m = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
     var cT = Math.max(0, m.top - r.top), cB = Math.max(0, r.bottom - m.bottom);
     put('clip-path', 'inset(' + cT + 'px 0 ' + cB + 'px 0)');
-    requestAnimationFrame(follow);
-  })();
+  }
+  requestAnimationFrame(function(){ sqcaFollow(token); });
 }
 
 // ── Mount Zelle button ────────────────────────────────────
