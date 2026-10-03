@@ -1441,13 +1441,14 @@ async function mountSquare() {
 function sqcaFixedLarge() {
   var modal = document.getElementById('checkout-modal');
   var out = [];
-  var nodes = document.querySelectorAll('body > *, body > * > *, body > * > * > *');
+  var nodes = document.querySelectorAll('body > *, body > * > *, body > * > * > *, #checkout-overlay *');
   for (var i = 0; i < nodes.length; i++) {
     var el = nodes[i];
     if (el === modal || (modal && el.contains(modal)) || el.id === 'paylater-overlay') continue;
     if (/^(SCRIPT|STYLE|LINK|META)$/.test(el.tagName)) continue;
     var cs = getComputedStyle(el);
-    if (cs.position !== 'fixed') continue;
+    if (cs.position !== 'fixed' && cs.position !== 'absolute') continue;
+    if (el.id === 'checkout-overlay' || el.id === 'sqca-qr-host' || el.id === 'sqca-mount') continue;
     var r = el.getBoundingClientRect();
     if (r.width >= 280 && r.height >= 280) out.push(el);
   }
@@ -1458,7 +1459,11 @@ function sqcaWatchForPopup() {
   var before = sqcaFixedLarge();
   var started = Date.now();
   var timer = setInterval(function() {
-    if (Date.now() - started > 8000) { clearInterval(timer); return; }
+    if (Date.now() - started > 8000) {
+      clearInterval(timer);
+      console.warn('[CTX] Cash App popup not found. Large positioned elements now:', sqcaFixedLarge().map(function(e){ return e.tagName + '#' + e.id + '.' + e.className; }));
+      return;
+    }
     var fresh = sqcaFixedLarge().filter(function(el){ return before.indexOf(el) === -1; });
     if (!fresh.length) return;
     clearInterval(timer);
@@ -1485,14 +1490,20 @@ function sqcaPinPopup(root) {
     }
     var r = host.getBoundingClientRect();
     var m = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight, left: 0, right: window.innerWidth };
-    put('position', 'fixed');
-    put('top', r.top + 'px');       put('left', r.left + 'px');
+    var isFixed = getComputedStyle(root).position === 'fixed';
+    var top = r.top, left = r.left;
+    if (!isFixed) {                         // absolute: offsets are relative to its containing block
+      var cb = root.offsetParent || document.body, cr = cb.getBoundingClientRect();
+      top  = r.top  - cr.top  - cb.clientTop  + cb.scrollTop;
+      left = r.left - cr.left - cb.clientLeft + cb.scrollLeft;
+    }
+    put('top', top + 'px');         put('left', left + 'px');
     put('width', r.width + 'px');   put('height', r.height + 'px');
     put('right', 'auto');           put('bottom', 'auto');
-    put('inset', 'auto');           put('transform', 'none');
-    put('margin', '0');             put('background', 'transparent');
+    put('transform', 'none');       put('margin', '0');
+    put('background', 'transparent');
     put('backdrop-filter', 'none'); put('-webkit-backdrop-filter', 'none');
-    // clip to the scrolling modal so it can't draw over the header/page when scrolled
+    // clip to the scrolling modal so it can't draw over the header when scrolled
     var cT = Math.max(0, m.top - r.top), cB = Math.max(0, r.bottom - m.bottom);
     put('clip-path', 'inset(' + cT + 'px 0 ' + cB + 'px 0)');
     requestAnimationFrame(follow);
