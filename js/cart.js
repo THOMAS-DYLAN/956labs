@@ -531,6 +531,8 @@ const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL'
 // ── Keys ──────────────────────────────────────────────────
 // Replace with live Client ID from developer.paypal.com → Apps & Credentials → Live
 const PAYPAL_CLIENT_ID  = 'AZSLv66rtWR7MDNObiUvYST-XeQEl4-aDzwxsV42ocY3EGXLLUscQ1l_zmmB4FPOOAkMLU5wlMpsGYUa';
+const SQUARE_APP_ID      = "sq0idp-C2w90yST1jqW55frQuSrpQ";
+const SQUARE_LOCATION_ID = "LDJ1E3KBXAGXS";
 const CASHAPP_USERNAME  = '$CTXLabs';
 
 // Square keys: use the globals if the site defines them, otherwise these (public client IDs).
@@ -1418,51 +1420,89 @@ async function mountSquare() {
     var cashWrap = document.getElementById('square-cashapp-container');
     if (cashWrap) {
       cashWrap.innerHTML =
-        '<div id="sqca-step1">'
-        + '<button onclick="window.openSquareCashApp()" style="width:100%;padding:13px;background:#00D632;color:#000;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'
-        + '<svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#000"/><path d="M20.5 12.2c-.6-1.1-1.8-1.7-3.3-1.7-1.8 0-3 .9-3 2.2 0 1.4 1.3 1.9 2.8 2.3 2.2.6 4 1.3 4 3.4 0 2-1.7 3.3-4.1 3.3-1.9 0-3.4-.8-4-2.3" stroke="#00D632" stroke-width="2" stroke-linecap="round"/><path d="M16.2 8v16" stroke="#00D632" stroke-width="2" stroke-linecap="round"/></svg>'
-        + ' Pay $' + total.toFixed(2) + ' with Cash App'
-        + '</button>'
+        // One tap target: Square's real (invisible) button sits on top of this green one.
+        '<div id="sqca-btn-wrap" style="position:relative;height:48px;border-radius:4px;overflow:hidden">'
+        +   '<div style="position:absolute;inset:0;background:#00D632;color:#000;border-radius:4px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;pointer-events:none">'
+        +     '<svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#000"/><path d="M20.5 12.2c-.6-1.1-1.8-1.7-3.3-1.7-1.8 0-3 .9-3 2.2 0 1.4 1.3 1.9 2.8 2.3 2.2.6 4 1.3 4 3.4 0 2-1.7 3.3-4.1 3.3-1.9 0-3.4-.8-4-2.3" stroke="#00D632" stroke-width="2" stroke-linecap="round"/><path d="M16.2 8v16" stroke="#00D632" stroke-width="2" stroke-linecap="round"/></svg>'
+        +     ' Pay $' + total.toFixed(2) + ' with Cash App'
+        +   '</div>'
+        +   '<div id="sqca-mount" style="position:absolute;inset:0;opacity:0;z-index:2"></div>'
         + '</div>'
-        + '<div id="sqca-step2" style="display:none;border:1px solid var(--border);border-radius:4px;padding:16px;margin-top:4px;position:relative">'
-        + '<div style="font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00A82A;margin-bottom:12px">Cash App Pay</div>'
-        + '<div style="font-family:var(--font-b);font-size:.85rem;color:var(--light,#C2DAFF);margin-bottom:12px">Pay <strong style="color:var(--white,#fff)">$' + total.toFixed(2) + '</strong> with Cash App. Tap the button below, then scan the code with your phone\'s Cash App (on mobile it opens the app).</div>'
-        + '<div id="sqca-mount" style="min-height:48px"></div>'
-        + '<div id="sqca-err" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:6px"></div>'
-        + '<div style="height:230px" aria-hidden="true"></div>'   // room under the button so the scan code opens down here, not at the top of the modal
+        + '<div id="sqca-box" style="display:none;border:1px solid var(--border);border-radius:4px;padding:16px;margin-top:8px">'
+        +   '<div style="font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00A82A;margin-bottom:6px">Cash App Pay — Scan to pay $' + total.toFixed(2) + '</div>'
+        +   '<div id="sqca-qr-host" style="position:relative;min-height:520px"></div>'
+        +   '<div id="sqca-err" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:6px"></div>'
         + '</div>';
       cashWrap.style.display = 'block';
+      await cashAppPay.attach('#sqca-mount', { shape: 'semiround', width: 'full' });
+      var wrap = document.getElementById('sqca-btn-wrap');
+      if (wrap) wrap.addEventListener('click', sqcaWatchForPopup, true);   // capture: runs before Square's own handler
     }
   } catch(caErr) {
     console.warn('Square Cash App Pay unavailable:', caErr.message);
+    _sqCashAppOk = false;
   }
 }
 
-window.openSquareCashApp = async function() {
-  var s1 = document.getElementById('sqca-step1'), s2 = document.getElementById('sqca-step2');
-  if (s1) s1.style.display = 'none';
-  if (s2) s2.style.display = 'block';
-  var err = document.getElementById('sqca-err');
-  if (_sqCashApp && !_sqCashAppAttached) {
-    try {
-      _sqCashAppAttached = true;
-      await _sqCashApp.attach('#sqca-mount', { shape: 'semiround', width: 'full' });
-      var m = document.getElementById('sqca-mount');
-      if (m) m.addEventListener('click', function() {
-        [250, 800, 1600].forEach(function(t) {
-          setTimeout(function() {
-            var p = document.getElementById('sqca-step2');
-            if (p) p.scrollIntoView({ behavior: 'smooth', block: 'end' });
-          }, t);
-        });
-      });
-    } catch(e) {
-      _sqCashAppAttached = false;
-      if (err) err.textContent = 'Cash App Pay couldn\'t load — ' + (e.message || 'please try another method.');
-    }
+// Square shows the Cash App scan code as its own full-page dialog. Find it and pin it inside #sqca-box.
+function sqcaFixedLarge() {
+  var modal = document.getElementById('checkout-modal');
+  var out = [];
+  var nodes = document.querySelectorAll('body > *, body > * > *, body > * > * > *');
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    if (el === modal || (modal && el.contains(modal)) || el.id === 'paylater-overlay') continue;
+    if (/^(SCRIPT|STYLE|LINK|META)$/.test(el.tagName)) continue;
+    var cs = getComputedStyle(el);
+    if (cs.position !== 'fixed') continue;
+    var r = el.getBoundingClientRect();
+    if (r.width >= 280 && r.height >= 280) out.push(el);
   }
-  if (s2) setTimeout(function(){ s2.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
-};
+  return out;
+}
+
+function sqcaWatchForPopup() {
+  var before = sqcaFixedLarge();
+  var started = Date.now();
+  var timer = setInterval(function() {
+    if (Date.now() - started > 8000) { clearInterval(timer); return; }
+    var fresh = sqcaFixedLarge().filter(function(el){ return before.indexOf(el) === -1; });
+    if (!fresh.length) return;
+    clearInterval(timer);
+    sqcaPinPopup(fresh[0]);
+  }, 120);
+}
+
+function sqcaPinPopup(root) {
+  var box  = document.getElementById('sqca-box');
+  var host = document.getElementById('sqca-qr-host');
+  var modal = document.getElementById('checkout-modal');
+  if (!box || !host) return;
+  console.info('[CTX] Cash App scan popup pinned into checkout box:', root);
+  box.style.display = 'block';
+  host.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  function put(prop, val) { root.style.setProperty(prop, val, 'important'); }
+  (function follow() {
+    if (!root.isConnected) {            // Square closed the popup (paid / cancelled)
+      box.style.display = 'none';
+      return;
+    }
+    var r = host.getBoundingClientRect();
+    var m = modal ? modal.getBoundingClientRect() : { top: 0, bottom: window.innerHeight, left: 0, right: window.innerWidth };
+    put('position', 'fixed');
+    put('top', r.top + 'px');       put('left', r.left + 'px');
+    put('width', r.width + 'px');   put('height', r.height + 'px');
+    put('right', 'auto');           put('bottom', 'auto');
+    put('inset', 'auto');           put('transform', 'none');
+    put('margin', '0');             put('background', 'transparent');
+    put('backdrop-filter', 'none'); put('-webkit-backdrop-filter', 'none');
+    // clip to the scrolling modal so it can't draw over the header/page when scrolled
+    var cT = Math.max(0, m.top - r.top), cB = Math.max(0, r.bottom - m.bottom);
+    put('clip-path', 'inset(' + cT + 'px 0 ' + cB + 'px 0)');
+    requestAnimationFrame(follow);
+  })();
+}
 
 // ── Mount Zelle button ────────────────────────────────────
 function mountZelle() {
