@@ -725,7 +725,7 @@ function renderCheckoutModal(items, profile, addr) {
     + '<div class="modal-section">'
     + '<div class="modal-section-title">Payment Method</div>'
     + '<div id="paypal-button-container"></div>'
-    + '<div style="margin-top:10px;border-top:1px solid var(--border,#1a3a2a);padding-top:10px">'    + '<button id="paylater-btn" onclick="window.openPayLater()" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'    + '<span style="font-size:1rem">🐾</span> Pay in 4 with Afterpay'    + '</button>'    + '<p style="text-align:center;font-family:var(--font-b);font-size:.65rem;color:var(--smoke);margin:5px 0 0">4 interest-free payments. No credit check.</p>'    + '</div>'
+    + '<div style="margin-top:10px;border-top:1px solid var(--border,#1a3a2a);padding-top:10px">'    + '<button id="paylater-btn" onclick="window.openPayLater()" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'    + '<span style="font-size:1rem">🐾</span> Pay in 4 — Payment Plan'    + '</button>'    + '<p style="text-align:center;font-family:var(--font-b);font-size:.65rem;color:var(--smoke);margin:5px 0 0">4 interest-free payments · via Afterpay or PayPal</p>'    + '</div>'
     + '<div id="cashapp-container" style="margin-top:10px"></div>'
     + '<div id="zelle-container" style="margin-top:10px"></div>'    + '<div id="square-cashapp-container" style="display:none;margin-top:10px"></div>'    + '<div id="square-afterpay-container" style="display:none;margin-top:10px"></div>'
     + '<div id="bitcoin-container" style="margin-top:10px"></div>'
@@ -791,9 +791,39 @@ window.applyDiscountInModal = async function() {
 };
 
 // ── Mount PayPal buttons ──────────────────────────────────
-// ── Custom Pay in 4 ────────────────────────────────────────────
+// ── Pay in 4 (payment plan) ────────────────────────────────────
+var _plInstances = [];
+var _sqPaymentsObj = null;
+var _sqCashApp = null;
+var _sqCashAppAttached = false;
+
+function splitInstalments(total) {
+  var cents = Math.round(total * 100);
+  var base  = Math.floor(cents / 4);
+  var first = cents - base * 3;            // first payment absorbs rounding so the 4 always add up
+  return [first, base, base, base].map(function(c){ return c / 100; });
+}
+
+function plDateLabel(daysFromNow) {
+  var d = new Date(); d.setDate(d.getDate() + daysFromNow);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+window.closePayLater = function() {
+  _plInstances.forEach(function(i){ try { i.destroy(); } catch(e) {} });
+  _plInstances = [];
+  var o = document.getElementById('paylater-overlay');
+  if (o) o.remove();
+};
+
+function plSetStatus(html, isError) {
+  var el = document.getElementById('pl-status');
+  if (!el) return;
+  el.style.color = isError ? '#CE1126' : '#666666';
+  el.innerHTML = html;
+}
+
 window.openPayLater = function() {
-  var shipping = _pendingShipping || captureShipping();
   clearCheckoutError();
   if (!shippingValid()) {
     var LABELS = {
@@ -809,97 +839,145 @@ window.openPayLater = function() {
   }
   _pendingShipping = captureShipping();
 
-  var items     = Cart.get();
-  var subtotal  = items.reduce(function(s,i){ return s+(i.price*i.qty); }, 0);
-  var shipPrice = _pendingShipping.shipping_price || 25;
-  var disc      = _appliedDiscount ? subtotal * (_appliedDiscount.pct/100) : 0;
-  var total     = Math.max(0, subtotal - disc + shipPrice);
-  var instalment = (total / 4).toFixed(2);
+  var total = currentCheckoutTotal().total;
+  var parts = splitInstalments(total);
+  var days  = [0, 14, 28, 42];
+
+  var steps = parts.map(function(amt, i) {
+    var filled = i === 0;
+    return '<div style="flex:1;text-align:center;position:relative">'
+      + '<div style="width:18px;height:18px;border-radius:50%;margin:0 auto 8px;position:relative;z-index:1;box-sizing:border-box;'
+        + (filled ? 'background:#006847;border:2px solid #006847' : 'background:#FFFFFF;border:2px solid #666666') + '"></div>'
+      + '<div style="font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666666">' + (i === 0 ? 'Today' : plDateLabel(days[i])) + '</div>'
+      + '<div style="font-size:1rem;font-weight:700;color:#111111;margin-top:2px">$' + amt.toFixed(2) + '</div>'
+      + '</div>';
+  }).join('');
 
   var overlay = document.createElement('div');
   overlay.id  = 'paylater-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto';
   overlay.innerHTML =
-    '<div style="background:#FFFFFF;border:1px solid #D9D9D9;border-radius:6px;width:100%;max-width:420px;padding:24px;font-family:var(--font-b)">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
-    + '<div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em;color:#111111">Pay in 4</div>'
-    + '<button onclick="document.getElementById(&quot;paylater-overlay&quot;).remove()" style="background:none;border:none;color:#666666;font-size:1.2rem;cursor:pointer">&#x2715;</button>'
+    '<div style="background:#FFFFFF;border:1px solid #D9D9D9;border-radius:6px;width:100%;max-width:440px;padding:24px;font-family:var(--font-b);margin:auto">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
+    +   '<div>'
+    +     '<div style="font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#006847;margin-bottom:4px">Payment plan</div>'
+    +     '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.5rem;letter-spacing:.04em;color:#111111;line-height:1">Pay in 4 · <span id="pl-provider">Afterpay</span></div>'
+    +   '</div>'
+    +   '<button onclick="window.closePayLater()" aria-label="Close" style="background:none;border:none;color:#666666;font-size:1.2rem;cursor:pointer">&#x2715;</button>'
     + '</div>'
-    + '<p style="font-size:.8rem;color:#333333;margin:0 0 16px">4 interest-free payments of <strong style="color:#111111">$' + instalment + '</strong></p>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">'
-    + ['Today','In 2 weeks','In 4 weeks','In 6 weeks'].map(function(label,i){
-        return '<div style="background:#F3F6F4;border:1px solid #D9D9D9;border-radius:4px;padding:10px;text-align:center">'
-          + '<div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#666666;margin-bottom:4px">' + label + '</div>'
-          + '<div style="font-size:1rem;font-weight:700;color:#111111">$' + instalment + '</div>'
-          + '</div>';
-      }).join('')
+    + '<p style="font-size:.82rem;color:#333333;margin:10px 0 18px;line-height:1.5">Split your <strong style="color:#111111">$' + total.toFixed(2) + '</strong> order into 4 interest-free payments. You pay <strong style="color:#111111">$' + parts[0].toFixed(2) + ' today</strong> and the rest is collected automatically every 2 weeks.</p>'
+    + '<div style="background:#F3F6F4;border:1px solid #D9D9D9;border-radius:4px;padding:16px 10px 12px">'
+    +   '<div style="font-size:.56rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#666666;text-align:center;margin-bottom:14px">Your payment schedule — nothing to select</div>'
+    +   '<div style="position:relative"><div style="position:absolute;top:8px;left:12.5%;right:12.5%;height:2px;background:#D9D9D9"></div>'
+    +   '<div style="display:flex;position:relative">' + steps + '</div></div>'
     + '</div>'
-    + '<p style="font-size:.68rem;color:#666666;margin:0 0 16px">First payment due today. Remaining 3 payments billed automatically every 2 weeks via PayPal.</p>'
-    + '<button id="paylater-confirm-btn" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer" onclick="window.confirmPayLater()">Pay $' + instalment + ' Now</button>'
-    + '<p id="paylater-msg" style="text-align:center;font-family:var(--font-c);font-size:.6rem;color:#666666;margin:8px 0 0"></p>'
+    + '<p style="font-size:.66rem;color:#666666;margin:12px 0 14px;line-height:1.5">You\'ll review and approve the full plan on the next step. Approval is required. No interest; late fees may apply.</p>'
+    + '<div id="pl-action" style="min-height:48px"></div>'
+    + '<p id="pl-status" style="text-align:center;font-size:.68rem;margin:10px 0 0;color:#666666">Loading payment plan…</p>'
     + '</div>';
-
   document.body.appendChild(overlay);
+
+  startPayLaterAction(total);
 };
 
-window.confirmPayLater = function() {
-  var btn = document.getElementById('paylater-confirm-btn');
-  var msg = document.getElementById('paylater-msg');
+// Real Afterpay (Square) first; if the Square account can't do Afterpay yet, fall back to PayPal Pay Later.
+async function startPayLaterAction(total) {
+  var ok = false;
+  try { ok = await mountAfterpayPlan('pl-action', total); } catch(e) { console.warn('Afterpay plan unavailable:', e && e.message); }
+  if (ok) { plSetStatus('Secure checkout with Afterpay.'); return; }
+  try { ok = await mountPayPalPayLater('pl-action', total); } catch(e) { console.warn('PayPal Pay Later unavailable:', e && e.message); }
+  if (!ok) plSetStatus('Pay in 4 isn\'t available for this order. Please choose another payment method.', true);
+}
 
-  var items     = Cart.get();
-  var subtotal  = items.reduce(function(s,i){ return s+(i.price*i.qty); }, 0);
-  var shipPrice = (_pendingShipping && _pendingShipping.shipping_price) || 25;
-  var disc      = _appliedDiscount ? subtotal * (_appliedDiscount.pct/100) : 0;
-  var total     = Math.max(0, subtotal - disc + shipPrice);
-  var firstPmt  = parseFloat((total / 4).toFixed(2));
-
-  if (btn) { btn.style.display = 'none'; }
-  if (msg) { msg.textContent = 'Complete payment via PayPal below:'; }
-
-  // Replace confirm button with a real PayPal button for the first instalment
-  var ppContainer = document.getElementById('paylater-pp-container');
-  if (!ppContainer) {
-    ppContainer = document.createElement('div');
-    ppContainer.id = 'paylater-pp-container';
-    ppContainer.style.marginTop = '12px';
-    btn && btn.parentNode.appendChild(ppContainer);
+async function mountAfterpayPlan(mountId, total) {
+  if (!sqAppId() || !sqLocId()) return false;
+  if (!window.Square) {
+    await new Promise(function(resolve, reject) {
+      var s = document.createElement('script');
+      s.src = 'https://web.squarecdn.com/v1/square.js';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
   }
+  var payments = _sqPaymentsObj || window.Square.payments(sqAppId(), sqLocId());
+  _sqPaymentsObj = payments;
+  var calc = currentCheckoutTotal();
+  var req = payments.paymentRequest({
+    countryCode: 'US', currencyCode: 'USD',
+    total: { amount: calc.total.toFixed(2), label: 'Total' },
+    requestShippingContact: true,
+  });
+  var shipLabel = getSelectedShipping().label;
+  req.addEventListener('afterpay_shippingaddresschanged', function() {
+    return { shippingOptions: [{ id: 'ship', label: shipLabel, amount: calc.ship.toFixed(2),
+      total: { amount: calc.total.toFixed(2), label: 'Total' } }] };
+  });
+  var afterpay = await payments.afterpayClearpay(req);   // throws if the merchant isn't onboarded for Afterpay
+  var mount = document.getElementById(mountId);
+  if (!mount) return false;
+  await afterpay.attach('#' + mountId);
+  _plInstances.push(afterpay);
+  var prov = document.getElementById('pl-provider'); if (prov) prov.textContent = 'Afterpay';
 
-  window.paypal.Buttons({
-    style: { layout:'vertical', color:'gold', shape:'rect', height:48 },
+  var busy = false;
+  mount.addEventListener('click', async function() {
+    if (busy) return;
+    busy = true;
+    try {
+      var result = await afterpay.tokenize();
+      if (result.status !== 'OK') {
+        if (result.status !== 'Cancel') {
+          var m = result.errors && result.errors[0] && result.errors[0].message;
+          plSetStatus('Afterpay: ' + (m || 'could not complete — please try again.'), true);
+        }
+        return;
+      }
+      plSetStatus('Processing…');
+      await chargeSquareToken(result.token, currentCheckoutTotal().total, 'afterpay');
+      var shippingData = _pendingShipping || captureShipping();
+      shippingData.square_token = result.token;
+      window.closePayLater();
+      await finishOrder(shippingData, 'afterpay');
+    } catch(err) {
+      console.error('Afterpay failed:', err);
+      plSetStatus('Afterpay payment failed — ' + (err.message || 'please try again.'), true);
+    } finally { busy = false; }
+  });
+  return true;
+}
+
+async function mountPayPalPayLater(mountId, total) {
+  if (!window.paypal || !window.paypal.FUNDING || !window.paypal.FUNDING.PAYLATER) return false;
+  var prov = document.getElementById('pl-provider'); if (prov) prov.textContent = 'PayPal';
+  var btn = window.paypal.Buttons({
+    fundingSource: window.paypal.FUNDING.PAYLATER,
+    style: { layout: 'vertical', color: 'gold', shape: 'rect', height: 48 },
     createOrder: function(data, actions) {
       return actions.order.create({
         intent: 'CAPTURE',
-        purchase_units: [{ amount: { value: String(firstPmt), currency_code:'USD' },
-          description: 'Pay in 4 — Instalment 1 of 4' }]
+        purchase_units: [{ amount: { value: total.toFixed(2), currency_code: 'USD' }, description: 'Order — Pay in 4' }]
       });
     },
     onApprove: async function(data, actions) {
       var capture = await actions.order.capture();
       var shippingData = _pendingShipping || captureShipping();
-      shippingData.paypal_email     = capture?.payer?.email_address || '';
-      shippingData.paypal_name      = ((capture?.payer?.name?.given_name||'')+' '+(capture?.payer?.name?.surname||'')).trim();
-      shippingData.pay_later        = true;
-      shippingData.instalment_total = total;
-      shippingData.instalment_amount = firstPmt;
-      var overlay = document.getElementById('paylater-overlay');
-      if (overlay) overlay.remove();
+      shippingData.paypal_email = (capture && capture.payer && capture.payer.email_address) || '';
+      shippingData.paypal_name  = (((capture && capture.payer && capture.payer.name && capture.payer.name.given_name) || '') + ' ' + ((capture && capture.payer && capture.payer.name && capture.payer.name.surname) || '')).trim();
+      shippingData.pay_later    = true;
+      window.closePayLater();
       await finishOrder(shippingData, 'pay_later');
     },
-    onCancel: function() {
-      if (msg) { msg.textContent = ''; }
-      if (btn) { btn.style.display = 'block'; }
-      ppContainer.innerHTML = '';
-    },
+    onCancel: function() { plSetStatus('Cancelled — you have not been charged.'); },
     onError: function(err) {
-      console.error('Pay in 4 PayPal error:', err);
-      if (msg) { msg.style.color='#E01535'; msg.textContent = 'Payment failed — please try again.'; }
-      if (btn) { btn.style.display='block'; }
-      ppContainer.innerHTML = '';
+      console.error('PayPal Pay Later error:', err);
+      plSetStatus('Payment failed — please try again.', true);
     }
-  }).render('#paylater-pp-container');
-};
-
+  });
+  if (!btn.isEligible()) return false;      // PayPal Pay in 4 covers roughly $30–$1,500 orders
+  await btn.render('#' + mountId);
+  plSetStatus('Pay in 4 is provided by PayPal. Your first payment is collected by PayPal at approval.');
+  return true;
+}
 
 
 async function mountPayPal() {
@@ -1305,6 +1383,8 @@ async function mountSquare() {
   }
 
   // ── Cash App Pay ─────────────────────────────────────────────
+  _sqPaymentsObj = payments;
+  _sqCashApp = null; _sqCashAppAttached = false;
   try {
     var caRequest = payments.paymentRequest({
       countryCode: 'US',
@@ -1315,96 +1395,74 @@ async function mountSquare() {
       redirectURL: window.location.href,
       referenceId: 'ctx-' + Date.now(),
     });
-    var cashAppContainer = document.getElementById('square-cashapp-container');
-    if (cashAppContainer) {
-      cashAppContainer.style.display = 'block';
-      await cashAppPay.attach('#square-cashapp-container');
-      _sqCashAppOk = true;
-      _sqInstances.push(cashAppPay);
-      cashAppPay.addEventListener('ontokenization', async function(e) {
-        var token = e.detail && e.detail.tokenResult && e.detail.tokenResult.token;
-        if (!token) return;
-        try {
-          clearCheckoutError();
-          await chargeSquareToken(token, currentCheckoutTotal().total, 'cashapp');
-          var shippingData = _pendingShipping || captureShipping();
-          shippingData.square_token = token;
-          await finishOrder(shippingData, 'cashapp');
-        } catch(err) {
-          console.error('Square Cash App Pay failed:', err);
-          showCheckoutError('Cash App payment failed — ' + (err.message || 'please try again.'));
-        }
-      });
+    cashAppPay.addEventListener('ontokenization', async function(e) {
+      var token = e.detail && e.detail.tokenResult && e.detail.tokenResult.token;
+      if (!token) return;
+      try {
+        clearCheckoutError();
+        await chargeSquareToken(token, currentCheckoutTotal().total, 'cashapp');
+        var shippingData = _pendingShipping || captureShipping();
+        shippingData.square_token = token;
+        await finishOrder(shippingData, 'cashapp');
+      } catch(err) {
+        console.error('Square Cash App Pay failed:', err);
+        var ce = document.getElementById('sqca-err');
+        if (ce) ce.textContent = 'Cash App payment failed — ' + (err.message || 'please try again.');
+        showCheckoutError('Cash App payment failed — ' + (err.message || 'please try again.'));
+      }
+    });
+    _sqCashApp = cashAppPay;
+    _sqInstances.push(cashAppPay);
+    _sqCashAppOk = true;
+
+    var cashWrap = document.getElementById('square-cashapp-container');
+    if (cashWrap) {
+      cashWrap.innerHTML =
+        '<div id="sqca-step1">'
+        + '<button onclick="window.openSquareCashApp()" style="width:100%;padding:13px;background:#00D632;color:#000;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'
+        + '<svg width="18" height="18" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#000"/><path d="M20.5 12.2c-.6-1.1-1.8-1.7-3.3-1.7-1.8 0-3 .9-3 2.2 0 1.4 1.3 1.9 2.8 2.3 2.2.6 4 1.3 4 3.4 0 2-1.7 3.3-4.1 3.3-1.9 0-3.4-.8-4-2.3" stroke="#00D632" stroke-width="2" stroke-linecap="round"/><path d="M16.2 8v16" stroke="#00D632" stroke-width="2" stroke-linecap="round"/></svg>'
+        + ' Pay $' + total.toFixed(2) + ' with Cash App'
+        + '</button>'
+        + '</div>'
+        + '<div id="sqca-step2" style="display:none;border:1px solid var(--border);border-radius:4px;padding:16px;margin-top:4px;position:relative">'
+        + '<div style="font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00A82A;margin-bottom:12px">Cash App Pay</div>'
+        + '<div style="font-family:var(--font-b);font-size:.85rem;color:var(--light,#C2DAFF);margin-bottom:12px">Pay <strong style="color:var(--white,#fff)">$' + total.toFixed(2) + '</strong> with Cash App. Tap the button below, then scan the code with your phone\'s Cash App (on mobile it opens the app).</div>'
+        + '<div id="sqca-mount" style="min-height:48px"></div>'
+        + '<div id="sqca-err" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:6px"></div>'
+        + '<div style="height:230px" aria-hidden="true"></div>'   // room under the button so the scan code opens down here, not at the top of the modal
+        + '</div>';
+      cashWrap.style.display = 'block';
     }
   } catch(caErr) {
     console.warn('Square Cash App Pay unavailable:', caErr.message);
   }
-
-  // ── Afterpay / Clearpay ──────────────────────────────────────
-  // Per Square docs: needs requestShippingContact + a shippingaddresschanged
-  // handler, and tokenization is triggered by the button click (tokenize()),
-  // NOT an 'ontokenization' event (that's Cash App Pay only).
-  try {
-    var paymentRequest = payments.paymentRequest({
-      countryCode: 'US',
-      currencyCode: 'USD',
-      total: { amount: total.toFixed(2), label: 'Total' },
-      requestShippingContact: true,
-    });
-    var shipLabel = getSelectedShipping().label;
-    paymentRequest.addEventListener('afterpay_shippingaddresschanged', function() {
-      return {
-        shippingOptions: [{
-          id: 'ship',
-          label: shipLabel,
-          amount: calc.ship.toFixed(2),
-          total: { amount: total.toFixed(2), label: 'Total' },
-        }],
-      };
-    });
-
-    var apContainer = document.getElementById('square-afterpay-container');
-    if (apContainer) {
-      var afterpay = await payments.afterpayClearpay(paymentRequest);
-      apContainer.style.display = 'block';
-      await afterpay.attach('#square-afterpay-container');
-      _sqInstances.push(afterpay);
-
-      var apBusy = false;
-      apContainer.addEventListener('click', async function() {
-        if (apBusy) return;
-        clearCheckoutError();
-        if (!shippingValid()) {
-          showCheckoutError('Please complete your shipping details before paying with Afterpay.');
-          return;
-        }
-        _pendingShipping = captureShipping();
-        apBusy = true;
-        try {
-          var result = await afterpay.tokenize();
-          if (result.status !== 'OK') {
-            if (result.status !== 'Cancel') {
-              var m = result.errors && result.errors[0] && result.errors[0].message;
-              showCheckoutError('Afterpay: ' + (m || 'could not complete — please try again.'));
-            }
-            return;
-          }
-          await chargeSquareToken(result.token, currentCheckoutTotal().total, 'afterpay');
-          var shippingData = _pendingShipping || captureShipping();
-          shippingData.square_token = result.token;
-          await finishOrder(shippingData, 'afterpay');
-        } catch(err) {
-          console.error('Square Afterpay failed:', err);
-          showCheckoutError('Afterpay payment failed — ' + (err.message || 'please try again.'));
-        } finally {
-          apBusy = false;
-        }
-      });
-    }
-  } catch(apErr) {
-    console.warn('Square Afterpay unavailable:', apErr.message);
-  }
 }
+
+window.openSquareCashApp = async function() {
+  var s1 = document.getElementById('sqca-step1'), s2 = document.getElementById('sqca-step2');
+  if (s1) s1.style.display = 'none';
+  if (s2) s2.style.display = 'block';
+  var err = document.getElementById('sqca-err');
+  if (_sqCashApp && !_sqCashAppAttached) {
+    try {
+      _sqCashAppAttached = true;
+      await _sqCashApp.attach('#sqca-mount', { shape: 'semiround', width: 'full' });
+      var m = document.getElementById('sqca-mount');
+      if (m) m.addEventListener('click', function() {
+        [250, 800, 1600].forEach(function(t) {
+          setTimeout(function() {
+            var p = document.getElementById('sqca-step2');
+            if (p) p.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }, t);
+        });
+      });
+    } catch(e) {
+      _sqCashAppAttached = false;
+      if (err) err.textContent = 'Cash App Pay couldn\'t load — ' + (e.message || 'please try another method.');
+    }
+  }
+  if (s2) setTimeout(function(){ s2.scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 100);
+};
 
 // ── Mount Zelle button ────────────────────────────────────
 function mountZelle() {
