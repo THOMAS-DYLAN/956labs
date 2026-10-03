@@ -533,6 +533,23 @@ const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL'
 const PAYPAL_CLIENT_ID  = 'AZSLv66rtWR7MDNObiUvYST-XeQEl4-aDzwxsV42ocY3EGXLLUscQ1l_zmmB4FPOOAkMLU5wlMpsGYUa';
 const CASHAPP_USERNAME  = '$CTXLabs';
 
+// Square keys: use the globals if the site defines them, otherwise these (public client IDs).
+function sqAppId()  { return (typeof SQUARE_APP_ID      !== 'undefined' && SQUARE_APP_ID)      || 'sq0idp-C2w90yST1jqW55frQuSrpQ'; }
+function sqLocId()  { return (typeof SQUARE_LOCATION_ID !== 'undefined' && SQUARE_LOCATION_ID) || 'LDJ1E3KBXAGXS'; }
+var _sqCashAppOk = false;
+
+// Mount every payment method independently so one failure can't hide the others.
+async function mountAllPayments() {
+  var jobs = [mountPayPal(), mountZelle()];
+  if (typeof mountBitcoin === 'function') jobs.push(mountBitcoin());
+  jobs.push(mountSquare());
+  var results = await Promise.allSettled(jobs.map(function(j){ return Promise.resolve(j); }));
+  results.forEach(function(r){ if (r.status === 'rejected') console.warn('Payment mount failed:', r.reason); });
+  // Manual Cash App is only hidden when Square Cash App Pay actually rendered
+  if (!_sqCashAppOk) { try { await mountCashApp(); } catch(e) { console.warn('Manual Cash App failed:', e); } }
+}
+
+
 // ── Shipping options ──────────────────────────────────────────
 const SHIPPING_OPTIONS = [
   { id: 'usps', label: 'USPS Standard Shipping', carrier: 'USPS', days: '5–7 business days', price: 25.00 },
@@ -576,7 +593,7 @@ window.openCheckout = async function() {
   renderCheckoutModal(items, profile || {}, addr || {});
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
-  await Promise.all([mountPayPal(), (SQUARE_APP_ID ? Promise.resolve() : mountCashApp()), mountZelle(), mountSquare(), mountBitcoin()]);
+  await mountAllPayments();
 };
 
 window.closeCheckout = function() {
@@ -770,7 +787,7 @@ window.applyDiscountInModal = async function() {
   input.style.opacity = '.5';
 
   // Re-mount payment buttons so the charged total reflects the discount
-  Promise.all([mountPayPal(), (SQUARE_APP_ID ? Promise.resolve() : mountCashApp()), mountZelle(), mountSquare()]);
+  mountAllPayments();
 };
 
 // ── Mount PayPal buttons ──────────────────────────────────
@@ -1251,7 +1268,8 @@ function currentCheckoutTotal() {
 }
 
 async function mountSquare() {
-  if (!SQUARE_APP_ID || !SQUARE_LOCATION_ID) return; // hidden until keys provided
+  _sqCashAppOk = false;
+  if (!sqAppId() || !sqLocId()) return; // hidden until keys provided
 
   // Tear down anything from a previous mount (discount / shipping change)
   _sqInstances.forEach(function(inst){ try { inst.destroy(); } catch(e) {} });
@@ -1280,7 +1298,7 @@ async function mountSquare() {
 
   var payments;
   try {
-    payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+    payments = window.Square.payments(sqAppId(), sqLocId());
   } catch(sqErr) {
     console.warn('Square payments init failed:', sqErr.message);
     return;
@@ -1296,6 +1314,7 @@ async function mountSquare() {
     if (cashAppContainer) {
       cashAppContainer.style.display = 'block';
       await cashAppPay.attach('#square-cashapp-container');
+      _sqCashAppOk = true;
       _sqInstances.push(cashAppPay);
       cashAppPay.addEventListener('ontokenization', async function(e) {
         var token = e.detail && e.detail.tokenResult && e.detail.tokenResult.token;
