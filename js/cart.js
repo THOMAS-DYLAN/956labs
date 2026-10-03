@@ -1420,12 +1420,9 @@ async function mountSquare() {
     var cashWrap = document.getElementById('square-cashapp-container');
     if (cashWrap) {
       cashWrap.innerHTML =
-        '<div id="sqca-box" style="border:1px solid var(--border);border-left:4px solid #00D632;border-radius:4px;padding:14px 16px">'
-        +   '<div style="font-family:var(--font-c);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00A82A;margin-bottom:10px">Cash App Pay · $' + total.toFixed(2) + '</div>'
-        +   '<div id="sqca-mount" style="min-height:48px"></div>'
-        +   '<div id="sqca-qr-host" style="display:none;position:relative;margin-top:12px;overflow:hidden;border-radius:6px"></div>'
-        +   '<div id="sqca-err" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;min-height:14px;margin-top:6px"></div>'
-        + '</div>';
+        '<div id="sqca-mount" style="min-height:48px"></div>'
+        + '<div id="sqca-qr-host" style="display:none;position:relative;margin-top:10px;overflow:hidden;border-radius:6px"></div>'
+        + '<div id="sqca-err" style="font-size:.62rem;color:#CE1126;font-family:var(--font-c);letter-spacing:.06em;margin-top:4px"></div>';
       cashWrap.style.display = 'block';
       await cashAppPay.attach('#sqca-mount', { shape: 'semiround', width: 'full' });
       sqcaStartWatching();
