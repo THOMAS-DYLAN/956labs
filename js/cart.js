@@ -9,8 +9,6 @@ import { supabase } from './supabase.js';
 // Falls back to empty object if the fetch fails.
 let _couponMap = {}; // populated on first applyDiscount call
 let _dealsCache = null; // active deals from DB
-const SQUARE_APP_ID = "sq0idp-C2w90yST1jqW55frQuSrpQ";
-const SQUARE_LOCATION_ID = "LDJ1E3KBXAGXS";
 
 async function _loadCoupons() {
   if (Object.keys(_couponMap).length) return; // already loaded
@@ -555,6 +553,7 @@ window.updateShippingTotal = function() {
   const ship        = getSelectedShipping();
   const el          = document.getElementById('modal-total-val');
   if (el) el.textContent = '$' + (subtotal - discountAmt + ship.price).toFixed(2);
+  if (typeof mountSquare === 'function' && document.getElementById('square-afterpay-container')) mountSquare();
 };
 
 // ── Checkout state ────────────────────────────────────────
@@ -577,7 +576,7 @@ window.openCheckout = async function() {
   renderCheckoutModal(items, profile || {}, addr || {});
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
-  await Promise.all([mountPayPal(), mountCashApp(), mountZelle(), mountBitcoin()]);
+  await Promise.all([mountPayPal(), (SQUARE_APP_ID ? Promise.resolve() : mountCashApp()), mountZelle(), mountSquare(), mountBitcoin()]);
 };
 
 window.closeCheckout = function() {
@@ -712,7 +711,6 @@ function renderCheckoutModal(items, profile, addr) {
     + '<div style="margin-top:10px;border-top:1px solid var(--border,#1a3a2a);padding-top:10px">'    + '<button id="paylater-btn" onclick="window.openPayLater()" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">'    + '<span style="font-size:1rem">🐾</span> Pay in 4 with Afterpay'    + '</button>'    + '<p style="text-align:center;font-family:var(--font-b);font-size:.65rem;color:var(--smoke);margin:5px 0 0">4 interest-free payments. No credit check.</p>'    + '</div>'
     + '<div id="cashapp-container" style="margin-top:10px"></div>'
     + '<div id="zelle-container" style="margin-top:10px"></div>'    + '<div id="square-cashapp-container" style="display:none;margin-top:10px"></div>'    + '<div id="square-afterpay-container" style="display:none;margin-top:10px"></div>'
-    + '<div id="zelle-container" style="margin-top:10px"></div>'    + '<div id="square-cashapp-container" style="display:none;margin-top:10px"></div>'    + '<div id="square-afterpay-container" style="display:none;margin-top:10px"></div>'
     + '<div id="bitcoin-container" style="margin-top:10px"></div>'
     + '</div>'
 
@@ -776,6 +774,117 @@ window.applyDiscountInModal = async function() {
 };
 
 // ── Mount PayPal buttons ──────────────────────────────────
+// ── Custom Pay in 4 ────────────────────────────────────────────
+window.openPayLater = function() {
+  var shipping = _pendingShipping || captureShipping();
+  clearCheckoutError();
+  if (!shippingValid()) {
+    var LABELS = {
+      'co-first':'First Name','co-last':'Last Name','co-email':'Email',
+      'co-phone':'Phone','co-street':'Street Address','co-city':'City',
+      'co-state':'State','co-zip':'ZIP Code'
+    };
+    var missing = SHIP_RULES
+      .filter(function(r){ var el=document.getElementById(r.id); return !el||!r.test(el.value.trim()); })
+      .map(function(r){ return LABELS[r.id]||r.id; });
+    showCheckoutError('Please complete: ' + missing.join(', '));
+    return;
+  }
+  _pendingShipping = captureShipping();
+
+  var items     = Cart.get();
+  var subtotal  = items.reduce(function(s,i){ return s+(i.price*i.qty); }, 0);
+  var shipPrice = _pendingShipping.shipping_price || 25;
+  var disc      = _appliedDiscount ? subtotal * (_appliedDiscount.pct/100) : 0;
+  var total     = Math.max(0, subtotal - disc + shipPrice);
+  var instalment = (total / 4).toFixed(2);
+
+  var overlay = document.createElement('div');
+  overlay.id  = 'paylater-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML =
+    '<div style="background:#FFFFFF;border:1px solid #D9D9D9;border-radius:6px;width:100%;max-width:420px;padding:24px;font-family:var(--font-b)">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
+    + '<div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em;color:#111111">Pay in 4</div>'
+    + '<button onclick="document.getElementById(&quot;paylater-overlay&quot;).remove()" style="background:none;border:none;color:#666666;font-size:1.2rem;cursor:pointer">&#x2715;</button>'
+    + '</div>'
+    + '<p style="font-size:.8rem;color:#333333;margin:0 0 16px">4 interest-free payments of <strong style="color:#111111">$' + instalment + '</strong></p>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">'
+    + ['Today','In 2 weeks','In 4 weeks','In 6 weeks'].map(function(label,i){
+        return '<div style="background:#F3F6F4;border:1px solid #D9D9D9;border-radius:4px;padding:10px;text-align:center">'
+          + '<div style="font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#666666;margin-bottom:4px">' + label + '</div>'
+          + '<div style="font-size:1rem;font-weight:700;color:#111111">$' + instalment + '</div>'
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<p style="font-size:.68rem;color:#666666;margin:0 0 16px">First payment due today. Remaining 3 payments billed automatically every 2 weeks via PayPal.</p>'
+    + '<button id="paylater-confirm-btn" style="width:100%;padding:13px;background:#006847;color:#fff;border:none;border-radius:4px;font-family:var(--font-c);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer" onclick="window.confirmPayLater()">Pay $' + instalment + ' Now</button>'
+    + '<p id="paylater-msg" style="text-align:center;font-family:var(--font-c);font-size:.6rem;color:#666666;margin:8px 0 0"></p>'
+    + '</div>';
+
+  document.body.appendChild(overlay);
+};
+
+window.confirmPayLater = function() {
+  var btn = document.getElementById('paylater-confirm-btn');
+  var msg = document.getElementById('paylater-msg');
+
+  var items     = Cart.get();
+  var subtotal  = items.reduce(function(s,i){ return s+(i.price*i.qty); }, 0);
+  var shipPrice = (_pendingShipping && _pendingShipping.shipping_price) || 25;
+  var disc      = _appliedDiscount ? subtotal * (_appliedDiscount.pct/100) : 0;
+  var total     = Math.max(0, subtotal - disc + shipPrice);
+  var firstPmt  = parseFloat((total / 4).toFixed(2));
+
+  if (btn) { btn.style.display = 'none'; }
+  if (msg) { msg.textContent = 'Complete payment via PayPal below:'; }
+
+  // Replace confirm button with a real PayPal button for the first instalment
+  var ppContainer = document.getElementById('paylater-pp-container');
+  if (!ppContainer) {
+    ppContainer = document.createElement('div');
+    ppContainer.id = 'paylater-pp-container';
+    ppContainer.style.marginTop = '12px';
+    btn && btn.parentNode.appendChild(ppContainer);
+  }
+
+  window.paypal.Buttons({
+    style: { layout:'vertical', color:'gold', shape:'rect', height:48 },
+    createOrder: function(data, actions) {
+      return actions.order.create({
+        intent: 'CAPTURE',
+        purchase_units: [{ amount: { value: String(firstPmt), currency_code:'USD' },
+          description: 'Pay in 4 — Instalment 1 of 4' }]
+      });
+    },
+    onApprove: async function(data, actions) {
+      var capture = await actions.order.capture();
+      var shippingData = _pendingShipping || captureShipping();
+      shippingData.paypal_email     = capture?.payer?.email_address || '';
+      shippingData.paypal_name      = ((capture?.payer?.name?.given_name||'')+' '+(capture?.payer?.name?.surname||'')).trim();
+      shippingData.pay_later        = true;
+      shippingData.instalment_total = total;
+      shippingData.instalment_amount = firstPmt;
+      var overlay = document.getElementById('paylater-overlay');
+      if (overlay) overlay.remove();
+      await finishOrder(shippingData, 'pay_later');
+    },
+    onCancel: function() {
+      if (msg) { msg.textContent = ''; }
+      if (btn) { btn.style.display = 'block'; }
+      ppContainer.innerHTML = '';
+    },
+    onError: function(err) {
+      console.error('Pay in 4 PayPal error:', err);
+      if (msg) { msg.style.color='#E01535'; msg.textContent = 'Payment failed — please try again.'; }
+      if (btn) { btn.style.display='block'; }
+      ppContainer.innerHTML = '';
+    }
+  }).render('#paylater-pp-container');
+};
+
+
+
 async function mountPayPal() {
   var container = document.getElementById('paypal-button-container');
   if (!container) return;
@@ -1119,78 +1228,157 @@ window.payCashApp = async function() {
 
 // ── Square (Cash App Pay + Afterpay) ──────────────────────────
 // Stays dormant until SQUARE_APP_ID and SQUARE_LOCATION_ID are set
+var _sqInstances = [];
+
+// Charges a Square token server-side (Supabase edge fn `square-charge`).
+// Throws if the charge doesn't go through, so an order is never placed unpaid.
+async function chargeSquareToken(token, total, method) {
+  var res = await supabase.functions.invoke('square-charge', {
+    body: { token: token, amount: Math.round(total * 100), currency: 'USD', method: method, reference: 'order-' + Date.now() }
+  });
+  if (res.error || !res.data || res.data.success !== true) {
+    throw new Error((res.data && res.data.error) || (res.error && res.error.message) || 'Payment was not completed.');
+  }
+  return res.data;
+}
+
+function currentCheckoutTotal() {
+  var items    = Cart.get();
+  var subtotal = items.reduce(function(s,i){ return s+i.price*i.qty; }, 0);
+  var disc     = _appliedDiscount ? Math.round(subtotal * _appliedDiscount.pct) / 100 : 0;
+  var ship     = getSelectedShipping().price;
+  return { total: Math.max(0, subtotal - disc + ship), ship: ship };
+}
+
 async function mountSquare() {
   if (!SQUARE_APP_ID || !SQUARE_LOCATION_ID) return; // hidden until keys provided
 
+  // Tear down anything from a previous mount (discount / shipping change)
+  _sqInstances.forEach(function(inst){ try { inst.destroy(); } catch(e) {} });
+  _sqInstances = [];
+  ['square-cashapp-container','square-afterpay-container'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) { el.innerHTML = ''; el.style.display = 'none'; }
+  });
+
   // Load Square SDK if not already loaded
   if (!window.Square) {
-    await new Promise(function(resolve, reject) {
-      var s = document.createElement('script');
-      s.src = 'https://web.squarecdn.com/v1/square.js';
-      s.onload = resolve;
-      s.onerror = reject;
-      document.head.appendChild(s);
-    });
+    try {
+      await new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'https://web.squarecdn.com/v1/square.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    } catch(e) { console.warn('Square SDK failed to load'); return; }
   }
 
-  var items     = Cart.get();
-  var subtotal  = items.reduce(function(s,i){ return s+i.price*i.qty; }, 0);
-  var disc      = _appliedDiscount ? subtotal*(_appliedDiscount.pct/100) : 0;
-  var ship      = 25; // default
-  var total     = Math.max(0, subtotal - disc + ship);
+  var calc = currentCheckoutTotal();
+  var total = calc.total;
   var amountMoney = { amount: Math.round(total * 100), currency: 'USD' };
 
+  var payments;
   try {
-    var payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
-
-    // ── Cash App Pay ─────────────────────────────────────────────
-    try {
-      var cashAppPay = await payments.cashAppPay(amountMoney, {
-        redirectURL: window.location.href,
-        referenceId: 'ctx-' + Date.now(),
-      });
-      var cashAppContainer = document.getElementById('square-cashapp-container');
-      if (cashAppContainer) {
-        cashAppContainer.style.display = 'block';
-        await cashAppPay.attach('#square-cashapp-container');
-        cashAppPay.addEventListener('ontokenization', async function(e) {
-          var token = e.detail?.tokenResult?.token;
-          if (!token) return;
-          var shippingData = _pendingShipping || captureShipping();
-          shippingData.square_token = token;
-          await finishOrder(shippingData, 'pending_cashapp');
-        });
-      }
-    } catch(caErr) {
-      console.warn('Square Cash App Pay unavailable:', caErr.message);
-    }
-
-    // ── Afterpay / Clearpay ──────────────────────────────────────
-    try {
-      var paymentRequest = payments.paymentRequest({
-        countryCode: 'US',
-        currencyCode: 'USD',
-        total: { amount: String((total).toFixed(2)), label: 'Total' },
-      });
-      var afterpay = await payments.afterpayClearpay(paymentRequest);
-      var apContainer = document.getElementById('square-afterpay-container');
-      if (apContainer) {
-        apContainer.style.display = 'block';
-        await afterpay.attach('#square-afterpay-container');
-        afterpay.addEventListener('ontokenization', async function(e) {
-          var token = e.detail?.tokenResult?.token;
-          if (!token) return;
-          var shippingData = _pendingShipping || captureShipping();
-          shippingData.square_token = token;
-          await finishOrder(shippingData, 'afterpay');
-        });
-      }
-    } catch(apErr) {
-      console.warn('Square Afterpay unavailable:', apErr.message);
-    }
-
+    payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
   } catch(sqErr) {
     console.warn('Square payments init failed:', sqErr.message);
+    return;
+  }
+
+  // ── Cash App Pay ─────────────────────────────────────────────
+  try {
+    var cashAppPay = await payments.cashAppPay(amountMoney, {
+      redirectURL: window.location.href,
+      referenceId: 'ctx-' + Date.now(),
+    });
+    var cashAppContainer = document.getElementById('square-cashapp-container');
+    if (cashAppContainer) {
+      cashAppContainer.style.display = 'block';
+      await cashAppPay.attach('#square-cashapp-container');
+      _sqInstances.push(cashAppPay);
+      cashAppPay.addEventListener('ontokenization', async function(e) {
+        var token = e.detail && e.detail.tokenResult && e.detail.tokenResult.token;
+        if (!token) return;
+        try {
+          clearCheckoutError();
+          await chargeSquareToken(token, currentCheckoutTotal().total, 'cashapp');
+          var shippingData = _pendingShipping || captureShipping();
+          shippingData.square_token = token;
+          await finishOrder(shippingData, 'cashapp');
+        } catch(err) {
+          console.error('Square Cash App Pay failed:', err);
+          showCheckoutError('Cash App payment failed — ' + (err.message || 'please try again.'));
+        }
+      });
+    }
+  } catch(caErr) {
+    console.warn('Square Cash App Pay unavailable:', caErr.message);
+  }
+
+  // ── Afterpay / Clearpay ──────────────────────────────────────
+  // Per Square docs: needs requestShippingContact + a shippingaddresschanged
+  // handler, and tokenization is triggered by the button click (tokenize()),
+  // NOT an 'ontokenization' event (that's Cash App Pay only).
+  try {
+    var paymentRequest = payments.paymentRequest({
+      countryCode: 'US',
+      currencyCode: 'USD',
+      total: { amount: total.toFixed(2), label: 'Total' },
+      requestShippingContact: true,
+    });
+    var shipLabel = getSelectedShipping().label;
+    paymentRequest.addEventListener('afterpay_shippingaddresschanged', function() {
+      return {
+        shippingOptions: [{
+          id: 'ship',
+          label: shipLabel,
+          amount: calc.ship.toFixed(2),
+          total: { amount: total.toFixed(2), label: 'Total' },
+        }],
+      };
+    });
+
+    var apContainer = document.getElementById('square-afterpay-container');
+    if (apContainer) {
+      var afterpay = await payments.afterpayClearpay(paymentRequest);
+      apContainer.style.display = 'block';
+      await afterpay.attach('#square-afterpay-container');
+      _sqInstances.push(afterpay);
+
+      var apBusy = false;
+      apContainer.addEventListener('click', async function() {
+        if (apBusy) return;
+        clearCheckoutError();
+        if (!shippingValid()) {
+          showCheckoutError('Please complete your shipping details before paying with Afterpay.');
+          return;
+        }
+        _pendingShipping = captureShipping();
+        apBusy = true;
+        try {
+          var result = await afterpay.tokenize();
+          if (result.status !== 'OK') {
+            if (result.status !== 'Cancel') {
+              var m = result.errors && result.errors[0] && result.errors[0].message;
+              showCheckoutError('Afterpay: ' + (m || 'could not complete — please try again.'));
+            }
+            return;
+          }
+          await chargeSquareToken(result.token, currentCheckoutTotal().total, 'afterpay');
+          var shippingData = _pendingShipping || captureShipping();
+          shippingData.square_token = result.token;
+          await finishOrder(shippingData, 'afterpay');
+        } catch(err) {
+          console.error('Square Afterpay failed:', err);
+          showCheckoutError('Afterpay payment failed — ' + (err.message || 'please try again.'));
+        } finally {
+          apBusy = false;
+        }
+      });
+    }
+  } catch(apErr) {
+    console.warn('Square Afterpay unavailable:', apErr.message);
   }
 }
 
@@ -1365,7 +1553,7 @@ async function finishOrder(shipping, paymentStatus, skipInventory) {
         shipping_city:    shipping.city || null,
         shipping_state:   shipping.state || null,
         shipping_zip:     shipping.zip || null,
-        payment_method:   paymentStatus === 'pending_cashapp' ? 'cashapp' : paymentStatus === 'pending_zelle' ? 'zelle' : paymentStatus === 'pending_bitcoin' ? 'bitcoin' : 'paypal',
+        payment_method:   paymentStatus === 'afterpay' ? 'afterpay' : paymentStatus === 'pay_later' ? 'pay_in_4' : paymentStatus === 'cashapp' ? 'cashapp' : paymentStatus === 'pending_cashapp' ? 'cashapp' : paymentStatus === 'pending_zelle' ? 'zelle' : paymentStatus === 'pending_bitcoin' ? 'bitcoin' : 'paypal',
         cashapp_cashtag:  shipping.cashapp_cashtag || null,
         paypal_email:     shipping.paypal_email    || null,
         paypal_name:      shipping.paypal_name     || null,
