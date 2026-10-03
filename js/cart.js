@@ -1306,7 +1306,12 @@ async function mountSquare() {
 
   // ── Cash App Pay ─────────────────────────────────────────────
   try {
-    var cashAppPay = await payments.cashAppPay(amountMoney, {
+    var caRequest = payments.paymentRequest({
+      countryCode: 'US',
+      currencyCode: 'USD',
+      total: { amount: total.toFixed(2), label: 'Total' },
+    });
+    var cashAppPay = await payments.cashAppPay(caRequest, {
       redirectURL: window.location.href,
       referenceId: 'ctx-' + Date.now(),
     });
